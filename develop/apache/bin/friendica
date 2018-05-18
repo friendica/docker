@@ -1,0 +1,152 @@
+#!/bin/sh
+set -eu
+
+FRIENDICA_VERSION=${FRIENDICA_VERSION:-develop}
+FRIENDICA_ADDONS=${FRIENDICA_ADDONS:-develop}
+AUTOINSTALL=${AUTOINSTALL:-false}
+
+SOURCEDIR=/usr/src
+WORKDIR=/var/www/html
+
+# run an command with the www-data user
+run_as() {
+  if [ "$(id -u)" = 0 ]; then
+    su - www-data -s /bin/sh -c "$1"
+  else
+    sh -c "$1"
+  fi
+}
+
+# checks if the the first parameter is greater than the second parameter
+version_greater() {
+  [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 | head -n 1)" != "$1" ]
+}
+
+# clones the whole develop branch (Friendica and Addons)
+clone_develop() {
+  dir="${1:-$SOURCEDIR}"
+  friendica="${2:-$FRIENDICA_VERSION}"
+  addons="${3:-$FRIENDICA_ADDONS}"
+
+  echo "Cloning Friendica '${friendica}' with Addons '${addons}' into '${dir}'"
+
+  git clone -b ${friendica} https://github.com/friendica/friendica ${dir}/friendica
+  chmod 777 ${dir}/friendica/view/smarty3
+  mkdir ${dir}/friendica/addon
+  git clone -b ${addons} https://github.com/friendica/friendica-addons ${dir}/friendica/addon
+}
+
+# help of this shell script
+friendica_help() {
+  echo "Usage: friendica <command> [<args>]"
+  echo ""
+  echo "Commands:"
+  echo "      console     Executes an command in the Friendica console"
+  echo "      composer    Executes the composer.phar executable for Friendica"
+  echo "      install     Installs Friendica"
+  echo "      update      Updates Friendica"
+  exit 1
+}
+
+# executes the Friendica console
+console() {
+  cd ${WORKDIR}
+  php "${WORKDIR}/bin/console.php" "$@"
+}
+
+# executes the composer.phar binary of Friendica
+composer() {
+  if [ -f ${WORKDIR}/bin/composer.phar ]; then
+    run_as "cd ${WORKDIR};${WORKDIR}/bin/composer.phar "$@" -d ${WORKDIR}"
+  fi
+}
+
+copy_sources() {
+  installed_version="0.0.0.0"
+  if [ -f ${WORKDIR}/VERSION ]; then
+    installed_version="$(cat ${WORKDIR}/VERSION)"
+  fi
+
+  image_version="0.0.0.0"
+  if [ -f ${SOURCEDIR}/friendica/VERSION ]; then
+    image_version="$(cat ${SOURCEDIR}/friendica/VERSION)"
+  elif [ "$FRIENDICA_VERSION" = "develop" ]; then
+    clone_develop
+    image_version="$(cat ${SOURCEDIR}/friendica/VERSION)"
+  else
+    # no given installation and not using the developer branch => nothing to do
+    echo "Friendica command '$1' failed, because of no valid combination of source and version"
+    return;
+  fi
+
+  if version_greater "$installed_version" "$image_version"; then
+    echo "Can't copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ($image_version)"
+    exit 1;
+  fi
+
+  if version_greater "$image_version" "$installed_version"; then
+    if [ "$(id -u)" = 0 ]; then
+        rsync_options="-rlDog --chown www-data:root"
+    else
+        rsync_options="-rlD"
+    fi
+
+    echo "Copying Friendica sources ($image_version) from '${SOURCEDIR}/friendica' to '${WORKDIR}'"
+    rsync $rsync_options --delete --exclude='.git/' ${SOURCEDIR}/friendica/ ${WORKDIR}/
+  fi
+}
+
+# install Friendica
+install() {
+  if [ -f ${WORKDIR}/VERSION ]; then
+    # If there is a given installation of Friendica and we should not update it => exit
+    # We have to explicit update Friendica to avoid breaking something
+    return
+  fi
+
+  copy_sources
+
+  echo "Installing Friendica"
+  if [ "$FRIENDICA_VERSION" = "develop" ]; then
+    composer "install"
+  fi
+
+  if [ ! -f ${WORKDIR}/.htconfig.php ] &&
+     [ -f ${SOURCEDIR}/config/htconfig.php ] &&
+     "$AUTOINSTALL" == "true"; then
+    run_as "cp ${SOURCEDIR}/config/htconfig.php ${WORKDIR}/html/.htconfig.php"
+    # TODO Pull Request for dba Change
+    run_as "sed -i 's/\s+\sDNS_CNAME//g' ${WORKDIR}/include/dba.php"
+    console "autoinstall -f .htconfig.php"
+    # TODO Workaround because of a strange permission issue
+    rm -fr ${WORKDIR}/view/smarty3/compiled
+  fi
+}
+
+update() {
+  if [ ! -f ${WORKDIR}/VERSION ]; then
+    # We want to update a given installation
+    # if there is no installation, exit
+    return
+  fi
+
+  copy_sources
+
+  echo "Upgrading Friendica"
+  if [ "$FRIENDICA_VERSION" = "develop" ]; then
+    composer "update"
+  fi
+  console "dbstructure update"
+}
+
+if [ $# -eq 0 ]; then
+  friendica_help
+fi
+
+case "$1" in
+  install) shift; install "$@";;
+  update) shift; update "$@" ;;
+  console) shift; console "$@" ;;
+  composer) shift; composer "$@" ;;
+  *) friendica_help ;;
+esac

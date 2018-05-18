@@ -15,7 +15,7 @@ install:
 before_script:
   - env | sort
   - cd "$VARIANT"
-  - slash='/'; image="friendica:${VARIANT//$slash/-\"
+  - slash='/'; image="friendica:${VARIANT//$slash/-}"
 
 script:
   - docker build -t "$image" .

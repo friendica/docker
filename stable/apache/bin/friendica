@@ -134,7 +134,7 @@ update() {
 
   echo "Upgrading Friendica"
   if [ "$FRIENDICA_VERSION" = "develop" ]; then
-    composer "update"
+    composer "install"
   fi
   console "dbstructure update"
 }

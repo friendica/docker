@@ -73,6 +73,10 @@ RUN chown -R www-data:root /var/www; \
 
 VOLUME /var/www/html
 
+RUN {\
+      echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
+    } > /usr/local/etc/php/conf.d/sendmail.ini;
+
 ENV FRIENDICA_VERSION 3.6
 ENV ADDONS_VERSION 3.6
 

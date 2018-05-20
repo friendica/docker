@@ -30,6 +30,9 @@ clone_develop() {
 
   echo "Cloning Friendica '${friendica}' with Addons '${addons}' into '${dir}'"
 
+  # Removing the whole directory first
+  rm -fr ${dir}/friendica
+
   git clone -b ${friendica} https://github.com/friendica/friendica ${dir}/friendica
   chmod 777 ${dir}/friendica/view/smarty3
   mkdir ${dir}/friendica/addon
@@ -139,6 +142,20 @@ update() {
   console "dbstructure update"
 }
 
+sendmail() {
+  if [ ! -f /etc/init.d/sendmail ]; then
+    # If sendmail isn't installed, exit this method
+    return
+  fi
+
+  line=$(head -n 1 /etc/hosts)
+  line2=$(echo $line | awk '{print $2}')
+  echo "$line $line2.localdomain" >> /etc/hosts
+
+  echo "Starting sendmail for Mail-Support"
+  /etc/init.d/sendmail start
+}
+
 if [ $# -eq 0 ]; then
   friendica_help
 fi
@@ -148,5 +165,6 @@ case "$1" in
   update) shift; update "$@" ;;
   console) shift; console "$@" ;;
   composer) shift; composer "$@" ;;
+  sendmail) shift; sendmail "$@" ;;
   *) friendica_help ;;
 esac

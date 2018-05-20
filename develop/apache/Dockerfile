@@ -13,6 +13,8 @@ RUN set -ex; \
         bzip2 \
         busybox-static \
         git \
+# For mail() support
+        sendmail \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
@@ -92,6 +94,10 @@ RUN a2enmod rewrite remoteip ;\
       echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
+
+RUN {\
+      echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
+    } > /usr/local/etc/php/conf.d/sendmail.ini;
 
 ENV FRIENDICA_VERSION develop
 ENV ADDONS_VERSION develop

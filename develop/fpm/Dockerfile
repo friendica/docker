@@ -13,6 +13,8 @@ RUN set -ex; \
         bzip2 \
         busybox-static \
         git \
+# For mail() support
+        sendmail \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
@@ -83,6 +85,10 @@ RUN chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
+
+RUN {\
+      echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
+    } > /usr/local/etc/php/conf.d/sendmail.ini;
 
 ENV FRIENDICA_VERSION develop
 ENV ADDONS_VERSION develop

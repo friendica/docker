@@ -106,11 +106,9 @@ RUN set -ex; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
     rm friendica_addons.tar.gz;
 
-COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/
 COPY *.sh /
 RUN chmod +x /*.sh
-RUN chmod +x /usr/local/bin/*
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

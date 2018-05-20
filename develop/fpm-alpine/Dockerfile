@@ -80,11 +80,9 @@ RUN {\
 ENV FRIENDICA_VERSION develop
 ENV ADDONS_VERSION develop
 
-COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/
 COPY *.sh /
 RUN chmod +x /*.sh
-RUN chmod +x /usr/local/bin/*
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

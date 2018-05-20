@@ -1,4 +1,5 @@
 # Docker Image for Friendica
+[![Build Status Travis](https://travis-ci.org/friendica/docker.svg?branch=master)](https://travis-ci.org/friendica/docker)
 
 This repository holds the official Docker Image for [Friendica](https://friendi.ca)
 

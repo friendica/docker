@@ -41,10 +41,10 @@ if [ ! -f $WORKDIR/VERSION -o "$1" = "update" ]; then
     # Removing the whole directory first
     rm -fr $SOURCEDIR/friendica
 
-    git clone --quiet -b $FRIENDICA_VERSION https://github.com/friendica/friendica $SOURCEDIR/friendica > /dev/null 2&>1
+    sh -c "git clone -q -b $FRIENDICA_VERSION https://github.com/friendica/friendica $SOURCEDIR/friendica" > /dev/null 2&>1
     chmod 777 $SOURCEDIR/friendica/view/smarty3
     mkdir $SOURCEDIR/friendica/addon
-    git clone --quiet -b $FRIENDICA_ADDONS https://github.com/friendica/friendica-addons $SOURCEDIR/friendica/addon > /dev/null 2&>1
+    sh -c "git clone -q -b $FRIENDICA_ADDONS https://github.com/friendica/friendica-addons $SOURCEDIR/friendica/addon" > /dev/null 2&>1
   fi
 
   image_version="0.0.0.0"

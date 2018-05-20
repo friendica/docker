@@ -26,7 +26,7 @@ version_greater() {
 console() {
   cd $WORKDIR
   # Todo starting a php-executable without quoting the arguments seems not secure (but is the only way it works)
-  sh -c "php $WORKDIR/bin/console.php $@" > /dev/null 2&>1
+  sh -c "php $WORKDIR/bin/console.php $@"
 }
 
 # If there is no VERSION file or the command is "update", (re-)install Friendica
@@ -41,10 +41,12 @@ if [ ! -f $WORKDIR/VERSION -o "$1" = "update" ]; then
     # Removing the whole directory first
     rm -fr $SOURCEDIR/friendica
 
-    sh -c "git clone -q -b $FRIENDICA_VERSION https://github.com/friendica/friendica $SOURCEDIR/friendica" > /dev/null 2&>1
-    chmod 777 $SOURCEDIR/friendica/view/smarty3
+    sh -c "git clone -q -b $FRIENDICA_VERSION https://github.com/friendica/friendica $SOURCEDIR/friendica"
+    if [ -f $SOURCEDIR/friendica/view/smarty3 ]; then
+        chmod 777 $SOURCEDIR/friendica/view/smarty3
+    fi
     mkdir $SOURCEDIR/friendica/addon
-    sh -c "git clone -q -b $FRIENDICA_ADDONS https://github.com/friendica/friendica-addons $SOURCEDIR/friendica/addon" > /dev/null 2&>1
+    sh -c "git clone -q -b $FRIENDICA_ADDONS https://github.com/friendica/friendica-addons $SOURCEDIR/friendica/addon"
   fi
 
   image_version="0.0.0.0"
@@ -76,7 +78,7 @@ if [ ! -f $WORKDIR/VERSION -o "$1" = "update" ]; then
         exit 1
       fi
 
-      run_as "cd $WORKDIR;$WORKDIR/bin/composer.phar install -d $WORKDIR" > /dev/null 2&>1
+      run_as "cd $WORKDIR;$WORKDIR/bin/composer.phar install -d $WORKDIR"
     fi
 
     if [ ! -f $WORKDIR/.htconfig.php ] &&
@@ -89,10 +91,7 @@ if [ ! -f $WORKDIR/VERSION -o "$1" = "update" ]; then
       # TODO Workaround because of a strange permission issue
       rm -fr $WORKDIR/view/smarty3/compiled
     elif [ "$1" = "update" ]; then
-      echo "Updating Friendica"
       console "dbstructure update"
-
-      exit 0
     fi
   fi
 fi

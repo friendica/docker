@@ -48,7 +48,7 @@ friendica_help() {
   echo "      composer    Executes the composer.phar executable for Friendica"
   echo "      install     Installs Friendica"
   echo "      update      Updates Friendica"
-  exit 1
+  return
 }
 
 # executes the Friendica console
@@ -86,7 +86,7 @@ copy_sources() {
 
   if version_greater "$installed_version" "$image_version"; then
     echo "Can't copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ($image_version)"
-    exit 1;
+    return;
   fi
 
   if version_greater "$image_version" "$installed_version"; then

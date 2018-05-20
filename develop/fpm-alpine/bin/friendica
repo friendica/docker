@@ -54,7 +54,8 @@ friendica_help() {
 # executes the Friendica console
 console() {
   cd ${WORKDIR}
-  php "${WORKDIR}/bin/console.php" "$@"
+  # Todo starting a php-executable without quoting the arguments seems not secure (but is the only way it works)
+  php "${WORKDIR}/bin/console.php" $@
 }
 
 # executes the composer.phar binary of Friendica
@@ -70,15 +71,16 @@ copy_sources() {
     installed_version="$(cat ${WORKDIR}/VERSION)"
   fi
 
+  if [ "$FRIENDICA_VERSION" = "develop" ]; then
+    clone_develop
+  fi
+
   image_version="0.0.0.0"
   if [ -f ${SOURCEDIR}/friendica/VERSION ]; then
     image_version="$(cat ${SOURCEDIR}/friendica/VERSION)"
-  elif [ "$FRIENDICA_VERSION" = "develop" ]; then
-    clone_develop
-    image_version="$(cat ${SOURCEDIR}/friendica/VERSION)"
   else
     # no given installation and not using the developer branch => nothing to do
-    echo "Friendica command '$1' failed, because of no valid combination of source and version"
+    echo "Friendica command '$1' failed, because of no version found"
     return;
   fi
 

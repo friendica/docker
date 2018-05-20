@@ -24,7 +24,8 @@ To use this image it must be combined with any Webserver that can proxy the http
 ## Using the apache image
 You need at least one other mariadb/mysql-container to link it to Friendica.
 
-The apache image contains a webserver and exposes port 80. To start the container type:
+The apache image contains a webserver and exposes port 80.
+To start the container type:
 ```console
 $ docker run -d -p 8080:80 --link some-mysql:mysql friendica 
 ```

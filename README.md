@@ -32,7 +32,8 @@ $ docker run -d -p 8080:80 --link some-mysql:mysql friendica
 Now you can access the Friendica installation wizard at http://localhost:8080/ from your host system.
 
 ## Using the fpm image
-To use the fpm image you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000.
+To use the fpm image you need an additional web server that can proxy http-request to the fpm-port of the container.
+For fpm connection this container exposes port 9000.
 In most cases you might want use another container or your host as proxy.
 If you use your host you can address your Friendica container directly on port 9000.
 If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).

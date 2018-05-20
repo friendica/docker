@@ -89,7 +89,10 @@ if [ ! -f $WORKDIR/VERSION -o "$1" = "update" ]; then
       # TODO Workaround because of a strange permission issue
       rm -fr $WORKDIR/view/smarty3/compiled
     elif [ "$1" = "update" ]; then
+      echo "Updating Friendica"
       console "dbstructure update"
+
+      exit 0
     fi
   fi
 fi

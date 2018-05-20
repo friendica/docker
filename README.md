@@ -115,5 +115,36 @@ You can also predefine the following `.htconfig.php` values:
 - `LANGUAGE` The default language of the Friendica server
 - `SITENAME` The default name of the Friendica server
 
+## Updating Friendica
+
+There are differences between the [stable](https://github.com/friendica/docker/tree/master/stable/) and the [develop](https://github.com/friendica/docker/tree/master/develop/) branches.
+
+They have both in common that normally we do not automatically overwrite your working directory with the new version.
+Instead you need to explicit run `friendica update` for the node for updating files&database.
+
+## Updating stable 
+You have to pull the latest image from the hub (`docker pull friendica`).
+
+## Updating develop
+You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
+Instead you can just update your node with `friendica update`.
+It will clone the latest Friendica version and copy it to your working directory.
+
+# The `friendica` CLI
+
+To make the usage of the Dockerimages smooth, we created a little CLI.
+It wraps the common commands for Friendica and adds new commands.
+
+You can call it with
+```console
+$ docker exec -ti friendica_running_node friendica <command> \
+```
+
+Commands:
+- `console` Executes an command in the Friendica console (`bin/console.php` wrapper)
+- `composer` Executes the composer.phar executable for Friendica (`bin/composer.phar` wrapper)
+- `install` Installs Friendica on a empty environment (gets called automatically during first start) 
+- `update` Updates Friendica on a **existing** environment
+
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/friendica/docker) and write an issue.  

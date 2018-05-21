@@ -9,11 +9,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
-        git \
-    ; \
-    \
-    rm /var/spool/cron/crontabs/root; \
-    echo '*/10 * * * * cd /var/www/html && php -f bin/worker.php' > /var/spool/cron/crontabs/www-data
+        git;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/
@@ -93,9 +89,11 @@ RUN set -ex; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
     rm friendica_addons.tar.gz;
 
+COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/
 COPY *.sh /
 RUN chmod +x /*.sh
+RUN chmod +x /usr/local/bin/*
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

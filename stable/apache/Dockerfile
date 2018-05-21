@@ -11,15 +11,11 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         rsync \
         bzip2 \
-        busybox-static \
         git \
 # For mail() support
         sendmail \
     ; \
-    rm -rf /var/lib/apt/lists/*; \
-    \
-    mkdir -p /var/spool/cron/crontabs; \
-    echo '*/10 * * * * cd /var/www/html && php -f bin/worker.php' > /var/spool/cron/crontabs/www-data
+    rm -rf /var/lib/apt/lists/*;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/
@@ -115,9 +111,11 @@ RUN set -ex; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
     rm friendica_addons.tar.gz;
 
+COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/
 COPY *.sh /
 RUN chmod +x /*.sh
+RUN chmod +x /usr/local/bin/*
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]

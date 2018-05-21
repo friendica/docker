@@ -130,12 +130,29 @@ You have to pull the latest image from the hub (`docker pull friendica`).
 
 ## Updating develop
 You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
-Instead you can just update your node with executing `update` on the node.
+Instead you can just update your node with executing `friendica update` on the node.
 Example:
 ```console
-$ docker exec -ti friendica_running_node update
+$ docker exec -ti friendica_running_node friendica update
 ```
 It will clone the latest Friendica version and copy it to your working directory.
+
+# The `friendica` CLI
+
+To make the usage of the Dockerimages smooth, we created a little CLI.
+It wraps the common commands for Friendica and adds new commands.
+
+You can call it with
+```console
+$ docker exec -ti friendica_running_node friendica <command> \
+```
+
+Commands:
+- `console` Executes an command in the Friendica console (`bin/console.php` wrapper)
+- `composer` Executes the composer.phar executable for Friendica (`bin/composer.phar` wrapper)
+- `install` Installs Friendica on a empty environment (gets called automatically during first start) 
+- `update` Updates Friendica on a **existing** environment
+
 
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/friendica/docker) and write an issue.  

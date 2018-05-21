@@ -1,4 +1,14 @@
 #!/bin/sh
 set -eu
 
-exec busybox crond -f -l 0 -L /dev/stdout
+trap "break;exit" SIGHUP SIGINT SIGTERM
+
+while [ ! -f /var/www/html/.htconfig.php ]; do
+    sleep 1
+done
+
+while true; do
+    cd /var/www/html
+    php -f /var/www/html/bin/worker.php
+    sleep 10m
+done

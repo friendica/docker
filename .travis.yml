@@ -1,0 +1,25 @@
+language: bash
+services: docker
+
+env:
+  - VARIANT=stable/apache
+  - VARIANT=stable/fpm
+  - VARIANT=stable/fpm-alpine
+  - VARIANT=develop/apache
+  - VARIANT=develop/fpm
+  - VARIANT=develop/fpm-alpine
+
+install:
+  - git clone https://github.com/docker-library/official-images.git ~/official-images
+
+before_script:
+  - env | sort
+  - cd "$VARIANT"
+  - slash='/'; image="friendica:${VARIANT//$slash/-}"
+
+script:
+  - docker build -t "$image" .
+  - ~/official-images/test/run.sh "$image"
+
+after_script:
+  - docker images

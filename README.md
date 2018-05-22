@@ -12,6 +12,9 @@ Our platform links to independent social projects and corporate services.
 
 # How to use this image
 
+The images are designed to be used in a micro-service environment.		
+There are two types of the image you can choose from.
+
 The `apache` tag contains a full Friendica installation including an apache web server.
 It is designed to be easy to use and gets you running pretty fast.
 This is also the default for the `latest` tag and version tags that are not further specified.

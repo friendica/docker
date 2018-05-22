@@ -1,0 +1,81 @@
+version: '2.1'
+services:
+
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - db:/var/lib/mysql/
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    env_file:
+      - db.env
+
+  app:
+    build: ./app
+    restart: always
+    volumes:
+      - friendica:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MAILNAME=
+      - TZ=
+      - LANGUAGE=
+    env_file:
+      - db.env
+    depends_on:
+      - db
+    hostname: friendica.local
+    labels:
+      - "traefik.backend=friendica"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.frontend.headers.SSLRedirect=true"
+      - "traefik.frontend.headers.STSSeconds=15768000"
+      - "traefik.frontend.headers.STSIncludeSubdomains=false"
+      - "traefik.frontend.headers.forceSTSHeader=true"
+      - "traefik.friendica.frontend.rule=Host:friendica.local"
+      - "traefik.friendica.frontend.port=80"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy-tier"
+    networks:
+      - proxy-tier
+      - default
+
+  cron:
+    build: ./app
+    restart: always
+    volumes:
+      - friendica:/var/www/html
+    entrypoint: /cron.sh
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MAILNAME=
+      - TZ=
+      - LANGUAGE=
+    env_file:
+      - db.env
+    depends_on:
+      - db
+    hostname: friendica.local
+
+  proxy:
+    build: ./proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    container_name: traefik
+    networks:
+      - default
+      - proxy-tier
+
+volumes:
+  db:
+  friendica:
+
+networks:
+  proxy-tier:

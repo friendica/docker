@@ -31,7 +31,7 @@ The apache image contains a webserver and exposes port 80.
 To start the container type:
 
 ```console
-$ docker run -d -p 8080:80 --link some-mysql:mysql friendica
+$ docker run -d -p 8080:80 --link some-mysql:mysql friendica/server
 ```
 
 Now you can access the Friendica installation wizard at http://localhost:8080/ from your host system.

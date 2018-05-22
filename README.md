@@ -28,7 +28,7 @@ You need at least one other mariadb/mysql-container to link it to Friendica.
 The apache image contains a webserver and exposes port 80.
 To start the container type:
 ```console
-$ docker run -d -p 8080:80 --link some-mysql:mysql friendica 
+$ docker run -d -p 8080:80 --link some-mysql:mysql friendica/server 
 ```
 
 Now you can access the Friendica installation wizard at http://localhost:8080/ from your host system.
@@ -42,7 +42,7 @@ If you use another container, make sure that you add them to the same docker net
 In both cases you don't want to map the fpm port to you host. 
 
 ```console
-$ docker run -d friendica:fpm
+$ docker run -d friendica/server:fpm
 ```
 
 As the fastCGI-Process is not capable of serving static files (style sheets, images, ...) the webserver needs access to these files.
@@ -88,7 +88,7 @@ Friendica:
 ```console
 $ docker run -d \
 -v friendica-vol-1:/var/www/html \
-friendica
+friendica/server
 ```
 
 Database:
@@ -126,7 +126,7 @@ They have both in common that normally we do not automatically overwrite your wo
 Instead you need to explicit run `update` for the node for updating files&database.
 
 ## Updating stable 
-You have to pull the latest image from the hub (`docker pull friendica`).
+You have to pull the latest image from the hub (`docker pull friendica/server`).
 
 ## Updating develop
 You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).

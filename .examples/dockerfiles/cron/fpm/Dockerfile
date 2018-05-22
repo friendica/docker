@@ -1,4 +1,4 @@
-FROM friendica:fpm
+FROM friendica/server:fpm
 
 ENV AUTOINSTALL true
 ENV MARIADB_VERSION 10.3

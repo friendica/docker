@@ -1,4 +1,4 @@
-FROM friendica:develop-fpm-alpine
+FROM friendica/server:fpm-alpine
 
 # at least you HAVE to set one SMTP_HOST (normally something like mail.example.org)
 ENV SMTP_HOST mail

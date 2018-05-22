@@ -46,7 +46,7 @@ If you use another container, make sure that you add them to the same docker net
 In both cases you don't want to map the fpm port to you host.
 
 ```console
-$ docker run -d friendica:fpm
+$ docker run -d friendica/server:fpm
 ```
 
 As the fastCGI-Process is not capable of serving static files (style sheets, images, ...) the webserver needs access to these files.
@@ -99,7 +99,7 @@ Friendica:
 ```console
 $ docker run -d \
   -v friendica-vol-1:/var/www/html \
-  friendica
+  friendica/server
 ```
 
 Database:
@@ -209,7 +209,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
 
   app:
-    image: friendica
+    image: friendica/server
     restart: always
     volumes:
       - friendica:/var/www/html
@@ -264,7 +264,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
 
   app:
-    image: friendica:fpm
+    image: friendica/server:fpm
     restart: always
     volumes:
       - friendica:/var/www/html    

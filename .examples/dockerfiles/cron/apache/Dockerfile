@@ -1,4 +1,4 @@
-FROM friendica:apache
+FROM friendica/server:apache
 
 ENV AUTOINSTALL true
 ENV MARIADB_VERSION 10.3

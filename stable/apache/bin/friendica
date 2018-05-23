@@ -137,6 +137,8 @@ copy_sources() {
     if [ -f $WORKDIR/view/smarty3 ]; then
         chmod 777 $WORKDIR/view/smarty3
     fi
+
+    custom_patch
   fi
 }
 
@@ -159,8 +161,6 @@ install() {
      [ -f ${SOURCEDIR}/config/htconfig.php ] &&
      "$AUTOINSTALL" == "true"; then
     run_as "cp ${SOURCEDIR}/config/htconfig.php ${WORKDIR}/html/.htconfig.php"
-    # TODO Pull Request for dba Change
-    run_as "sed -i 's/\s+\sDNS_CNAME//g' ${WORKDIR}/include/dba.php"
     console "autoinstall -f .htconfig.php"
     # TODO Workaround because of a strange permission issue
     rm -fr ${WORKDIR}/view/smarty3/compiled
@@ -197,6 +197,13 @@ sendmail() {
   nohup /etc/init.d/sendmail start > /dev/null 2>&1 &
 }
 
+# this method will patch Friendica sources in the WORKDIR because of special behaviors in Docker environments
+custom_patch() {
+  # TODO Pull Request for dba Change
+  run_as "sed -i 's/\s+\sDNS_CNAME//g' ${WORKDIR}/include/dba.php"
+  run_as "sed -i 's/\s+\sDNS_PTR//g' ${WORKDIR}/include/dba.php"
+}
+
 if [ $# -eq 0 ]; then
   friendica_help
   exit 0
@@ -207,6 +214,7 @@ case "$1" in
   update) shift; update "$@" ;;
   console) shift; console "$@" ;;
   composer) shift; composer "$@" ;;
+  patch) shift; custom_patch "$@" ;;
   sendmail) shift; sendmail "$@" ;;
   *) friendica_help ;;
 esac

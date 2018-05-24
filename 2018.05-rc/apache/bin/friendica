@@ -142,7 +142,7 @@ copy_sources() {
     fi
 
     log 'Copying Friendica sources ('$image_version') from '\'$SOURCEDIR'/friendica'\'' to '\'$WORKDIR\'
-    rsync $rsync_options --delete --exclude=.git --exclude=photo --exclude=proxy $SOURCEDIR/friendica/ $WORKDIR/
+    rsync $rsync_options --delete --exclude=.git --exclude=photo --exclude=proxy --exclude=.htconfig.php $SOURCEDIR/friendica/ $WORKDIR/
 
     if [ -f $WORKDIR/view/smarty3 ]; then
         chmod 777 $WORKDIR/view/smarty3
@@ -161,7 +161,7 @@ install() {
   copy_sources
 
   log 'Installing Friendica'
-  if [ "$FRIENDICA_VERSION" = "develop" ]; then
+  if echo "$FRIENDICA_VERSION" | grep -Eq '^.*(\-dev|-rc)'; then
     composer "install"
   fi
 
@@ -187,7 +187,7 @@ update() {
   copy_sources
 
   log 'Upgrading Friendica'
-  if [ "$FRIENDICA_VERSION" = "develop" ]; then
+  if echo "$FRIENDICA_VERSION" | grep -Eq '^.*(\-dev|-rc)'; then
     composer "install"
   fi
   console "dbstructure update"

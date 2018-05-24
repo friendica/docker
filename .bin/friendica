@@ -64,14 +64,24 @@ clone_develop() {
   friendica="${2:-$FRIENDICA_VERSION}"
   addons="${3:-$FRIENDICA_ADDONS}"
 
-  log 'Cloning Friendica '\'$friendica\'' with Addons '\'$addons\'' into '\'$dir\'
+  friendica_git=$friendica
+  addons_git=$addons
+  if echo "$friendica" | grep -Eq '^.*\-dev'; then
+    friendica_git="develop"
+  fi
+
+  if echo "$addons" | grep -Eq '^.*\-dev'; then
+    addons_git="develop"
+  fi
+
+  log 'Cloning Friendica '\'$friendica_git\'' with Addons '\'$addons_git\'' into '\'$dir\'
 
   # Removing the whole directory first
   rm -fr $dir/friendica
 
-  sh -c "git clone -b ${friendica} https://github.com/friendica/friendica ${dir}/friendica"
+  sh -c "git clone -q -b ${friendica_git} https://github.com/friendica/friendica ${dir}/friendica"
   mkdir $dir/friendica/addon
-  sh -c "git clone -b ${addons} https://github.com/friendica/friendica-addons ${dir}/friendica/addon"
+  sh -c "git clone -q -b ${addons_git} https://github.com/friendica/friendica-addons ${dir}/friendica/addon"
 }
 
 # help of this shell script
@@ -106,7 +116,7 @@ copy_sources() {
     installed_version="$(cat ${WORKDIR}/VERSION)"
   fi
 
-  if [ "$FRIENDICA_VERSION" = "develop" ]; then
+  if echo "$FRIENDICA_VERSION" | grep -Eq '^.*(\-dev|-rc)'; then
     clone_develop
   fi
 
@@ -132,7 +142,7 @@ copy_sources() {
     fi
 
     log 'Copying Friendica sources ('$image_version') from '\'$SOURCEDIR'/friendica'\'' to '\'$WORKDIR\'
-    rsync $rsync_options --delete --exclude='.git' $SOURCEDIR/friendica/ $WORKDIR/
+    rsync $rsync_options --delete --exclude=.git --exclude=photo --exclude=proxy $SOURCEDIR/friendica/ $WORKDIR/
 
     if [ -f $WORKDIR/view/smarty3 ]; then
         chmod 777 $WORKDIR/view/smarty3

@@ -1,8 +1,6 @@
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
 FROM php:7.1-fpm-alpine
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
-
-ENV IMAGICK_PECL 3.4.3
-ENV AUTOINSTALL false
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -42,8 +40,9 @@ RUN set -ex; \
         curl-dev \
         rsync \
         bzip2 \
+        pcre-dev \
     ; \
-    pecl install imagick-${IMAGICK_PECL}; \
+    pecl install imagick-3.4.3; \
         docker-php-ext-enable imagick; \
         pecl clear-cache; \
     docker-php-ext-configure gd \
@@ -69,12 +68,16 @@ RUN chown -R www-data:root /var/www; \
 
 VOLUME /var/www/html
 
+
 RUN {\
       echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
     } > /usr/local/etc/php/conf.d/sendmail.ini;
 
-ENV FRIENDICA_VERSION develop
-ENV ADDONS_VERSION develop
+ENV AUTOINSTALL false
+
+ENV FRIENDICA_VERSION 2018.05-rc
+ENV ADDONS_VERSION 2018.05-rc
+
 
 COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/

@@ -1,10 +1,7 @@
 FROM friendica/server:fpm
 
-ENV AUTOINSTALL true
-ENV MARIADB_VERSION 10.3
-
 RUN set -ex; \
-    ; \
+    \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         supervisor \

@@ -1,8 +1,5 @@
-FROM php:7.1-fpm-alpine
+FROM php:%%PHP_VERSION%%-%%VARIANT%%
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
-
-ENV IMAGICK_PECL 3.4.3
-ENV AUTOINSTALL false
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -42,8 +39,9 @@ RUN set -ex; \
         curl-dev \
         rsync \
         bzip2 \
+        pcre-dev \
     ; \
-    pecl install imagick-${IMAGICK_PECL}; \
+    pecl install imagick-%%IMAGICK_VERSION%%; \
         docker-php-ext-enable imagick; \
         pecl clear-cache; \
     docker-php-ext-configure gd \
@@ -68,13 +66,17 @@ RUN chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
+%%VARIANT_EXTRAS%%
 
 RUN {\
       echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
     } > /usr/local/etc/php/conf.d/sendmail.ini;
 
-ENV FRIENDICA_VERSION develop
-ENV ADDONS_VERSION develop
+ENV AUTOINSTALL false
+
+ENV FRIENDICA_VERSION %%VERSION%%
+ENV FRIENDICA_ADDONS %%VERSION%%
+%%INSTALL_EXTRAS%%
 
 COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/
@@ -83,4 +85,4 @@ RUN chmod +x /*.sh
 RUN chmod +x /usr/local/bin/*
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["%%CMD%%"]

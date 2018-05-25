@@ -1,8 +1,6 @@
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
 FROM php:7.1-apache
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
-
-ENV IMAGICK_PECL 3.4.3
-ENV AUTOINSTALL false
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -33,8 +31,7 @@ RUN set -ex; \
         make \
         openssl \
         libssl-dev \
-        libpng12-0 \
-        libpng12-dev \
+        libpng-dev \
         libjpeg62-turbo-dev \
         libtool \
         libmcrypt4 \
@@ -50,7 +47,7 @@ RUN set -ex; \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    pecl install imagick-${IMAGICK_PECL}; \
+    pecl install imagick-3.4.3; \
         docker-php-ext-enable imagick; \
         pecl clear-cache \
     ; \
@@ -84,10 +81,10 @@ VOLUME /var/www/html
 
 RUN a2enmod rewrite remoteip ;\
     {\
-      echo RemoteIPHeader X-Real-IP ;\
-      echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-      echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-      echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
@@ -95,8 +92,11 @@ RUN {\
       echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
     } > /usr/local/etc/php/conf.d/sendmail.ini;
 
-ENV FRIENDICA_VERSION develop
-ENV ADDONS_VERSION develop
+ENV AUTOINSTALL false
+
+ENV FRIENDICA_VERSION 2018.05-rc
+ENV FRIENDICA_ADDONS 2018.05-rc
+
 
 COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/

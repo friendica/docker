@@ -1,25 +1,67 @@
-language: bash
+dist: trusty
+sudo: required
+
 services: docker
 
-env:
-  - VARIANT=stable/apache
-  - VARIANT=stable/fpm
-  - VARIANT=stable/fpm-alpine
-  - VARIANT=develop/apache
-  - VARIANT=develop/fpm
-  - VARIANT=develop/fpm-alpine
+language: bash
+
+stages:
+  - test scripts
+# small tests for PRs
+  - name: test images (amd64)
+    if: branch != master
+# full test for master
+  - name: test images (full)
+    if: branch = master
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
   - env | sort
-  - cd "$VARIANT"
-  - slash='/'; image="friendica/server:${VARIANT//$slash/-}"
+  - image="friendica/server:${VERSION}${VARIANT:+-$VARIANT}"
+  - if [[ "$ARCH" == 'i386' ]]; then sed -i -e 's/FROM php/FROM i386\/php/g' "${VERSION}/${VARIANT}/Dockerfile"; fi
 
 script:
-  - docker build -t "$image" .
+  - travis_retry docker build -t "$image" "${VERSION}/${VARIANT}"
   - ~/official-images/test/run.sh "$image"
+  - .travis/test-example-dockerfiles.sh "$image"
 
 after_script:
   - docker images
+
+jobs:
+  include:
+    - &test-scripts
+      stage: test scripts
+      env: SCRIPT=update.sh
+      sudo: false
+      services: []
+      install: skip
+      before_script: skip
+      script:
+        - hash_before=$(git write-tree)
+        - ./update.sh
+        - bash -c "[[ $hash_before = $(git add -A && git write-tree) ]]"
+      after_script: skip
+
+    - <<: *test-scripts
+      env: SCRIPT=generate-stackbrew-library.sh
+      install:
+        - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
+        - chmod +x "$HOME/bin/bashbrew"
+      script:
+        - ./generate-stackbrew-library.sh
+
+    - stage: test images (amd64)
+      env: VERSION=2018.05-rc VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2018.05-rc VARIANT=fpm ARCH=amd64
+    - env: VERSION=2018.05-rc VARIANT=apache ARCH=amd64
+
+    - stage: test images (full)
+      env: VERSION=2018.05-rc VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2018.05-rc VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=2018.05-rc VARIANT=fpm ARCH=amd64
+    - env: VERSION=2018.05-rc VARIANT=fpm ARCH=i386
+    - env: VERSION=2018.05-rc VARIANT=apache ARCH=amd64
+    - env: VERSION=2018.05-rc VARIANT=apache ARCH=i386

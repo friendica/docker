@@ -23,6 +23,8 @@ The second option is a `fpm` container.
 It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Friendica server.
 To use this image it must be combined with any Webserver that can proxy the http requests to the FastCGI-port of the container.
 
+[![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/friendica/docker/b9ed3e8ce68eaf89b08269a15f6360abc2fce544/stack.yml)
+
 ## Using the apache image
 
 You need at least one other mariadb/mysql-container to link it to Friendica.

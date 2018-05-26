@@ -4,8 +4,6 @@
 // Uses a lot of environment variables
 
 // Use environment variables for mysql if they are set beforehand
-
-// Use environment variables for mysql if they are set beforehand
 if (!empty(getenv('MYSQL_HOST'))
 	&& !empty(getenv('MYSQL_PORT'))
 	&& (!empty(getenv('MYSQL_USERNAME')) || !empty(getenv('MYSQL_USER')))

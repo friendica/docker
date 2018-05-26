@@ -26,20 +26,6 @@ services:
     depends_on:
       - db
     hostname: friendica.local
-    labels:
-      - "traefik.backend=friendica"
-      - "traefik.frontend.entryPoints=https"
-      - "traefik.frontend.headers.SSLRedirect=true"
-      - "traefik.frontend.headers.STSSeconds=15768000"
-      - "traefik.frontend.headers.STSIncludeSubdomains=false"
-      - "traefik.frontend.headers.forceSTSHeader=true"
-      - "traefik.friendica.frontend.rule=Host:friendica.local"
-      - "traefik.friendica.frontend.port=80"
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy-tier"
-    networks:
-      - proxy-tier
-      - default
 
   cron:
     build: ./app
@@ -55,7 +41,30 @@ services:
       - db.env
     depends_on:
       - db
+      - app
     hostname: friendica.local
+
+  web:
+    image: nginx
+    restart: always
+    volumes:
+      - friendica:/var/www/html:ro
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - default
+      - proxy-tier
+    labels:
+      - "traefik.backend=friendica"
+      - "traefik.frontend.entryPoints=https,http"
+      - "traefik.frontend.headers.STSSeconds=15768000"
+      - "traefik.frontend.headers.STSIncludeSubdomains=false"
+      - "traefik.frontend.headers.forceSTSHeader=true"
+      - "traefik.friendica.frontend.rule=Host:friendica.local"
+      - "traefik.friendica.frontend.port=80"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy-tier"
 
   proxy:
     build: ./proxy

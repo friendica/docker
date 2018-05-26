@@ -246,7 +246,9 @@ An example can be found in the [examples section](https://github.com/friendica/d
 
 As this setup does **not include encryption** it should to be run behind a proxy.
 
-Maker sure to set the variable `MYSQL_PASSWORD` before you run the setup.
+Prerequisites for this example:
+- Make sure to set the variable `MYSQL_PASSWORD` before you run the setup.
+- Create a `nginx.conf` in the same directory as the docker-compose.yml file (take it from [example](https://github.com/friendica/docker/tree/master/.examples/docker-compose/with-traefik-proxy/mariadb-cron-smtp/fpm/web/nginx.conf))
 
 ```yaml
 version: '2'
@@ -276,8 +278,9 @@ services:
       - MYSQL_DATABASE=friendica
       - MAILNAME=root@friendica.local
     hostname: friendica.local
-    depends_on:
-      - db
+    networks:
+      - proxy-tier
+      - default 
 
   web:
     image: nginx
@@ -286,14 +289,17 @@ services:
     links:
       - app
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    volumes_from:
-      - app
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro    
     restart: always
+    networks:
+      - proxy-tier  
 
 volumes:
   db:
   friendica:
+
+networks:
+  proxy-tier:
 ```
 
 Then run `docker-compose up -d`, now you can access Friendica at http://localhost:8080/ from your system.

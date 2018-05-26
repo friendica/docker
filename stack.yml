@@ -20,6 +20,7 @@ services:
     volumes:
       - friendica:/var/www/html
     environment:
+      - AUTOINSTALL=true
       - MYSQL_HOST=db
       - MYSQL_PORT=3306
       - MYSQL_USER=friendica

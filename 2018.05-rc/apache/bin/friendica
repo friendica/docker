@@ -8,9 +8,6 @@ AUTOINSTALL=${AUTOINSTALL:-false}
 SOURCEDIR=/usr/src
 WORKDIR=/var/www/html
 
-# change delimiter for arrays from whitespaces to newlines (so we can pass strings with whitespaces)
-#IFS=\r\n
-
 VERBOSE=1
 for arg; do
 	case "$arg" in
@@ -168,9 +165,7 @@ install() {
   if [ ! -f ${WORKDIR}/.htconfig.php ] &&
      [ -f ${SOURCEDIR}/config/htconfig.php ] &&
      "$AUTOINSTALL" == "true"; then
-    run_as "cp ${SOURCEDIR}/config/htconfig.php ${WORKDIR}/html/.htconfig.php"
-    # TODO Pull Request for dba Change
-    run_as "sed -i 's/\s+\sDNS_CNAME//g' ${WORKDIR}/include/dba.php"
+    run_as "cp ${SOURCEDIR}/config/htconfig.php ${WORKDIR}/.htconfig.php"
     console "autoinstall -f .htconfig.php"
     # TODO Workaround because of a strange permission issue
     rm -fr ${WORKDIR}/view/smarty3/compiled
@@ -213,10 +208,10 @@ if [ $# -eq 0 ]; then
 fi
 
 case "$1" in
-  install) shift; install "$@";;
-  update) shift; update "$@" ;;
-  console) shift; console "$@" ;;
-  composer) shift; composer "$@" ;;
-  sendmail) shift; sendmail "$@" ;;
+  install) shift; install $@;;
+  update) shift; update $@ ;;
+  console) shift; console $@ ;;
+  composer) shift; composer $@ ;;
+  sendmail) shift; sendmail $@ ;;
   *) friendica_help ;;
 esac

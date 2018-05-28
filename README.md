@@ -124,7 +124,7 @@ You can preconfigure everything that is asked on the install page on first run.
 **MYSQL/MariaDB**:
 
 -	`MYSQL_USERNAME` Username for the database user using mysql.
--   `MYSQL_USER` Username for the database user using mariadb.
+-	`MYSQL_USER` Username for the database user using mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.

@@ -96,8 +96,7 @@ friendica_help() {
 # executes the Friendica console
 console() {
   cd $WORKDIR
-  # Todo starting a php-executable without quoting the arguments seems not secure (but is the only way it works)
-  sh -c "php $WORKDIR/bin/console.php $@"
+  php $WORKDIR/bin/console.php "$@"
 }
 
 # executes the composer.phar binary of Friendica

@@ -9,17 +9,21 @@ Never ever change a file/folder inside a directory without a `.` at the beginnin
 This folder will get updated automatically based on the templates you want to change.
 All changes in such folders will get overwritten during an update.
 
-# [`.bin`](https://github.com/friendica/docker/tree/master/.bin)
+# Basic files and folders
+
+Most of the time you want to change one of the followed files. 
+
+## [`.bin`](https://github.com/friendica/docker/tree/master/.bin)
 
 This directory holds the binary/shell files for docker images.
 They get copied into the docker images at `/usr/local/bin`.
 
-# [`.config`](https://github.com/friendica/docker/tree/master/.config)
+## [`.config`](https://github.com/friendica/docker/tree/master/.config)
 
 This directory holds the config files for docker images.
 They get copied into the docker images at `/usr/src/config`.
 
-## `htconfig.php`
+### `htconfig.php`
 
 This file is based on the sample [`htconfig.php`](https://github.com/friendica/friendica/blob/559250b8b3a7a5d0e524d3e3e2d347d18d6c3a2a/htconfig.php) in the Friendica repository.
 
@@ -28,7 +32,7 @@ The differences:
 - Removed all hard-coded DB settings
 - Added environment variables for mailname, tz, language
 
-# Templates & shell-scripts
+## Templates & shell-scripts
  
 - If you want to update/upgrade Dockerfiles, use the right `*.template` file for it.
 - If you want to update/change the behavior of **every** start of Docker-image, change `docker-entrypoint.sh`

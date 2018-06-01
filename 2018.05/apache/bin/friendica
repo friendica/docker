@@ -95,8 +95,10 @@ friendica_help() {
 
 # executes the Friendica console
 console() {
-  cd $WORKDIR
-  php $WORKDIR/bin/console.php "$@"
+  if [ -f $WORKDIR/bin/console.php ]; then
+    cd $WORKDIR
+    php $WORKDIR/bin/console.php "$@"
+  fi
 }
 
 # executes the composer.phar binary of Friendica
@@ -157,15 +159,13 @@ install() {
   copy_sources
 
   log 'Installing Friendica'
-  if echo "$FRIENDICA_VERSION" | grep -Eq '^.*(\-dev|-rc)'; then
-    composer "install"
-  fi
+  composer install
 
   if [ ! -f ${WORKDIR}/.htconfig.php ] &&
      [ -f ${SOURCEDIR}/config/htconfig.php ] &&
      "$AUTOINSTALL" == "true"; then
     run_as "cp ${SOURCEDIR}/config/htconfig.php ${WORKDIR}/.htconfig.php"
-    console "autoinstall -f .htconfig.php"
+    console autoinstall -f .htconfig.php
     # TODO Workaround because of a strange permission issue
     rm -fr ${WORKDIR}/view/smarty3/compiled
   fi
@@ -181,10 +181,9 @@ update() {
   copy_sources
 
   log 'Upgrading Friendica'
-  if echo "$FRIENDICA_VERSION" | grep -Eq '^.*(\-dev|-rc)'; then
-    composer "install"
-  fi
-  console "dbstructure update"
+
+  composer install
+  console dbstructure update
 }
 
 sendmail() {

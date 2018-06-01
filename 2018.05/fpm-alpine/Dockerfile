@@ -75,9 +75,21 @@ RUN {\
 
 ENV AUTOINSTALL false
 
-ENV FRIENDICA_VERSION 2018.05-rc
-ENV FRIENDICA_ADDONS 2018.05-rc
+ENV FRIENDICA_VERSION 2018.05
+ENV FRIENDICA_ADDONS 2018.05
 
+RUN set -ex; \
+    curl -fsSL -o friendica.tar.gz \
+        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \
+    tar -xzf friendica.tar.gz -C /usr/src/; \
+    rm friendica.tar.gz; \
+    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    curl -fsSL -o friendica_addons.tar.gz \
+        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \
+    mkdir /usr/src/friendica/addon; \
+    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
+    rm friendica_addons.tar.gz;
 
 COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/

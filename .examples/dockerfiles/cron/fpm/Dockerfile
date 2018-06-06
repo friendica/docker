@@ -9,6 +9,6 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*; \
     mkdir /var/log/supervisord /var/run/supervisord
 
-COPY ./supervisord.conf /etc/supervisor/supervisord.conf
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 CMD ["/usr/bin/supervisord"]

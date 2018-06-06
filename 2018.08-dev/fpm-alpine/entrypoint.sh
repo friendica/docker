@@ -2,6 +2,6 @@
 set -eu
 
 friendica install -q
-friendica sendmail -q
+friendica configmail -q
 
 exec "$@"

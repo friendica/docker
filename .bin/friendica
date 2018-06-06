@@ -1,18 +1,23 @@
 #!/bin/sh
 set -eu
 
-FRIENDICA_VERSION=${FRIENDICA_VERSION:-develop}
-FRIENDICA_ADDONS=${FRIENDICA_ADDONS:-develop}
-AUTOINSTALL=${AUTOINSTALL:-false}
+SMTP=${SMTP:-localhost}
+SMTP_FROM=${SMTP_FROM:-no-reply}
 
-SOURCEDIR=/usr/src
-WORKDIR=/var/www/html
+SOURCEDIR=${SOURCEDIR:-/usr/src}
+WORKDIR=${WORKDIR:-/var/www/html}
+
+SMTP_TLS=${SMTP_TLS:-}
+SMTP_STARTTLS=${SMTP_STARTTLS:-}
+SMTP_AUTH_USER=${SMTP_AUTH_USER:-}
+SMTP_AUTH_PASS=${SMTP_AUTH_PASS:-}
+SMTP_AUTH_METHOD=${SMTP_AUTH_METHOD:-}
 
 VERBOSE=1
 for arg; do
 	case "$arg" in
 		-q|--quit)
-		    if [ "$VERBOSE" -eq "2" ]; then
+		    if [ "$VERBOSE" -eq 2 ]; then
 		      echo 'You cannot use verbose and quiet at the same time'
 		      exit 1
 		    fi
@@ -20,7 +25,7 @@ for arg; do
 			break
 			;;
 		-v|--verbose)
-		    if [ "$VERBOSE" -eq "0" ]; then
+		    if [ "$VERBOSE" -eq 0 ]; then
 		      echo 'You cannot use verbose and quiet at the same time'
 		      exit 1
 		    fi
@@ -32,7 +37,7 @@ done
 
 # run an command with the www-data user
 run_as() {
-  if [ "$(id -u)" = 0 ]; then
+  if [ "$(id -u)" -eq 0 ]; then
     su - www-data -s /bin/sh -c "$1"
   else
     sh -c "$1"
@@ -42,7 +47,7 @@ run_as() {
 # log event
 log() {
   currVerb=1
-  if [ $# -eq 2 ]; then
+  if [ "$#" -eq 2 ]; then
     currVerb=$2
   fi
   if [ "$VERBOSE" -ge "$currVerb" ]; then
@@ -105,6 +110,9 @@ console() {
 composer() {
   if [ -f $WORKDIR/bin/composer.phar ]; then
     run_as "cd $WORKDIR;$WORKDIR/bin/composer.phar $@ -d $WORKDIR"
+  elif [ -f $SOURCEDIR/friendica/bin/composer.phar ]; then
+    cd $SOURCEDIR/friendica
+    $SOURCEDIR/friendica/bin/composer.phar "$@" -d $SOURCEDIR/friendica
   fi
 }
 
@@ -133,7 +141,7 @@ copy_sources() {
   fi
 
   if version_greater "$image_version" "$installed_version"; then
-    if [ "$(id -u)" = 0 ]; then
+    if [ "$(id -u)" -eq 0 ]; then
         rsync_options="-rlDog --chown=www-data:root"
     else
         rsync_options="-rlD"
@@ -163,7 +171,7 @@ install() {
 
   if [ ! -f ${WORKDIR}/.htconfig.php ] &&
      [ -f ${SOURCEDIR}/config/htconfig.php ] &&
-     "$AUTOINSTALL" == "true"; then
+     [ "$AUTOINSTALL" = "true" ]; then
     run_as "cp ${SOURCEDIR}/config/htconfig.php ${WORKDIR}/.htconfig.php"
     console autoinstall -f .htconfig.php
     # TODO Workaround because of a strange permission issue
@@ -186,21 +194,37 @@ update() {
   console dbstructure update
 }
 
-sendmail() {
-  if [ ! -f /etc/init.d/sendmail ]; then
-    # If sendmail isn't installed, exit this method
+configmail() {
+  if [ "$SMTP" = "localhost" ]; then
+    # SMTP is a required setting
+    # do nothing if it is "localhost" (= not changed)
     return
   fi
 
-  line=$(head -n 1 /etc/hosts)
-  line2=$(echo $line | awk '{print $2}')
-  echo "$line $line2.localdomain" >> /etc/hosts
+  sed -i "s/:root:/:${SITENAME}:/g" /etc/passwd
+  sed -i "s/Linux\ User/${SITENAME}/g" /etc/passwd
 
-  log 'Starting sendmail for Mail-Support'
-  nohup /etc/init.d/sendmail start > /dev/null 2>&1 &
+  # add possible mail-senders
+  echo "www-data:$SMTP_FROM@$HOSTNAME:$SMTP" >> /etc/ssmtp/revaliases
+  echo "root:$SMTP_FROM@$HOSTNAME:$SMTP" >> /etc/ssmtp/revaliases
+
+  # replace ssmtp.conf settings
+  cat << EOF > /etc/ssmtp/ssmtp.conf
+# /etc/ssmtp/ssmtp.conf
+
+root=$SMTP_FROM@$HOSTNAME
+hostname=$HOSTNAME
+mailhub=$SMTP
+FromLineOverride=YES
+EOF
+  [ -z "$SMTP_TLS" ] || echo "UseTLS=$SMTP_TLS" >> /etc/ssmtp/ssmtp.conf
+  [ -z "$SMTP_STARTTLS" ] || echo "UseSTARTTLS=$SMTP_STARTTLS" >> /etc/ssmtp/ssmtp.conf
+  [ -z "$SMTP_AUTH_USER" ] || echo "AuthUser=$SMTP_AUTH_USER" >> /etc/ssmtp/ssmtp.conf
+  [ -z "$SMTP_AUTH_PASS" ] || echo "AuthPass=$SMTP_AUTH_PASS" >> /etc/ssmtp/ssmtp.conf
+  [ -z "$SMTP_AUTH_METHOD" ] || echo "AuthMethod=$SMTP_AUTH_METHOD" >> /etc/ssmtp/ssmtp.conf
 }
 
-if [ $# -eq 0 ]; then
+if [ "$#" -eq 0 ]; then
   friendica_help
   exit 0
 fi
@@ -210,6 +234,6 @@ case "$1" in
   update) shift; update $@ ;;
   console) shift; console $@ ;;
   composer) shift; composer $@ ;;
-  sendmail) shift; sendmail $@ ;;
+  configmail) shift; configmail $@ ;;
   *) friendica_help ;;
 esac

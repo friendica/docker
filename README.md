@@ -121,6 +121,14 @@ You can preconfigure everything that is asked on the install page on first run.
 
 -	`AUTOINSTALL` if `true`, the automatic configuration will start (Default: `false`)
 
+**SMTP/Mail Settings**:
+
+-	`SMTP` **required** address of the SMTP Mail-Gateway (Default: `localhost`)
+-	`SMTP_FROM` sender user-part of the address (Default: `no-reply` - e.g. no-reply@friendica.local)
+-	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway (Default: empty)
+-	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway (Default: empty)
+-	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway (Default: empty/plain text)
+
 **MYSQL/MariaDB**:
 
 -	`MYSQL_USERNAME` Username for the database user using mysql.
@@ -133,9 +141,10 @@ You can preconfigure everything that is asked on the install page on first run.
 You can also predefine the following `.htconfig.php` values:
 
 -	`MAILNAME` E-Mail address of the administrator
--	`TZ` The default localization of the Friendica server
--	`LANGUAGE` The default language of the Friendica server
--	`SITENAME` The default name of the Friendica server
+-	`TZ` The default localization of the Friendica server (Default: `America/Los_Angeles`)
+-	`LANGUAGE` The default language of the Friendica server (Default: `en`)
+-	`SITENAME` The default name of the Friendica server (Default: `Friendica Social Network` )
+-	`VALIDATION` The default setting if url/emails are getting validated (Default: `true`) 
 
 ## Updating to a newer version
 

@@ -16,7 +16,6 @@ The Dockerfiles use the default images as base image and build on top of it.
 Examples | Descriptions
 -------- | -------
 [cron](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed).
-[smtp](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/smtp) | adds dependencies required to use SMTP as mail relay/smarthost
 
 ## docker-compose
 

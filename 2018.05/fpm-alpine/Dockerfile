@@ -87,7 +87,6 @@ COPY *.sh /
 RUN chmod +x /*.sh
 RUN chmod +x /usr/local/bin/*
 
-
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
         "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \

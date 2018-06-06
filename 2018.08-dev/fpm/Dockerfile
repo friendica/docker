@@ -98,6 +98,5 @@ RUN chmod +x /*.sh
 RUN chmod +x /usr/local/bin/*
 
 
-
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

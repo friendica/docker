@@ -24,6 +24,7 @@ It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fas
 To use this image it must be combined with any Webserver that can proxy the http requests to the FastCGI-port of the container.
 
 [![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nupplaphil/friendica-docker/fec33c98be957436279b7074ca08068b18622627/stack.yml)
+(Admin-E-Mail: `root@friendica.local`)
 
 ## Using the apache image
 
@@ -63,27 +64,49 @@ There are three options to enable the cron-job for Friendica:
 -	Using the default image (apache, fpm, fpm-alpine) and creating **two** container (one for cron and one for the main app)
 -	Using one of the additional, prepared [`cron dockerfiles`](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/cron)
 
-## Using sendmail for E-Mail support
+# Environment variables
 
-You have to set the `--hostname/-h` parameter correctly to make the `mail()` command use the right domainname of it's e-mail.
-Currently, the command `sendmail` will be used for the `mail()` support of Friendica.
+This is the full list of all possible environment variables used for this image:
 
-Be aware that in production environment, you normally have an external MTA (or a SmartHost) for correctly signing and routing your e-mails.
-See the Dockerfiles at [`smtp`](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/smtp) for examples how to configure it.
+**Common**
+-	`MAILNAME` E-Mail address of the administrator (**required**)
+-	`TZ` The default localization of the Friendica server (Default: `America/Los_Angeles`)
+-	`LANGUAGE` The default language of the Friendica server (Default: `en`)
+-	`SITENAME` The default name of the Friendica server (Default: `Friendica Social Network` )
+-	`VALIDATION` The default setting if url/emails are getting validated (Default: `true`)
+-	`AUTOINSTALL` if `true`, the automatic configuration will start (Default: `false`)
 
-### `apache` and `fpm` image
+**SMTP/Mail** 
+-	`SMTP` address of the SMTP Mail-Gateway (**required** - Default: `localhost`)
+-	`SMTP_FROM` sender user-part of the address (Default: `no-reply` - e.g. no-reply@friendica.local)
+-	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway (Default: empty)
+-	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway (Default: empty)
+-	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway (Default: empty/plain text)
 
-`sendmail` is used as a SMTP MTA for standalone usage and it works out-of-the-box.
+**Database** (**required**)
+-	`MYSQL_USERNAME` Username for the database user using mysql.
+-	`MYSQL_USER` Username for the database user using mariadb.
+-	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
+-	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
+-	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
+-	`MYSQL_PORT` Port of the database server using mysql / mariadb.
 
-### `fpm-alpine` image
+## Administrator account
 
-For alpine, there is no "standalone" mail-service available.
-Therefore you **have** to setup a SMTP MTA.
+Because Friendica links the administrator account to a specific mail address, you **have** to set a valid address for `MAILNAME`.
 
-## Using an external database
+## Mail settings
 
-By default the `latest` container uses a local MySQL-Database for data storage, but the Friendica setup wizard (appears on first run) allows connecting to an existing MySQL/MariaDB database.
-You can also link a database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup.
+The binary `ssmtp` is used for the `mail()` support of Friendica.
+
+You have to set the `--hostname/-h` parameter correctly to use the right domainname for the `mail()` command.
+
+You have to set a valid SMTP-MTA for the `SMTP` environment variable to enable mail support in Friendica.
+A valid SMTP-MTA would be, for example, `mx.example.org`.
+
+## Database settings
+
+You have to link a running database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup.
 
 ## Persistent data
 
@@ -114,37 +137,13 @@ $ docker run -d \
   mariadb
 ```
 
-## Auto configuration via environment variables
+## Automatic installation
 
 The Friendica image supports auto configuration via environment variables.
 You can preconfigure everything that is asked on the install page on first run.
+To enable the automatic installation, you have to set `AUTOINSTALL` to `true`.
 
--	`AUTOINSTALL` if `true`, the automatic configuration will start (Default: `false`)
-
-**SMTP/Mail Settings**:
-
--	`SMTP` **required** address of the SMTP Mail-Gateway (Default: `localhost`)
--	`SMTP_FROM` sender user-part of the address (Default: `no-reply` - e.g. no-reply@friendica.local)
--	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway (Default: empty)
--	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway (Default: empty)
--	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway (Default: empty/plain text)
-
-**MYSQL/MariaDB**:
-
--	`MYSQL_USERNAME` Username for the database user using mysql.
--	`MYSQL_USER` Username for the database user using mariadb.
--	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
--	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
--	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
--	`MYSQL_PORT` Port of the database server using mysql / mariadb.
-
-You can also predefine the following `.htconfig.php` values:
-
--	`MAILNAME` E-Mail address of the administrator
--	`TZ` The default localization of the Friendica server (Default: `America/Los_Angeles`)
--	`LANGUAGE` The default language of the Friendica server (Default: `en`)
--	`SITENAME` The default name of the Friendica server (Default: `Friendica Social Network` )
--	`VALIDATION` The default setting if url/emails are getting validated (Default: `true`) 
+# Maintenance of the image
 
 ## Updating to a newer version
 
@@ -153,11 +152,11 @@ There are differences between the [stable](https://github.com/friendica/docker/t
 They have both in common that normally we do not automatically overwrite your working directory with the new version.
 Instead you need to explicit run `friendica update` for the node for updating files&database.
 
-## Updating stable
+### Updating stable
 
 You have to pull the latest image from the hub (`docker pull friendica`).
 
-## Updating develop
+### Updating develop
 
 You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
 Instead you can just update your node with executing `friendica update` on the node.
@@ -169,7 +168,7 @@ $ docker exec -ti friendica_running_node friendica update
 
 It will clone the latest Friendica version and copy it to your working directory.
 
-# The `friendica` CLI
+## The `friendica` CLI
 
 To make the usage of the Docker images smooth, we created a little CLI.
 It wraps the common commands for Friendica and adds new commands.

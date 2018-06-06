@@ -140,7 +140,8 @@ copy_sources() {
     exit 1;
   fi
 
-  if version_greater "$image_version" "$installed_version"; then
+  if version_greater "$image_version" "$installed_version" ||
+     echo "$image_version" | grep -Eq '^.*\-dev'; then
     if [ "$(id -u)" -eq 0 ]; then
         rsync_options="-rlDog --chown=www-data:root"
     else
@@ -148,10 +149,10 @@ copy_sources() {
     fi
 
     log 'Copying Friendica sources ('$image_version') from '\'$SOURCEDIR'/friendica'\'' to '\'$WORKDIR\'
-    rsync $rsync_options --delete --exclude=.git --exclude=photo --exclude=proxy --exclude=.htconfig.php $SOURCEDIR/friendica/ $WORKDIR/
+    rsync $rsync_options --delete --exclude='.git' --exclude='photo' --exclude='proxy' --exclude='.htconfig.php' --exclude='home.*' --exclude='vendor' $SOURCEDIR/friendica/ $WORKDIR/
 
     if [ -f $WORKDIR/view/smarty3 ]; then
-        chmod 777 $WORKDIR/view/smarty3
+        chmod -R 777 $WORKDIR/view/smarty3
     fi
   fi
 }

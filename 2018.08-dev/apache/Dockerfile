@@ -11,7 +11,7 @@ RUN set -ex; \
         bzip2 \
         git \
 # For mail() support
-        sendmail \
+        ssmtp \
     ; \
     rm -rf /var/lib/apt/lists/*;
 
@@ -93,16 +93,18 @@ RUN {\
     } > /usr/local/etc/php/conf.d/sendmail.ini;
 
 ENV AUTOINSTALL false
+ENV VALIDATION true
+ENV SITENAME "Friendica Social Network"
 
 ENV FRIENDICA_VERSION 2018.08-dev
 ENV FRIENDICA_ADDONS 2018.08-dev
-
 
 COPY bin/* /usr/local/bin/
 COPY config/* /usr/src/config/
 COPY *.sh /
 RUN chmod +x /*.sh
 RUN chmod +x /usr/local/bin/*
+
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]

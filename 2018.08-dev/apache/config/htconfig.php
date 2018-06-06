@@ -106,3 +106,8 @@ $a->config['system']['allowed_link_protocols'] = ['ftp', 'ftps', 'mailto', 'cid'
 
 // Authentication cookie lifetime, in days
 $a->config['system']['auth_cookie_lifetime'] = 7;
+
+if (!empty(getenv('VALIDATION'))) {
+	$a->config['system']['disable_url_validation'] = strtolower(getenv('VALIDATION'));
+	$a->config['system']['disable_email_validation'] = strtolower(getenv('VALIDATION'));
+}

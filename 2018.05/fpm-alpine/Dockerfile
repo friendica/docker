@@ -4,10 +4,11 @@ LABEL maintainer="Philipp Holzer <admin@philipp.info>"
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
-    \
     apk add --no-cache \
         rsync \
-        git;
+        git \
+ # For mail() support
+        ssmtp;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/
@@ -74,9 +75,17 @@ RUN {\
     } > /usr/local/etc/php/conf.d/sendmail.ini;
 
 ENV AUTOINSTALL false
+ENV VALIDATION true
+ENV SITENAME "Friendica Social Network"
 
 ENV FRIENDICA_VERSION 2018.05
 ENV FRIENDICA_ADDONS 2018.05
+
+COPY bin/* /usr/local/bin/
+COPY config/* /usr/src/config/
+COPY *.sh /
+RUN chmod +x /*.sh
+RUN chmod +x /usr/local/bin/*
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
@@ -89,13 +98,8 @@ RUN set -ex; \
         "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \
     mkdir /usr/src/friendica/addon; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica_addons.tar.gz;
-
-COPY bin/* /usr/local/bin/
-COPY config/* /usr/src/config/
-COPY *.sh /
-RUN chmod +x /*.sh
-RUN chmod +x /usr/local/bin/*
+    rm friendica_addons.tar.gz; \
+    friendica composer install;
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

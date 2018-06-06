@@ -12,7 +12,7 @@ services:
       - db.env
 
   app:
-    build: ./app
+    image: friendica/server:apache
     restart: always
     volumes:
       - friendica:/var/www/html
@@ -21,14 +21,17 @@ services:
       - MAILNAME=
       - TZ=
       - LANGUAGE=
+      - SMTP=
     env_file:
       - db.env
     depends_on:
       - db
     hostname: friendica.local
+    ports:
+      - "80:80"
 
   cron:
-    build: ./app
+    image: friendica/server:apache
     restart: always
     volumes:
       - friendica:/var/www/html
@@ -37,23 +40,12 @@ services:
       - MAILNAME=
       - TZ=
       - LANGUAGE=
+      - SMTP=
     env_file:
       - db.env
     depends_on:
       - db
-      - app
     hostname: friendica.local
-
-  web:
-    image: nginx
-    restart: always
-    volumes:
-      - friendica:/var/www/html:ro
-      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - app
-    ports:
-      - "80:80"
 
 volumes:
   db:

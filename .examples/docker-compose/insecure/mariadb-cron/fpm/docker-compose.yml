@@ -12,7 +12,7 @@ services:
       - db.env
 
   app:
-    build: ./app
+    image: friendica/server:fpm
     restart: always
     volumes:
       - friendica:/var/www/html
@@ -28,7 +28,7 @@ services:
     hostname: friendica.local
 
   cron:
-    build: ./app
+    image: friendica/server:fpm
     restart: always
     volumes:
       - friendica:/var/www/html

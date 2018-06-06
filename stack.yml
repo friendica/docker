@@ -27,6 +27,8 @@ services:
       - MYSQL_PASSWORD=friendica
       - MYSQL_DATABASE=friendica
       - MAILNAME=root@friendica.local
+      - SITENAME=Friendica PWD Test Node
+      - VALIDATION=false
     hostname: friendica.local
     depends_on:
       - db
@@ -44,6 +46,7 @@ services:
       - MYSQL_PASSWORD=friendica
       - MYSQL_DATABASE=friendica
       - MAILNAME=root@friendica.local
+      - SITENAME=Friendica PWD Test Node
     depends_on:
       - db
 

@@ -95,7 +95,6 @@ COPY config/* /usr/src/config/
 COPY *.sh /
 RUN chmod +x /*.sh
 RUN chmod +x /usr/local/bin/*
-
 %%INSTALL_EXTRAS%%
 
 ENTRYPOINT ["/entrypoint.sh"]

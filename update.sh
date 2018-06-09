@@ -32,11 +32,6 @@ declare -A install_extras=(
     ['develop']=''
 )
 
-declare -A bin_dir=(
-  ['stable']='scripts'
-  ['develop']='bin'
-)
-
 variants=(
 	apache
 	fpm
@@ -90,10 +85,6 @@ function create_variant() {
 
 	# Copy the bin directory
 	cp -rT .bin "$dir/bin"
-
-	sed -ri -e '
-	    s/%%DIR%%/'"${bin_dir[$install_type]}"'/g;
-	' "$dir/cron.sh"
 
     travisEnvAmd64='\n    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH=amd64'"$travisEnvAmd64"
 	for arch in i386 amd64; do

@@ -141,7 +141,7 @@ copy_sources() {
   fi
 
   if version_greater "$image_version" "$installed_version" ||
-     echo "$image_version" | grep -Eq '^.*\-dev'; then
+     echo "$image_version" | grep -Eq '^.*\-dev|-rc'; then
     if [ "$(id -u)" -eq 0 ]; then
         rsync_options="-rlDog --chown=www-data:root"
     else
@@ -149,10 +149,15 @@ copy_sources() {
     fi
 
     log 'Copying Friendica sources ('$image_version') from '\'$SOURCEDIR'/friendica'\'' to '\'$WORKDIR\'
-    rsync $rsync_options --delete --exclude='.git' --exclude='photo' --exclude='proxy' --exclude='.htconfig.php' --exclude='home.*' --exclude='vendor' $SOURCEDIR/friendica/ $WORKDIR/
+    rsync $rsync_options --delete --exclude='.git' --exclude='photo' --exclude='proxy' --exclude='.htconfig.php' --exclude='home.*' $SOURCEDIR/friendica/ $WORKDIR/
 
     if [ -f $WORKDIR/view/smarty3 ]; then
         chmod -R 777 $WORKDIR/view/smarty3
+    fi
+
+    # the stable packages already have the whole vendor stuff in their images
+    if echo "$FRIENDICA_VERSION" | grep -Eq '^.*(\-dev|-rc)'; then
+        composer install
     fi
   fi
 }
@@ -165,10 +170,9 @@ install() {
     return
   fi
 
-  copy_sources
-
   log 'Installing Friendica'
-  composer install
+
+  copy_sources
 
   if [ ! -f ${WORKDIR}/.htconfig.php ] &&
      [ -f ${SOURCEDIR}/config/htconfig.php ] &&
@@ -187,11 +191,10 @@ update() {
     return
   fi
 
-  copy_sources
-
   log 'Upgrading Friendica'
 
-  composer install
+  copy_sources
+
   console dbstructure update
 }
 

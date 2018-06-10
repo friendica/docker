@@ -116,7 +116,7 @@ do {
         $mysql = @new PDO($connection, $db_user, $db_pass);
         $connected = true;
     } catch (PDOException $e) {
-        fwrite($stderr, "MySQL Connection Error\n");
+        fwrite($stderr, "\nMySQL Connection Error: " . $e . "\n");
         $connected = false;
         --$maxTries;
         if ($maxTries <= 0) {

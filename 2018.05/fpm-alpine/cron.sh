@@ -6,6 +6,6 @@ while [ ! -f /var/www/html/.htconfig.php ]; do
 done
 
 while true; do
-    php -f /var/www/html/bin/worker.php
-    sleep 10m
+    php /var/www/html/bin/worker.php no_cron
+    sleep 5m
 done

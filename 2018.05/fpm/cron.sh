@@ -7,5 +7,5 @@ done
 
 while true; do
     php /var/www/html/bin/worker.php no_cron
-    sleep 5m
+    sleep 10m
 done

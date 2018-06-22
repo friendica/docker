@@ -69,19 +69,19 @@ There are three options to enable the cron-job for Friendica:
 This is the full list of all possible environment variables used for this image:
 
 **Common**
--	`MAILNAME` E-Mail address of the administrator (**required**)
--	`TZ` The default localization of the Friendica server (Default: `America/Los_Angeles`)
--	`LANGUAGE` The default language of the Friendica server (Default: `en`)
--	`SITENAME` The default name of the Friendica server (Default: `Friendica Social Network` )
--	`VALIDATION` The default setting if url/emails are getting validated (Default: `true`)
--	`AUTOINSTALL` if `true`, the automatic configuration will start (Default: `false`)
+-	`MAILNAME` E-Mail address of the administrator. (**required**)
+-	`TZ` The default localization of the Friendica server. (Default: `America/Los_Angeles`)
+-	`LANGUAGE` The default language of the Friendica server. (Default: `en`)
+-	`SITENAME` The default name of the Friendica server. (Default: `Friendica Social Network` )
+-	`VALIDATION` The default setting if url/emails are getting validated. (Default: `true`)
+-	`AUTOINSTALL` if `true`, the automatic configuration will start. (Default: `false`)
 
 **SMTP/Mail** 
--	`SMTP` address of the SMTP Mail-Gateway (**required** - Default: `localhost`)
--	`SMTP_FROM` sender user-part of the address (Default: `no-reply` - e.g. no-reply@friendica.local)
--	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway (Default: empty)
--	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway (Default: empty)
--	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway (Default: empty/plain text)
+-	`SMTP` Address of the SMTP Mail-Gateway. (**required** - Default: `localhost`)
+-	`SMTP_FROM` Sender user-part of the address. (Default: `no-reply` - e.g. no-reply@friendica.local)
+-	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway. (Default: empty)
+-	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway. (Default: empty)
+-	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway. (Default: empty/plain text)
 
 **Database** (**required**)
 -	`MYSQL_USERNAME` Username for the database user using mysql.
@@ -90,6 +90,15 @@ This is the full list of all possible environment variables used for this image:
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
 -	`MYSQL_PORT` Port of the database server using mysql / mariadb.
+
+**Caching**
+-	`CACHE_DRIVER` Driver of the Friendica cache (`memcache`, `memcached` or `redis`)
+-	`MEMCACHE_HOST` Host of the memcache cache server. (Default: `127.0.0.1`)
+-	`MEMCACHE_PORT` Port of the memcache cache server. (Default: `11211`)
+-	`MEMCACHED_HOSTS` Hosts of the memcached cache server. (Default: `[['127.0.0.1', 11211]]`)
+-	`REDIS_HOST` Host of the redis cache server. (Default: `127.0.0.1`)
+-	`REDIS_PORT` Port of the redis cache server. (Default: `6379`)
+
 
 ## Administrator account
 

@@ -25,6 +25,8 @@ declare -A extras=(
 
 declare -A pecl_versions=(
 	[Imagick]='3.4.3'
+	[memcached]='3.0.4'
+	[redis]='3.1.6'
 )
 
 declare -A install_extras=(
@@ -73,6 +75,8 @@ function create_variant() {
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type]}"'|g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[Imagick]}"'/g;
+		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
+		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 	' "$dir/Dockerfile"
 
 	# Copy the shell scripts

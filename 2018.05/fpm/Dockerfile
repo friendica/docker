@@ -38,6 +38,7 @@ RUN set -ex; \
         libmcrypt-dev \
         imagemagick \
         libmagick++-dev \
+        libmemcached-dev \
         libgraphicsmagick1-dev \
         libfreetype6 \
         libfreetype6-dev \
@@ -60,6 +61,15 @@ RUN set -ex; \
     ; \
     docker-php-ext-install -j 4 curl pdo pdo_mysql xml gd zip opcache mbstring posix ctype json iconv mcrypt \
     ; \
+# pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install memcached-3.0.4; \
+    pecl install redis-3.1.6; \
+    \
+    docker-php-ext-enable \
+        memcached \
+        redis \
+    ; \
+    \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \

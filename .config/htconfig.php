@@ -111,3 +111,27 @@ if (!empty(getenv('VALIDATION'))) {
 	$a->config['system']['disable_url_validation'] = strtolower(getenv('VALIDATION'));
 	$a->config['system']['disable_email_validation'] = strtolower(getenv('VALIDATION'));
 }
+
+if (!empty(getenv('CACHE_DRIVER'))) {
+	$a->config['system']['cache_driver'] = strtolower(getenv('CACHE_DRIVER'));
+
+	if (!empty(getenv('REDIS_HOST'))) {
+		$a->config['system']['redis_host'] = getenv('REDIS_HOST');
+	}
+
+	if (!empty(getenv('REDIS_PORT'))) {
+		$a->config['system']['redis_port'] = getenv('REDIS_PORT');
+	}
+
+	if (!empty(getenv('MEMCACHE_HOST'))) {
+		$a->config['system']['memcache_host'] = getenv('MEMCACHE_HOST');
+	}
+
+	if (!empty(getenv('MEMCACHE_PORT'))) {
+		$a->config['system']['memcache_port'] = getenv('MEMCACHE_PORT');
+	}
+
+	if (!empty(getenv('MEMCACHED_HOSTS'))) {
+		$a->config['system']['memcached_hosts'] = getenv('MEMCACHED_HOSTS');
+	}
+}

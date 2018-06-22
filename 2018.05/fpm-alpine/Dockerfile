@@ -31,6 +31,8 @@ RUN set -ex; \
         libtool \
         libmcrypt \
         libmcrypt-dev \
+        libmemcached-dev \
+        cyrus-sasl-dev \
         freetype \
         libpng \
         libjpeg-turbo-dev \
@@ -54,6 +56,15 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     docker-php-ext-install -j 4 curl pdo pdo_mysql xml gd zip opcache mbstring posix ctype json iconv mcrypt; \
+    \
+# pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install memcached-3.0.4; \
+    pecl install redis-3.1.6; \
+    \
+    docker-php-ext-enable \
+        memcached \
+        redis \
+    ; \
     \
     runDeps="$( \
       scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \

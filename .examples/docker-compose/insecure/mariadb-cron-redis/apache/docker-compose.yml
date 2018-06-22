@@ -11,49 +11,49 @@ services:
     env_file:
       - db.env
 
+  redis:
+    image: redis
+    restart: always
+
   app:
-    image: friendica/server:fpm
+    image: friendica/server:apache
     restart: always
     volumes:
       - friendica:/var/www/html
     environment:
       - AUTOINSTALL=true
+      - CACHE_DRIVER=redis
+      - REDIS_HOST=redis
       - MAILNAME=
       - TZ=
       - LANGUAGE=
+      - SMTP=
     env_file:
       - db.env
     depends_on:
       - db
     hostname: friendica.local
+    ports:
+      - "80:80"
 
   cron:
-    image: friendica/server:fpm
+    image: friendica/server:apache
     restart: always
     volumes:
       - friendica:/var/www/html
     entrypoint: /cron.sh
     environment:
+      - CACHE_DRIVER=redis
+      - REDIS_HOST=redis
       - MAILNAME=
       - TZ=
       - LANGUAGE=
+      - SMTP=
     env_file:
       - db.env
     depends_on:
       - db
-      - app
     hostname: friendica.local
-
-  web:
-    image: nginx
-    restart: always
-    volumes:
-      - friendica:/var/www/html:ro
-      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - app
-    ports:
-      - "80:80"
 
 volumes:
   db:

@@ -16,6 +16,25 @@ The Dockerfiles use the default images as base image and build on top of it.
 Examples | Descriptions
 -------- | -------
 [cron](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed).
+[smtp](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/smtp) | adds SMTP support to the Friendica container (necessary if you want to have mail support in Friendica).
+
+### SMTP settings <a id="smtpsetting"></a>
+
+The binary `ssmtp` is used for the `mail()` support of Friendica.
+
+You have to set the `--hostname/-h` parameter correctly to use the right domainname for the `mail()` command.
+
+You have to set a valid SMTP-MTA for the `SMTP` environment variable to enable mail support in Friendica.
+A valid SMTP-MTA would be, for example, `mx.example.org`.
+
+The following environment variables are possible for the SMTP examples.
+
+-	`SITENAME` The name of the Friendica node. (**required** - Default: `Testsite`)
+-	`SMTP` Address of the SMTP Mail-Gateway. (**required** - Default: `localhost`)
+-	`SMTP_FROM` Sender user-part of the address. (Default: `no-reply` - e.g. no-reply@friendica.local)
+-	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway. (Default: empty)
+-	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway. (Default: empty)
+-	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway. (Default: empty/plain text)
 
 ## docker-compose
 

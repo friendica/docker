@@ -1,4 +1,5 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:7.1-fpm-alpine
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
 
 # entrypoint.sh and cron.sh dependencies
@@ -42,7 +43,7 @@ RUN set -ex; \
         bzip2 \
         pcre-dev \
     ; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
+    pecl install imagick-3.4.3; \
         docker-php-ext-enable imagick; \
         pecl clear-cache; \
     docker-php-ext-configure gd \
@@ -55,8 +56,8 @@ RUN set -ex; \
     docker-php-ext-install -j 4 curl pdo pdo_mysql xml gd zip opcache mbstring posix ctype json iconv mcrypt; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached-%%MEMCACHED_VERSION%%; \
-    pecl install redis-%%REDIS_VERSION%%; \
+    pecl install memcached-3.0.4; \
+    pecl install redis-3.1.6; \
     \
     docker-php-ext-enable \
         memcached \
@@ -77,7 +78,7 @@ RUN chown -R www-data:www-data /var/www; \
 
 VOLUME /var/www/html
 WORKDIR /var/www/html
-%%VARIANT_EXTRAS%%
+
 
 RUN {\
       echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
@@ -86,9 +87,22 @@ RUN {\
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION %%VERSION%%
-ENV FRIENDICA_ADDONS %%VERSION%%
-%%INSTALL_EXTRAS%%
+ENV FRIENDICA_VERSION 2018.09
+ENV FRIENDICA_ADDONS 2018.09
+
+RUN set -ex; \
+    curl -fsSL -o friendica.tar.gz \
+        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \
+    tar -xzf friendica.tar.gz -C /usr/src/; \
+    rm friendica.tar.gz; \
+    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    curl -fsSL -o friendica_addons.tar.gz \
+        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \
+    mkdir /usr/src/friendica/addon; \
+    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
+    rm friendica_addons.tar.gz; \
+    /usr/src/friendica/bin/composer.phar install --no-plugins --no-scripts --no-dev -d /usr/src/friendica;
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["%%CMD%%"]
+CMD ["php-fpm"]

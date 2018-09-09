@@ -20,15 +20,12 @@ services:
     volumes:
       - friendica:/var/www/html
     environment:
-      - AUTOINSTALL=true
       - MYSQL_HOST=db
-      - MYSQL_PORT=3306
       - MYSQL_USER=friendica
       - MYSQL_PASSWORD=friendica
       - MYSQL_DATABASE=friendica
-      - MAILNAME=root@friendica.local
+      - FRIENDICA_ADMIN_MAIL=root@friendica.local
       - SITENAME=Friendica PWD Test Node
-      - VALIDATION=false
     hostname: friendica.local
     depends_on:
       - db
@@ -41,11 +38,10 @@ services:
     entrypoint: /cron.sh
     environment:
       - MYSQL_HOST=db
-      - MYSQL_PORT=3306
       - MYSQL_USER=friendica
       - MYSQL_PASSWORD=friendica
       - MYSQL_DATABASE=friendica
-      - MAILNAME=root@friendica.local
+      - FRIENDICA_ADMIN_MAIL=root@friendica.local
       - SITENAME=Friendica PWD Test Node
     depends_on:
       - db

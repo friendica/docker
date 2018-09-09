@@ -64,41 +64,24 @@ There are three options to enable the cron-job for Friendica:
 -	Using the default image (apache, fpm, fpm-alpine) and creating **two** container (one for cron and one for the main app)
 -	Using one of the additional, prepared [`cron dockerfiles`](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/cron)
 
-# Environment variables
+## Possible Environment Variables
 
-This is the full list of all possible environment variables used for this image:
+**Auto Install Settings**
+-	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
+-	`FRIENDICA_TZ` The default localization of the Friendica server.
+-	`FRIENDICA_LANG` The default language of the Friendica server.
+-	`FRIENDICA_PHP_PATH` The path of the PHP binary.
 
-**Common**
--	`MAILNAME` E-Mail address of the administrator. (**required**)
--	`TZ` The default localization of the Friendica server. (Default: `America/Los_Angeles`)
--	`LANGUAGE` The default language of the Friendica server. (Default: `en`)
--	`SITENAME` The default name of the Friendica server. (Default: `Friendica Social Network` )
--	`VALIDATION` The default setting if url/emails are getting validated. (Default: `true`)
--	`AUTOINSTALL` if `true`, the automatic configuration will start. (Default: `false`)
-
-**SMTP/Mail** 
--	`SMTP` Address of the SMTP Mail-Gateway. (**required** - Default: `localhost`)
--	`SMTP_FROM` Sender user-part of the address. (Default: `no-reply` - e.g. no-reply@friendica.local)
--	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway. (Default: empty)
--	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway. (Default: empty)
--	`SMTP_AUTH_METHOD` Authentication method for the SMTP Mail-Gateway. (Default: empty/plain text)
-
-**Database** (**required**)
+**Database** (**required at installation**)
 -	`MYSQL_USERNAME` Username for the database user using mysql.
 -	`MYSQL_USER` Username for the database user using mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
--	`MYSQL_PORT` Port of the database server using mysql / mariadb.
+-	`MYSQL_PORT` Port of the database server using mysql / mariadb (Default: `3306`)
 
-**Caching**
--	`CACHE_DRIVER` Driver of the Friendica cache (`memcache`, `memcached` or `redis`)
--	`MEMCACHE_HOST` Host of the memcache cache server. (Default: `127.0.0.1`)
--	`MEMCACHE_PORT` Port of the memcache cache server. (Default: `11211`)
--	`MEMCACHED_HOSTS` Hosts of the memcached cache server. (Default: `[['127.0.0.1', 11211]]`)
--	`REDIS_HOST` Host of the redis cache server. (Default: `127.0.0.1`)
--	`REDIS_PORT` Port of the redis cache server. (Default: `6379`)
-
+**Develop/Release Candidat Settings**
+-	`FRIENDICA_UPGRADE` If set to `true`, a develop or release candidat node will get updated at startup.
 
 ## Administrator account
 
@@ -106,12 +89,7 @@ Because Friendica links the administrator account to a specific mail address, yo
 
 ## Mail settings
 
-The binary `ssmtp` is used for the `mail()` support of Friendica.
-
-You have to set the `--hostname/-h` parameter correctly to use the right domainname for the `mail()` command.
-
-You have to set a valid SMTP-MTA for the `SMTP` environment variable to enable mail support in Friendica.
-A valid SMTP-MTA would be, for example, `mx.example.org`.
+see the [example](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/README.md#smtpsetting)
 
 ## Database settings
 
@@ -150,50 +128,40 @@ $ docker run -d \
 
 The Friendica image supports auto configuration via environment variables.
 You can preconfigure everything that is asked on the install page on first run.
-To enable the automatic installation, you have to set `AUTOINSTALL` to `true`.
+To enable the automatic installation, there are two possibilities:
+
+### Environment Variables
+
+You have to set at least the following environment variables (others are optional).
+
+-	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
+-	`MYSQL_USERNAME` or `MYSQL_USER` Username for the database user using mysql/mariadb.
+-	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
+-	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
+-	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
+
+### Using a predefined config file
+
+You can create a `local.ini.php` and `COPY` it to `/usr/src/config`.
+If no other environment variable is set, this `local.ini.php` will get copied to the config path.
 
 # Maintenance of the image
 
 ## Updating to a newer version
 
-There are differences between the [stable](https://github.com/friendica/docker/tree/master/stable/) and the [develop](https://github.com/friendica/docker/tree/master/develop/) branches.
-
-They have both in common that normally we do not automatically overwrite your working directory with the new version.
-Instead you need to explicit run `friendica update` for the node for updating files&database.
+There are differences between the deveop (everything which ends with `-rc` or `-dev`) and the stable (the rest) branches. 
 
 ### Updating stable
 
 You have to pull the latest image from the hub (`docker pull friendica`).
+The stable branch gets checked at every startup and will get updated if no installation was found or a new image is used.
 
 ### Updating develop
 
 You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
-Instead you can just update your node with executing `friendica update` on the node.
-Example:
-
-```console
-$ docker exec -ti friendica_running_node friendica update
-```
+Instead, the develop branch will get updated if no installation was found or the environment variable `FRIENDICA_UPGRADE` is set to `true`.
 
 It will clone the latest Friendica version and copy it to your working directory.
-
-## The `friendica` CLI
-
-To make the usage of the Docker images smooth, we created a little CLI.
-It wraps the common commands for Friendica and adds new commands.
-
-You can call it with
-
-```console
-$ docker exec -ti friendica_running_node friendica <command>
-```
-
-Commands:
-
--	`console` Executes an command in the Friendica console (`bin/console.php` wrapper)
--	`composer` Executes the composer.phar executable for Friendica (`bin/composer.phar` wrapper)
--	`install` Installs Friendica on a empty environment (gets called automatically during first start)
--	`update` Updates Friendica on a **existing** environment
 
 # Running this image with docker-compose
 
@@ -237,11 +205,10 @@ services:
       - "8080:80"
     environment:
       - MYSQL_HOST=db
-      - MYSQL_PORT=3306
       - MYSQL_USER=friendica
       - MYSQL_PASSWORD=
       - MYSQL_DATABASE=friendica
-      - MAILNAME=root@friendica.local
+      - FRIENDICA_ADMIN_MAIL=root@friendica.local      
     hostname: friendica.local
     depends_on:
       - db
@@ -292,11 +259,10 @@ services:
       - friendica:/var/www/html    
     environment:
       - MYSQL_HOST=db
-      - MYSQL_PORT=3306
       - MYSQL_USER=friendica
       - MYSQL_PASSWORD=
       - MYSQL_DATABASE=friendica
-      - MAILNAME=root@friendica.local
+      - FRIENDICA_ADMIN_MAIL=root@friendica.local
     hostname: friendica.local
     networks:
       - proxy-tier

@@ -145,7 +145,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 				echo "Starting Friendica installation ..."
 				# TODO Let the database time to warm up - not winning a beauty contest
 				sleep 10s
-				run_as "/var/www/html/bin/console autoinstall $install_options"
+				run_as "cd /var/www/html; php /var/www/html/bin/console.php autoinstall $install_options"
 
 				# TODO Workaround because of a strange permission issue
 				rm -fr /var/www/html/view/smarty3/compiled
@@ -162,7 +162,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 		# upgrade
 		else
 			echo "Upgrading Friendica ..."
-			run_as '/var/www/html/bin/console dbstructure update'
+			run_as 'cd /var/www/html; php /var/www/html/bin/console.php dbstructure update'
 			echo "Upgrading finished"
 		fi
 	fi

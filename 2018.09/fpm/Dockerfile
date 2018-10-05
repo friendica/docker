@@ -10,6 +10,8 @@ RUN set -ex; \
         rsync \
         bzip2 \
         git \
+      # mail() support
+        ssmtp \
     ; \
     rm -rf /var/lib/apt/lists/*;
 
@@ -111,7 +113,7 @@ RUN set -ex; \
     mkdir /usr/src/friendica/addon; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
     rm friendica_addons.tar.gz; \
-    /usr/src/friendica/bin/composer.phar install --no-plugins --no-scripts --no-dev -d /usr/src/friendica;
+    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

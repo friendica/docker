@@ -6,7 +6,9 @@ LABEL maintainer="Philipp Holzer <admin@philipp.info>"
 RUN set -ex; \
     apk add --no-cache \
         rsync \
-        git;
+        git \
+     # mail() support
+        ssmtp;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/
@@ -102,7 +104,7 @@ RUN set -ex; \
     mkdir /usr/src/friendica/addon; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
     rm friendica_addons.tar.gz; \
-    /usr/src/friendica/bin/composer.phar install --no-plugins --no-scripts --no-dev -d /usr/src/friendica;
+    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

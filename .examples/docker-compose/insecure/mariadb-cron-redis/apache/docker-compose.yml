@@ -22,10 +22,10 @@ services:
       - friendica:/var/www/html
     environment:
       - FRIENDICA_ADMIN_MAIL=
-      - FRIENDICA_TZ=
-      - FRIENDICA_LANG=
-      - SITENAME=
-      - SMTP=
+      - FRIENDICA_TZ=Europe/Berlin
+      - FRIENDICA_LANG=de
+      - SITENAME=Testsite
+      - SMTP=smtp.philipp.info
     env_file:
       - db.env
     depends_on:
@@ -40,9 +40,6 @@ services:
     volumes:
       - friendica:/var/www/html
     entrypoint: /cron.sh
-    environment:
-      - SITENAME=
-      - SMTP=
     depends_on:
       - db
     hostname: friendica.local

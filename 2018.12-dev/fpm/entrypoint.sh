@@ -15,10 +15,6 @@ version_greater() {
 	[ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 | head -n 1)" != "$1" ]
 }
 
-directory_empty() {
-	[ -z "$(ls -A "$1/")" ]
-}
-
 # clones the whole develop branch (Friendica and Addons)
 clone_develop() {
 	friendica_git="${FRIENDICA_VERSION}"
@@ -43,7 +39,40 @@ clone_develop() {
 
 	echo "Download finished"
 
-	/usr/src/friendica/bin/composer.phar install --no-dev --no-plugins --no-scripts -d /usr/src/friendica
+	/usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
+}
+
+setup_ssmtp() {
+	if [ -n "${SITENAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
+		echo "Setup SSMTP for '$SITENAME' with '$SMTP' ..."
+
+		smtp_from=${SMTP_FROM:-no-reply}
+
+		# Setup SSMTP
+		sed -i "s/:root:/:${SITENAME}:/g" /etc/passwd
+		sed -i "s/:Linux\ User:/:${SITENAME}:/g" /etc/passwd
+
+		# add possible mail-senders
+		{
+		 echo "www-data:$smtp_from@$HOSTNAME:$SMTP" ;
+		 echo "root::$smtp_from@$HOSTNAME:$SMTP" ;
+		} > /etc/ssmtp/revaliases;
+
+		# replace ssmtp.conf settings
+		{
+		 echo "root=:$smtp_from@$HOSTNAME" ;
+		 echo "hostname=$HOSTNAME" ;
+		 echo "mailhub=$SMTP" ;
+		 echo "FromLineOverride=YES" ;
+		 if [ -n "${SMTP_TLS+x}" ]; then echo "UseTLS=$SMTP_TLS"; fi
+		 if [ -n "${SMTP_STARTTLS+x}" ]; then echo "UseSTARTTLS=$SMTP_STARTTLS"; fi
+		 if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "AuthUser=$SMTP_AUTH_USER"; fi
+		 if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "AuthPass=$SMTP_AUTH_PASS";fi
+		 if [ -n "${SMTP_AUTH_METHOD+x}" ]; then echo "AuthMethod=$SMTP_AUTH_METHOD"; fi
+		} > /etc/ssmtp/ssmtp.conf
+
+		echo "Setup finished"
+	fi
 }
 
 # just check if we execute apache or php-fpm
@@ -77,6 +106,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 		fi
 	fi
 
+	setup_ssmtp
+
 	if [ "$check" = true ]; then
 		echo "Initializing Friendica $image_version ..."
 
@@ -91,13 +122,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 		fi
 
 		rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/friendica/ /var/www/html/
-
-		# copy every *.ini.php from the config directory except they are already copied (in case of an upgrade)
-		for dir in config; do
-			if [ ! -d "/var/www/html/$dir" ] || directory_empty "/var/www/html/$dir"; then
-				rsync $rsync_options --include="/$dir/" --exclude="/*" /usr/src/friendica/ /var/www/html/
-			fi
-		done
 
 		# In case there is no .htaccess, copy it from the default dist file
 		if [ ! -f "/var/www/html/.htaccess" ]; then

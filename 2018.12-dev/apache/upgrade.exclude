@@ -4,4 +4,4 @@
 .htconfig.php
 .htaccess
 home.*
-/config/
+/config/local.ini.php

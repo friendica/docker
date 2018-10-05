@@ -30,18 +30,18 @@ when running docker-compose on the same host as the docker daemon, another possi
 
 ### insecure
 
-This examples should only be used for **testing** on the local network because it uses a unencrypted http connection.
+These examples should only be used for **testing** on the local network because they use an unencrypted http connection.
 When you want to have your server reachable from the internet adding HTTPS-encryption is mandatory!
 For this use one of the [with-traefik-proxy](#with-traefik-proxy) examples.
 
-To use this example complete the following steps:
+To use one of these examples, complete the following steps:
 
 1. choose a password for the database user in `db.env` behind `MYSQL_PASSWORD=`
 2. run `docker-compose build --pull` to pull the mose recent base images and build the custom dockerfiles
 3. start Friendica with `docker-compose up -d`
 
 If you want to update your installation to a newer version, repeat 3 and 4.
-**Note**: If you are on a develop branch (*-dev or *-rc) you have to update Friendica with the command `docker-compose exec app friendica update`
+**Note**: If you are on a develop branch (*-dev or *-rc) you have to set the environment variable `FRIENDICA_UPGRADE=true` to update Friendica.
 
 ### with-traefik-proxy
 
@@ -65,4 +65,4 @@ To use this example complete the following steps:
 5. start Friendica with `docker-compose up -d`
 
 If you want to update your installation to a newer version, repeat 4 and 5.
-**Note**: If you are on a develop branch (*-dev or *-rc) you have to update Friendica with the command `docker-compose exec app friendica update`
+**Note**: If you are on a develop branch (*-dev or *-rc) you have to set the environment variable `FRIENDICA_UPGRADE=true` to update Friendica.

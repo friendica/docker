@@ -38,12 +38,6 @@ services:
     volumes:
       - friendica:/var/www/html
     entrypoint: /cron.sh
-    environment:
-      - FRIENDICA_ADMIN_MAIL=
-      - FRIENDICA_TZ=
-      - FRIENDICA_LANG=
-      - SITENAME=
-      - SMTP=
     depends_on:
       - db
       - app

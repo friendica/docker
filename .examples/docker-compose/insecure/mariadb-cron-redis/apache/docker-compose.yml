@@ -22,10 +22,10 @@ services:
       - friendica:/var/www/html
     environment:
       - FRIENDICA_ADMIN_MAIL=
-      - FRIENDICA_TZ=Europe/Berlin
-      - FRIENDICA_LANG=de
-      - SITENAME=Testsite
-      - SMTP=smtp.philipp.info
+      - FRIENDICA_TZ=
+      - FRIENDICA_LANG=
+      - SITENAME=
+      - SMTP=
     env_file:
       - db.env
     depends_on:

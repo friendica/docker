@@ -7,7 +7,7 @@ RUN set -ex; \
     apk add --no-cache \
         rsync \
         git \
-     # mail() support
+# For mail() support
         ssmtp;
 
 # install the PHP extensions we need

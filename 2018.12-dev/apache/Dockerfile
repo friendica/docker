@@ -10,7 +10,7 @@ RUN set -ex; \
         rsync \
         bzip2 \
         git \
-      # mail() support
+# For mail() support
         ssmtp \
     ; \
     rm -rf /var/lib/apt/lists/*;

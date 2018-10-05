@@ -5,3 +5,4 @@
 .htaccess
 home.*
 /config/local.ini.php
+/config/addon.ini.php

@@ -1,4 +1,5 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
+FROM php:7.1-apache
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
 
 # entrypoint.sh and cron.sh dependencies
@@ -47,7 +48,7 @@ RUN set -ex; \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
+    pecl install imagick-3.4.3; \
         docker-php-ext-enable imagick; \
         pecl clear-cache \
     ; \
@@ -61,8 +62,8 @@ RUN set -ex; \
     docker-php-ext-install -j 4 curl pdo pdo_mysql xml gd zip opcache mbstring posix ctype json iconv mcrypt \
     ; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached-%%MEMCACHED_VERSION%%; \
-    pecl install redis-%%REDIS_VERSION%%; \
+    pecl install memcached-3.0.4; \
+    pecl install redis-3.1.6; \
     \
     docker-php-ext-enable \
         memcached \
@@ -88,7 +89,15 @@ RUN chown -R www-data:root /var/www; \
 
 VOLUME /var/www/html
 WORKDIR /var/www/html
-%%VARIANT_EXTRAS%%
+
+RUN a2enmod rewrite remoteip ;\
+    {\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+    } > /etc/apache2/conf-available/remoteip.conf;\
+    a2enconf remoteip
 
 RUN {\
       echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
@@ -97,9 +106,9 @@ RUN {\
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION %%VERSION%%
-ENV FRIENDICA_ADDONS %%VERSION%%
-%%INSTALL_EXTRAS%%
+ENV FRIENDICA_VERSION 2018.12-dev
+ENV FRIENDICA_ADDONS 2018.12-dev
+
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["%%CMD%%"]
+CMD ["apache2-foreground"]

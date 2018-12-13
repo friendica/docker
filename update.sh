@@ -41,6 +41,7 @@ variants=(
 )
 
 versions=(
+    2018.12-rc
     2018.12-dev
     2018.09
 )

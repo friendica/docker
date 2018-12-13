@@ -13,6 +13,9 @@ stages:
 # full test for master
   - name: test images (full)
     if: branch = master
+# build and push for master
+  - name: deploy
+    if: branch = master
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -83,3 +86,10 @@ jobs:
     - env: VERSION=2018.12-rc VARIANT=fpm ARCH=i386
     - env: VERSION=2018.12-rc VARIANT=apache ARCH=amd64
     - env: VERSION=2018.12-rc VARIANT=apache ARCH=i386
+
+    - stage: deploy
+      env: SCRIPT=build_and_push.sh
+      script: skip
+      deploy:
+        provider: script
+        script: ./build_and_push.sh

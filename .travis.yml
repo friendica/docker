@@ -89,6 +89,9 @@ jobs:
 
     - stage: deploy
       env: SCRIPT=build_and_push.sh
+      install:
+        - wget -O "$HOME/bin/bashbrew" https://doi-janky.infosiftr.net/job/bashbrew/lastSuccessfulBuild/artifact/bin/bashbrew-amd64
+        - chmod +x "$HOME/bin/bashbrew"
       script: skip
       deploy:
         provider: script

@@ -12,7 +12,13 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 # Get the most recent commit which modified any of "$@".
 fileCommit() {
-	git log -1 --format='format:%H' HEAD -- "$@"
+	commit="$(git log -1 --format='format:%H' HEAD -- "$@")"
+	if [ -z "$commit" ]; then
+		# return some valid sha1 hash to make bashbrew happy
+		echo '0000000000000000000000000000000000000000'
+	else
+		echo "$commit"
+	fi
 }
 
 # Get the most recent commit which modified "$1/Dockerfile" or any file that
@@ -50,6 +56,7 @@ getArches 'friendica'
 # Header.
 cat <<-EOH
 # This file is generated via https://github.com/friendica/docker/blob/$(fileCommit "$self")/$self
+
 Maintainers: Friendica <info@friendi.ca> (@friendica), Philipp Holzer <admin@philipp.info> (@nupplaphil)
 GitRepo: https://github.com/friendica/docker.git
 EOH

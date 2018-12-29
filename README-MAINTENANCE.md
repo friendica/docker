@@ -17,9 +17,7 @@ All changes in such folders will get overwritten during an update.
 Creates a directory and the necessary files for each combination of version (2018.05-rc, 3.6, ...) and variant (apache, fpm, fpm-alpine):
 
 - Creating the right `Dockerfile` (from one of the two *.template files)
-- Creating the `docker-*.sh` files (copy as *.sh)
-- Coping `/.bin/*` to `bin/*`
-- Coping `/.config/*` to `config/*`
+- Copy each shell and *.exclude file in `.docker-files/`
 - Recreating the version/variant environment in `.travis.yml` 
    
 If you want to update the Docker-images to a newer version, just change the list in `update.sh` at
@@ -58,7 +56,7 @@ This is the input-file for the official-images in a later step :-)
 
 # `build_and_push.sh`
 
-This file automatically builds and publish all docker image variants (amd64, x86) and versions (stable, latest, dev, ...)
+This file automatically builds and publish all docker image variants (apache, fpm, ...) and versions (stable, latest, dev, ...)
 
 It uses [bashbrew](https://github.com/docker-library/official-images/tree/master/bashbrew) for building and publishing and `generate-stackbrew-library.sh` for the definition (manifest) what to build and publish.
 

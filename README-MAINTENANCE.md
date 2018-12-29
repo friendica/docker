@@ -12,9 +12,7 @@ All changes in such folders will get overwritten during an update.
 
 # Maintenance scripts
 
-There are two important scripts in this repository for maintenance.
-
-## update.sh
+# `update.sh`
    
 Creates a directory and the necessary files for each combination of version (2018.05-rc, 3.6, ...) and variant (apache, fpm, fpm-alpine):
 
@@ -31,7 +29,7 @@ versions=(
 )
 ```
    
-# generate-stackbrew-library.sh
+# `generate-stackbrew-library.sh`
    
 This file automatically creates a "manifest" for the docker-images.
 Like:
@@ -57,3 +55,11 @@ GitCommit: b46fae917321394e1482df59dc4e39daffbe5c59
 Directory: 2018.05-rc/fpm-alpine
 This is the input-file for the official-images in a later step :-)
 ```
+
+# `build_and_push.sh`
+
+This file automatically builds and publish all docker image variants (amd64, x86) and versions (stable, latest, dev, ...)
+
+It uses [bashbrew](https://github.com/docker-library/official-images/tree/master/bashbrew) for building and publishing and `generate-stackbrew-library.sh` for the definition (manifest) what to build and publish.
+
+See [Instruction format](https://github.com/docker-library/official-images/blob/master/README.md#instruction-format) for more background information.

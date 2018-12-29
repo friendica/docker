@@ -101,7 +101,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 		# no downgrading possible
 		if version_greater "$installed_version" "$image_version"; then
-			echo 'Can'\''t copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ('$image_version')', 0
+			echo 'Can'\''t copy Friendica sources because the version of the data ('$installed_version') is higher than the docker image ('$image_version')', 0
 			exit 1;
 		fi
 	fi
@@ -158,10 +158,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 				# shellcheck disable=SC2016
 				install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'"'
 				install=true
-			elif [ -f "/usr/src/config/local.ini.php" ]; then
-				echo "Installation with prepared local.ini.php"
+			elif [ -f "/usr/src/config/local.config.php" ]; then
+				echo "Installation with prepared local.config.php"
 
-				install_options="-f /usr/src/local.ini.php"
+				install_options="-f /usr/src/local.config.php"
 				install=true
 			fi
 
@@ -174,7 +174,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 				# TODO Workaround because of a strange permission issue
 				rm -fr /var/www/html/view/smarty3/compiled
 
-				# load other config files (*.ini.php) to the config folder (currently only local.ini.php and addon.ini.php supported)
+				# load other config files (*.config.php) to the config folder (currently only local.config.php and addon.config.php supported)
 				if [ -d "/usr/src/config" ]; then
 					rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
 				fi

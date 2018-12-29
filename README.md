@@ -158,8 +158,8 @@ You have to set at least the following environment variables (others are optiona
 
 ### Using a predefined config file
 
-You can create a `local.ini.php` and `COPY` it to `/usr/src/config`.
-If no other environment variable is set, this `local.ini.php` will get copied to the config path.
+You can create a `local.config.php` and `COPY` it to `/usr/src/config`.
+If no other environment variable is set, this `local.config.php` will get copied to the config path.
 
 # Maintenance of the image
 

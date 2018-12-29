@@ -80,13 +80,15 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 	' "$dir/Dockerfile"
 
-	# Copy the shell scripts
-	for name in entrypoint cron; do
-		cp "docker-$name.sh" "$dir/$name.sh"
+	# Copy the .docker-files to the directories (excluding README.md)
+	for name in ".docker-files"/*; do
+		# Don't copy the README of any directory
+		if [[ "$name" == *.sh || "$name" == *.exclude ]]; then
+			file=${name#".docker-files"}
+			mkdir -p $(dirname $dir/$file)
+			cp -r "$name" "$dir/$file"
+		fi
 	done
-
-	# Copy the upgrade.exclude
-	cp upgrade.exclude "$dir/"
 
     travisEnvAmd64='\n    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH=amd64'"$travisEnvAmd64"
 	for arch in i386 amd64; do

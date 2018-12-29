@@ -10,16 +10,6 @@ Never ever change a file/folder inside a directory without a `.` at the beginnin
 This folder will get updated automatically based on the templates you want to change.
 All changes in such folders will get overwritten during an update.
 
-# Basic files and folders
-
-Most of the time you want to change one of the followed files. 
-
-## Templates & shell-scripts
- 
-- If you want to update/upgrade Dockerfiles, use the right `*.template` file for it.
-- If you want to update/change the behavior of **every** start of Docker-image, change `docker-entrypoint.sh`
-- If you want to update/change the behavior how cronjobs will get started, change `docker-cron.sh` 
-
 # Maintenance scripts
 
 There are two important scripts in this repository for maintenance.

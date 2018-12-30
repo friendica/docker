@@ -10,28 +10,14 @@ Never ever change a file/folder inside a directory without a `.` at the beginnin
 This folder will get updated automatically based on the templates you want to change.
 All changes in such folders will get overwritten during an update.
 
-# Basic files and folders
-
-Most of the time you want to change one of the followed files. 
-
-## Templates & shell-scripts
- 
-- If you want to update/upgrade Dockerfiles, use the right `*.template` file for it.
-- If you want to update/change the behavior of **every** start of Docker-image, change `docker-entrypoint.sh`
-- If you want to update/change the behavior how cronjobs will get started, change `docker-cron.sh` 
-
 # Maintenance scripts
 
-There are two important scripts in this repository for maintenance.
-
-## update.sh
+# `update.sh`
    
 Creates a directory and the necessary files for each combination of version (2018.05-rc, 3.6, ...) and variant (apache, fpm, fpm-alpine):
 
 - Creating the right `Dockerfile` (from one of the two *.template files)
-- Creating the `docker-*.sh` files (copy as *.sh)
-- Coping `/.bin/*` to `bin/*`
-- Coping `/.config/*` to `config/*`
+- Copy each shell and *.exclude file in `.docker-files/`
 - Recreating the version/variant environment in `.travis.yml` 
    
 If you want to update the Docker-images to a newer version, just change the list in `update.sh` at
@@ -41,7 +27,7 @@ versions=(
 )
 ```
    
-# generate-stackbrew-library.sh
+# `generate-stackbrew-library.sh`
    
 This file automatically creates a "manifest" for the docker-images.
 Like:
@@ -67,3 +53,11 @@ GitCommit: b46fae917321394e1482df59dc4e39daffbe5c59
 Directory: 2018.05-rc/fpm-alpine
 This is the input-file for the official-images in a later step :-)
 ```
+
+# `build_and_push.sh`
+
+This file automatically builds and publish all docker image variants (apache, fpm, ...) and versions (stable, latest, dev, ...)
+
+It uses [bashbrew](https://github.com/docker-library/official-images/tree/master/bashbrew) for building and publishing and `generate-stackbrew-library.sh` for the definition (manifest) what to build and publish.
+
+See [Instruction format](https://github.com/docker-library/official-images/blob/master/README.md#instruction-format) for more background information.

@@ -1,7 +1,7 @@
 #!/bin/sh
 trap "break;exit" HUP INT TERM
 
-while [ ! -f /var/www/html/config/local.ini.php ]; do
+while [ ! -f /var/www/html/config/local.ini.php ] || [ ! -f /var/www/html/config/local.config.php ]; do
     sleep 1
 done
 

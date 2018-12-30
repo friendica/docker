@@ -6,3 +6,5 @@
 /home.*
 /config/local.ini.php
 /config/addon.ini.php
+/config/local.config.php
+/config/addon.config.php

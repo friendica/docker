@@ -89,8 +89,8 @@ RUN {\
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION 2018.12-dev
-ENV FRIENDICA_ADDONS 2018.12-dev
+ENV FRIENDICA_VERSION 2019.03-dev
+ENV FRIENDICA_ADDONS 2019.03-dev
 
 
 ENTRYPOINT ["/entrypoint.sh"]

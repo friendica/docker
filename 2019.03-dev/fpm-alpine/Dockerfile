@@ -21,8 +21,8 @@ RUN set -ex; \
         autoconf \
         g++ \
         make \
-        libressl \
-        libressl-dev \
+        openssl \
+        openssl-dev \
         libpng \
         libpng-dev \
         libjpeg-turbo-dev \

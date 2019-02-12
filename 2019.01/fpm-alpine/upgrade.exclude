@@ -8,3 +8,4 @@
 /config/addon.ini.php
 /config/local.config.php
 /config/addon.config.php
+/storage/

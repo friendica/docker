@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 declare -A release_channel=(
-	[production]='2018.01'
+	[production]='2019.01'
 	[stable]='2019.01'
 	[latest]='2019.01'
 )

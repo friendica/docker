@@ -41,6 +41,7 @@ variants=(
 )
 
 versions=(
+	2019.03-RC
     2019.03-dev
     2019.01
 )
@@ -60,7 +61,7 @@ function create_variant() {
 
     # Check which installation typ we need. If develop, the source will get downloaded by git.
     install_type='stable'
-    if [[ "$1" == *-dev ]] || [[ "$1" == *-rc ]]; then
+    if [[ "${1,,}" == *-dev ]] || [[ "${1,,}" == *-rc ]]; then
       install_type='develop'
     fi
 

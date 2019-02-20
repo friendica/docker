@@ -20,11 +20,11 @@ clone_develop() {
 	friendica_git="${FRIENDICA_VERSION}"
 	addons_git="${FRIENDICA_ADDONS}"
 
-	if echo "$friendica_git" | grep -Eq '^.*\-dev'; then
+	if echo "${friendica_git,,}" | grep -Eq '^.*\-dev'; then
 		friendica_git="develop"
 	fi
 
-	if echo "$addons_git" | grep -Eq '^.*\-dev'; then
+	if echo "{$addons_git,,}" | grep -Eq '^.*\-dev'; then
 		addons_git="develop"
 	fi
 

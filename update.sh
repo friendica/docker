@@ -50,7 +50,8 @@ travisEnv=
 travisEnvAmd64=
 
 function create_variant() {
-	dir="$1/$variant"
+	dockerName=${1,,}
+	dir="$dockerName/$variant"
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -90,9 +91,9 @@ function create_variant() {
 		fi
 	done
 
-    travisEnvAmd64='\n    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH=amd64'"$travisEnvAmd64"
+    travisEnvAmd64='\n    - env: VERSION='"$dockerName"' VARIANT='"$variant"' ARCH=amd64'"$travisEnvAmd64"
 	for arch in i386 amd64; do
-		travisEnv='\n    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch$travisEnv"
+		travisEnv='\n    - env: VERSION='"$dockerName"' VARIANT='"$variant"' ARCH='"$arch$travisEnv"
 	done
 }
 

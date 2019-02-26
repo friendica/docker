@@ -84,9 +84,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 	check=false
 	# cloning from git is just possible for develop or Release Candidats
-	if echo "${FRIENDICA_VERSION,,}" | grep -Eq '^.*(\-dev|-rc)'; then
+	if echo "${FRIENDICA_VERSION}" | grep -Eq '^.*(\-dev|-rc|-RC)'; then
 		# just clone & check if it's a new install or upgrade
-		if [ "$installed_version" = "0.0.0.0" ] || [ "$FRIENDICA_UPGRADE" = "true" ]; then
+		if [ "$installed_version" = "0.0.0.0" ] || [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then
 			clone_develop
 			image_version="$(cat /usr/src/friendica/VERSION)"
 			check=true

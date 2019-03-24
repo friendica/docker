@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.1-fpm
+FROM php:7.1-apache
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
 
 # entrypoint.sh and cron.sh dependencies
@@ -90,6 +90,14 @@ RUN chown -R www-data:root /var/www; \
 VOLUME /var/www/html
 WORKDIR /var/www/html
 
+RUN a2enmod rewrite remoteip ;\
+    {\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+    } > /etc/apache2/conf-available/remoteip.conf;\
+    a2enconf remoteip
 
 RUN {\
       echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
@@ -98,9 +106,22 @@ RUN {\
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION 2019.03-RC
-ENV FRIENDICA_ADDONS 2019.03-RC
+ENV FRIENDICA_VERSION 2019.03
+ENV FRIENDICA_ADDONS 2019.03
 
+RUN set -ex; \
+    curl -fsSL -o friendica.tar.gz \
+        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \
+    tar -xzf friendica.tar.gz -C /usr/src/; \
+    rm friendica.tar.gz; \
+    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    curl -fsSL -o friendica_addons.tar.gz \
+        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \
+    mkdir /usr/src/friendica/addon; \
+    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
+    rm friendica_addons.tar.gz; \
+    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]

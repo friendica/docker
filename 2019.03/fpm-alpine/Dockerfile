@@ -89,8 +89,8 @@ RUN {\
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION 2019.01
-ENV FRIENDICA_ADDONS 2019.01
+ENV FRIENDICA_VERSION 2019.03
+ENV FRIENDICA_ADDONS 2019.03
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \

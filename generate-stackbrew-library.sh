@@ -2,9 +2,9 @@
 set -Eeuo pipefail
 
 declare -A release_channel=(
-	[production]='2019.03'
-	[stable]='2019.03'
-	[latest]='2019.03'
+	[production]='2019.04'
+	[stable]='2019.04'
+	[latest]='2019.04'
 )
 
 self="$(basename "$BASH_SOURCE")"

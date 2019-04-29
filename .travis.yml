@@ -53,20 +53,20 @@ jobs:
         - ./generate-stackbrew-library.sh
 
     - stage: test images (amd64)
-      env: VERSION=2019.03 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.03 VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.03 VARIANT=apache ARCH=amd64
+      env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2019.04 VARIANT=fpm ARCH=amd64
+    - env: VERSION=2019.04 VARIANT=apache ARCH=amd64
     - env: VERSION=2019.06-dev VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=2019.06-dev VARIANT=fpm ARCH=amd64
     - env: VERSION=2019.06-dev VARIANT=apache ARCH=amd64
 
     - stage: test images (full)
-      env: VERSION=2019.03 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.03 VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2019.03 VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.03 VARIANT=fpm ARCH=i386
-    - env: VERSION=2019.03 VARIANT=apache ARCH=amd64
-    - env: VERSION=2019.03 VARIANT=apache ARCH=i386
+      env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=2019.04 VARIANT=fpm ARCH=amd64
+    - env: VERSION=2019.04 VARIANT=fpm ARCH=i386
+    - env: VERSION=2019.04 VARIANT=apache ARCH=amd64
+    - env: VERSION=2019.04 VARIANT=apache ARCH=i386
     - env: VERSION=2019.06-dev VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=2019.06-dev VARIANT=fpm-alpine ARCH=i386
     - env: VERSION=2019.06-dev VARIANT=fpm ARCH=amd64

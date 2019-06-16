@@ -12,7 +12,7 @@ run_as() {
 
 # checks if the the first parameter is greater than the second parameter
 version_greater() {
-	[ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 | head -n 1)" != "$1" ]
+	[ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2  | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
 }
 
 # clones the whole develop branch (Friendica and Addons)

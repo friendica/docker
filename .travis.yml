@@ -52,6 +52,11 @@ jobs:
       script:
         - ./generate-stackbrew-library.sh
 
+    - <<: *test-scripts
+      env: SCRIPT=test-entrypoint.sh
+      script:
+        - ./.travis/test-entrypoint.sh
+
     - stage: test images (amd64)
       env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=amd64
     - env: VERSION=2019.04 VARIANT=fpm ARCH=amd64

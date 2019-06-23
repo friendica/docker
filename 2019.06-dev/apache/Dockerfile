@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.1-apache
+FROM php:7.3-apache-stretch
 LABEL maintainer="Philipp Holzer <admin@philipp.info>"
 
 # entrypoint.sh and cron.sh dependencies
@@ -34,8 +34,6 @@ RUN set -ex; \
         libpng-dev \
         libjpeg62-turbo-dev \
         libtool \
-        libmcrypt4 \
-        libmcrypt-dev \
         imagemagick \
         libmagick++-dev \
         libmemcached-dev \
@@ -45,29 +43,43 @@ RUN set -ex; \
         librsvg2-2 \
         libcurl4-openssl-dev \
         curl \
+        libzip-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    pecl install imagick-3.4.3; \
-        docker-php-ext-enable imagick; \
-        pecl clear-cache \
-    ; \
+    \
     docker-php-ext-configure gd \
         --with-gd \
-        --enable-gd-native-ttf \
         --with-freetype-dir=/usr/include/ \
         --with-png-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
     ; \
-    docker-php-ext-install -j 4 curl pdo pdo_mysql xml gd zip opcache mbstring posix ctype json iconv mcrypt \
+    docker-php-ext-install -j 4 \
+        curl \
+        pdo \
+        pdo_mysql \
+        xml \
+        gd \
+        zip \
+        opcache \
+        mbstring \
+        posix \
+        ctype \
+        json \
+        iconv \
     ; \
+    \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached-3.0.4; \
-    pecl install redis-3.1.6; \
+    pecl install apcu-5.1.17; \
+    pecl install memcached-3.1.3; \
+    pecl install redis-4.3.0; \
+    pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
+        apcu \
         memcached \
         redis \
+        imagick \
     ; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
@@ -84,11 +96,19 @@ RUN set -ex; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*
 
-RUN chown -R www-data:root /var/www; \
+RUN {\
+      echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
+    } > /usr/local/etc/php/conf.d/sendmail.ini; \
+    \
+    echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
+    \
+    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    \
+    mkdir /var/www/data; \
+    chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
-WORKDIR /var/www/html
 
 RUN a2enmod rewrite remoteip ;\
     {\
@@ -98,10 +118,6 @@ RUN a2enmod rewrite remoteip ;\
      echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
-
-RUN {\
-      echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
-    } > /usr/local/etc/php/conf.d/sendmail.ini;
 
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh

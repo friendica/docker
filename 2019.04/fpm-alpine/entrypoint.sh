@@ -141,8 +141,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 			if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" -o -n "${MYSQL_USERNAME+x}" ] && [ -n ${FRIENDICA_ADMIN_MAIL+x} ]; then
 				echo "Installation with environment variables"
 
-				# TODO Bug in PHP Path for automatic installation
-				#FRIENDICA_PHP_PATH=${FRIENDICA_PHP_PATH:-/usr/local/php}
+				FRIENDICA_PHP_PATH=${FRIENDICA_PHP_PATH:-/usr/local/php}
 				FRIENDICA_TZ=${FRIENDICA_TZ:-America/LosAngeles}
 				FRIENDICA_LANG=${FRIENDICA_LANG:-en}
 				MYSQL_PORT=${MYSQL_PORT:-3306}

@@ -2,7 +2,7 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.1'
+	[default]='7.3'
 )
 
 declare -A cmd=(
@@ -23,14 +23,51 @@ declare -A extras=(
 	[fpm-alpine]=''
 )
 
+apcu_version="$(
+	git ls-remote --tags https://github.com/krakjoe/apcu.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
+
+memcached_version="$(
+	git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '-rc|-b' \
+		| sed -E 's/^[rv]//' \
+		| sort -V \
+		| tail -1
+)"
+
+redis_version="$(
+	git ls-remote --tags https://github.com/phpredis/phpredis.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
+imagick_version="$(
+	git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+		| cut -d/ -f3 \
+		| grep -viE '[a-z]' \
+		| tr -d '^{}' \
+		| sort -V \
+		| tail -1
+)"
+
 declare -A pecl_versions=(
-	[Imagick]='3.4.3'
-	[memcached]='3.0.4'
-	[redis]='3.1.6'
+	[APCu]="$apcu_version"
+	[memcached]="$memcached_version"
+	[redis]="$redis_version"
+	[imagick]="$imagick_version"
 )
 
 declare -A install_extras=(
-    ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica.tar.gz \\\n        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \\\n    tar -xzf friendica.tar.gz -C /usr/src/; \\\n    rm friendica.tar.gz; \\\n    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica_addons.tar.gz \\\n        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \\\n    mkdir /usr/src/friendica/addon; \\\n    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica_addons.tar.gz; \\\n    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;'
+    ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica.tar.gz \\\n        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \\\n    tar -xzf friendica.tar.gz -C /usr/src/; \\\n    rm friendica.tar.gz; \\\n    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica_addons.tar.gz \\\n        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica_addons.tar.gz; \\\n    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;'
     ['develop']=''
 )
 
@@ -76,7 +113,8 @@ function create_variant() {
 		s/%%CMD%%/'"${cmd[$variant]}"'/g;
 		s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
 		s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type]}"'|g;
-		s/%%IMAGICK_VERSION%%/'"${pecl_versions[Imagick]}"'/g;
+		s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
+		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 	' "$dir/Dockerfile"

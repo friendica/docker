@@ -107,8 +107,8 @@ VOLUME /var/www/html
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION 2019.04
-ENV FRIENDICA_ADDONS 2019.04
+ENV FRIENDICA_VERSION 2019.06
+ENV FRIENDICA_ADDONS 2019.06
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \

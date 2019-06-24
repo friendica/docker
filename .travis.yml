@@ -58,35 +58,26 @@ jobs:
         - ./.travis/test-entrypoint.sh
 
     - stage: test images (amd64)
-      env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.04 VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.04 VARIANT=apache ARCH=amd64
-    - env: VERSION=2019.06-dev VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.06-dev VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.06-dev VARIANT=apache ARCH=amd64
-    - env: VERSION=2019.06-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.06-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.06-rc VARIANT=apache ARCH=amd64
+      env: VERSION=2019.09-dev VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2019.09-dev VARIANT=fpm ARCH=amd64
+    - env: VERSION=2019.09-dev VARIANT=apache ARCH=amd64
+    - env: VERSION=2019.06 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2019.06 VARIANT=fpm ARCH=amd64
+    - env: VERSION=2019.06 VARIANT=apache ARCH=amd64
 
     - stage: test images (full)
-      env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.04 VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2019.04 VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.04 VARIANT=fpm ARCH=i386
-    - env: VERSION=2019.04 VARIANT=apache ARCH=amd64
-    - env: VERSION=2019.04 VARIANT=apache ARCH=i386
-    - env: VERSION=2019.06-dev VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.06-dev VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2019.06-dev VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.06-dev VARIANT=fpm ARCH=i386
-    - env: VERSION=2019.06-dev VARIANT=apache ARCH=amd64
-    - env: VERSION=2019.06-dev VARIANT=apache ARCH=i386
-    - env: VERSION=2019.06-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2019.06-rc VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2019.06-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=2019.06-rc VARIANT=fpm ARCH=i386
-    - env: VERSION=2019.06-rc VARIANT=apache ARCH=amd64
-    - env: VERSION=2019.06-rc VARIANT=apache ARCH=i386
+      env: VERSION=2019.09-dev VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2019.09-dev VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=2019.09-dev VARIANT=fpm ARCH=amd64
+    - env: VERSION=2019.09-dev VARIANT=fpm ARCH=i386
+    - env: VERSION=2019.09-dev VARIANT=apache ARCH=amd64
+    - env: VERSION=2019.09-dev VARIANT=apache ARCH=i386
+    - env: VERSION=2019.06 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2019.06 VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=2019.06 VARIANT=fpm ARCH=amd64
+    - env: VERSION=2019.06 VARIANT=fpm ARCH=i386
+    - env: VERSION=2019.06 VARIANT=apache ARCH=amd64
+    - env: VERSION=2019.06 VARIANT=apache ARCH=i386
 
     - stage: deploy
       env: SCRIPT=build_and_push.sh

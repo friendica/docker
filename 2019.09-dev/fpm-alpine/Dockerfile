@@ -107,8 +107,8 @@ VOLUME /var/www/html
 COPY *.sh upgrade.exclude /
 RUN chmod +x /*.sh
 
-ENV FRIENDICA_VERSION 2019.06-rc
-ENV FRIENDICA_ADDONS 2019.06-rc
+ENV FRIENDICA_VERSION 2019.09-dev
+ENV FRIENDICA_ADDONS 2019.09-dev
 
 
 ENTRYPOINT ["/entrypoint.sh"]

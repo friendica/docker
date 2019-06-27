@@ -19,8 +19,8 @@ version_greater() {
 clone_develop() {
 	friendica_git="${FRIENDICA_VERSION}"
 	addons_git="${FRIENDICA_ADDONS}"
-	friendica_repo="${FRIENDICA_REPOSITORY:-friendica}"
-	friendica_addons_repo="${FRIENDICA_ADDONS_REPO:-friendica}"
+	friendica_repo="${FRIENDICA_REPOSITORY:-friendica/friendica}"
+	friendica_addons_repo="${FRIENDICA_ADDONS_REPO:-friendica/friendica-addons}"
 
 	if echo "{$friendica_git,,}" | grep -Eq '^.*\-dev'; then
 		friendica_git="develop"
@@ -34,10 +34,10 @@ clone_develop() {
 
 	# Removing the whole directory first
 	rm -fr /usr/src/friendica
-	sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo}/friendica /usr/src/friendica"
+	sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo} /usr/src/friendica"
 
 	mkdir /usr/src/friendica/addon
-	sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo}/friendica-addons /usr/src/friendica/addon"
+	sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo} /usr/src/friendica/addon"
 
 	echo "Download finished"
 

@@ -82,6 +82,10 @@ There are three options to enable the cron-job for Friendica:
 
 **Develop/Release Candidat Settings**
 -	`FRIENDICA_UPGRADE` If set to `true`, a develop or release candidat node will get updated at startup.
+-	`FRIENDICA_REPOSITORY` If set, a custom repository will be chosen (Default: `friendica`)
+-	`FRIENDICA_ADDONS_REPO` If set, a custom repository for the addons will be chosen (Default: `friendica`)
+-	`FRIENDICA_VERSION` If set, a custom branch will be chosen (Default is based on the chosen image version)
+-	`FRIENDICA_ADDONS` If set, a custom branch for the addons will be chosen (Default is based on the chosen image version)
 
 ## Administrator account
 

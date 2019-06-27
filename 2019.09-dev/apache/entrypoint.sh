@@ -19,6 +19,8 @@ version_greater() {
 clone_develop() {
 	friendica_git="${FRIENDICA_VERSION}"
 	addons_git="${FRIENDICA_ADDONS}"
+	friendica_repo="${FRIENDICA_REPOSITORY:-friendica/friendica}"
+	friendica_addons_repo="${FRIENDICA_ADDONS_REPO:-friendica/friendica-addons}"
 
 	if echo "{$friendica_git,,}" | grep -Eq '^.*\-dev'; then
 		friendica_git="develop"
@@ -28,16 +30,21 @@ clone_develop() {
 		addons_git="develop"
 	fi
 
-	echo "Downloading Friendica from GitHub '${friendica_git}' ..."
+	echo "Downloading Friendica from GitHub '${friendica_repo}/${friendica_git}' ..."
 
 	# Removing the whole directory first
 	rm -fr /usr/src/friendica
-	sh -c "git clone -q -b ${friendica_git} https://github.com/friendica/friendica /usr/src/friendica"
+	sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo} /usr/src/friendica"
 
 	mkdir /usr/src/friendica/addon
-	sh -c "git clone -q -b ${addons_git} https://github.com/friendica/friendica-addons /usr/src/friendica/addon"
+	sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo} /usr/src/friendica/addon"
 
 	echo "Download finished"
+
+	if [ ! -f /usr/src/friendica/VERSION ]; then
+		echo "Couldn't clone repository"
+		exit 1
+	fi
 
 	/usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
 }
@@ -84,13 +91,11 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 	check=false
 	# cloning from git is just possible for develop or Release Candidats
-	if echo "${FRIENDICA_VERSION}" | grep -Eq '^.*(\-dev|-rc|-RC)'; then
+	if echo "${FRIENDICA_VERSION}" | grep -Eq '^.*(\-dev|-rc|-RC)' || [ "${FRIENDICA_UPGRADE:-false}" = "true" ] || [ ! -f /usr/src/friendica/VERSION ]; then
 		# just clone & check if it's a new install or upgrade
-		if [ "$installed_version" = "0.0.0.0" ] || [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then
-			clone_develop
-			image_version="$(cat /usr/src/friendica/VERSION)"
-			check=true
-		fi
+		clone_develop
+		image_version="$(cat /usr/src/friendica/VERSION)"
+		check=true
 	else
 		image_version="$(cat /usr/src/friendica/VERSION)"
 

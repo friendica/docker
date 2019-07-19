@@ -10,4 +10,6 @@ if (getenv('REDIS_HOST')) {
 			'redis_db' => (getenv('REDIS_DB') ? getenv('REDIS_DB') : 0),
 		],
 	];
+} else {
+	return [];
 }

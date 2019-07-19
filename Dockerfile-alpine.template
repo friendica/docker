@@ -51,7 +51,7 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     \
-    docker-php-ext-install -j 4 \
+    docker-php-ext-install -j "$(nproc)" \
        curl \
        pdo \
        pdo_mysql \
@@ -88,8 +88,18 @@ RUN set -ex; \
     apk add --virtual .friendica-phpext-rundeps $runDeps; \
     apk del .build-deps;
 
-RUN {\
-        echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
+# set recommended PHP.ini settings
+RUN { \
+        echo 'opcache.enable=1' ; \
+        echo 'opcache.interned_strings_buffer=8'; \
+        echo 'opcache.max_accelerated_files=10000'; \
+        echo 'opcache.memory_consumption=128'; \
+        echo 'opcache.save_comments=1'; \
+        echo 'opcache.revalidte_freq=1'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
+    \
+    { \
+        echo sendmail_path = "/usr/sbin/sendmail -t -i"; \
     } > /usr/local/etc/php/conf.d/sendmail.ini; \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
@@ -103,12 +113,13 @@ RUN {\
 VOLUME /var/www/html
 %%VARIANT_EXTRAS%%
 
-COPY *.sh upgrade.exclude /
-RUN chmod +x /*.sh
-
 ENV FRIENDICA_VERSION %%VERSION%%
 ENV FRIENDICA_ADDONS %%VERSION%%
 %%INSTALL_EXTRAS%%
+
+COPY *.sh upgrade.exclude /
+COPY config/* /usr/src/friendica/config/
+RUN chmod +x /*.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["%%CMD%%"]

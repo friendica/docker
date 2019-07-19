@@ -16,7 +16,7 @@ $config = [
 		'loglevel' => 'notice',
 	],
 	'storage' => [
-		'filesystem_path' => '/var/www/data',
+		'filesystem_path' => '/var/www/html/storage',
 	],
 ];
 

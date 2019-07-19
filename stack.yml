@@ -26,7 +26,7 @@ services:
       - MYSQL_DATABASE=friendica
       - FRIENDICA_ADMIN_MAIL=root@friendica.local
       - SITENAME=Friendica PWD Test Node
-	  - FRIENDICA_NO_VALIDATION=true
+      - FRIENDICA_NO_VALIDATION=true
     hostname: friendica.local
     depends_on:
       - db

@@ -128,6 +128,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 		rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/friendica/ /var/www/html/
 
+		# Update docker-based config files, but never delete other config files
+		rsync $rsync_options --update /usr/src/friendica/config/ /var/www/html/config/
+
 		# In case there is no .htaccess, copy it from the default dist file
 		if [ ! -f "/var/www/html/.htaccess" ]; then
 			cp "/var/www/html/.htaccess-dist" "/var/www/html/.htaccess"

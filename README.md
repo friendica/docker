@@ -66,11 +66,20 @@ There are three options to enable the cron-job for Friendica:
 
 ## Possible Environment Variables
 
-**Auto Install Settings**
+**Friendica Settings**
 -	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
 -	`FRIENDICA_TZ` The default localization of the Friendica server.
 -	`FRIENDICA_LANG` The default language of the Friendica server.
 -	`FRIENDICA_PHP_PATH` The path of the PHP binary.
+-	`FRIENDICA_SITENAME` The Sitename of the Friendica server.
+-	`FRIENDICA_NO_VALIDATION` If set to `true`, the URL and E-Mail validation will be disabled.
+-	`FRIENDICA_DATA` If set to `true`, the fileystem will be used instead of the DB backend.
+-	`FRIENDICA_DATA_DIR` The data directory of the Friendica server (Default: /var/www/data).
+
+**Friendica Logging**
+-	`FRIENDICA_DEBUGGING` If set to `true`, the logging of Friendica is enabled.
+-	`FRIENDICA_LOGFILE` (optional) The path to the logfile (Default: /var/www/friendica.log).
+-	`FRIENDICA_LOGLEVEL` (optional) The loglevel to log (Default: notice).
 
 **Database** (**required at installation**)
 -	`MYSQL_USERNAME` Username for the database user using mysql.
@@ -79,6 +88,12 @@ There are three options to enable the cron-job for Friendica:
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
 -	`MYSQL_PORT` Port of the database server using mysql / mariadb (Default: `3306`)
+
+**Lock Driver (Redis)**
+-	`REDIS_HOST` The hostname of the redis instance (in case of locking).
+-	`REDIS_PORT` (optional) The port of the redis instance (in case of locking).
+-	`REDIS_PW` (optional) The password for the redis instance (in case of locking).
+-	`REDIS_DB` (optional) The database instance of the redis instance (in case of locking).
 
 **Develop/Release Candidat Settings**
 -	`FRIENDICA_UPGRADE` If set to `true`, a develop or release candidat node will get updated at startup.

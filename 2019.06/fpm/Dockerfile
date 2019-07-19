@@ -54,7 +54,7 @@ RUN set -ex; \
         --with-png-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
     ; \
-    docker-php-ext-install -j 4 \
+    docker-php-ext-install -j "$(nproc)" \
         curl \
         pdo \
         pdo_mysql \
@@ -72,7 +72,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install apcu-5.1.17; \
     pecl install memcached-3.1.3; \
-    pecl install redis-4.3.0; \
+    pecl install redis-5.0.1; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
@@ -96,8 +96,18 @@ RUN set -ex; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*
 
-RUN {\
-      echo sendmail_path = "/usr/sbin/sendmail -t -i" ;\
+# set recommended PHP.ini settings
+RUN { \
+        echo 'opcache.enable=1' ; \
+        echo 'opcache.interned_strings_buffer=8'; \
+        echo 'opcache.max_accelerated_files=10000'; \
+        echo 'opcache.memory_consumption=128'; \
+        echo 'opcache.save_comments=1'; \
+        echo 'opcache.revalidte_freq=1'; \
+    } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
+    \
+    { \
+        echo sendmail_path = "/usr/sbin/sendmail -t -i"; \
     } > /usr/local/etc/php/conf.d/sendmail.ini; \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
@@ -110,9 +120,6 @@ RUN {\
 
 VOLUME /var/www/html
 
-
-COPY *.sh upgrade.exclude /
-RUN chmod +x /*.sh
 
 ENV FRIENDICA_VERSION 2019.06
 ENV FRIENDICA_ADDONS 2019.06
@@ -131,6 +138,10 @@ RUN set -ex; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
     rm friendica_addons.tar.gz; \
     /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;
+
+COPY *.sh upgrade.exclude /
+COPY config/* /usr/src/friendica/config/
+RUN chmod +x /*.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

@@ -65,12 +65,13 @@ RUN set -ex; \
        ctype \
        json \
        iconv \
+       pcntl \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.17; \
     pecl install memcached-3.1.3; \
-    pecl install redis-5.0.1; \
+    pecl install redis-5.0.2; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \

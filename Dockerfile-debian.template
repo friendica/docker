@@ -66,6 +66,7 @@ RUN set -ex; \
         ctype \
         json \
         iconv \
+        pcntl \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

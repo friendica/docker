@@ -52,14 +52,12 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-install -j "$(nproc)" \
-       curl \
        pdo \
        pdo_mysql \
        xml \
        gd \
        zip \
        opcache \
-       mbstring \
        posix \
        ctype \
        json \

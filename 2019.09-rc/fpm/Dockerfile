@@ -51,14 +51,12 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     docker-php-ext-install -j "$(nproc)" \
-        curl \
         pdo \
         pdo_mysql \
         xml \
         gd \
         zip \
         opcache \
-        mbstring \
         posix \
         ctype \
         json \

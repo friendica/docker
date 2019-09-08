@@ -22,14 +22,11 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        libxml2-dev \
         mysql-client \
         bash \
         autoconf \
         g++ \
         make \
-        openssl \
-        libssl-dev \
         libpng-dev \
         libjpeg62-turbo-dev \
         libtool \
@@ -40,8 +37,6 @@ RUN set -ex; \
         libfreetype6 \
         libfreetype6-dev \
         librsvg2-2 \
-        libcurl4-openssl-dev \
-        curl \
         libzip-dev \
     ; \
     docker-php-ext-configure gd \
@@ -51,16 +46,11 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     docker-php-ext-install -j "$(nproc)" \
-        pdo \
         pdo_mysql \
-        xml \
         gd \
         zip \
         opcache \
-        posix \
         ctype \
-        json \
-        iconv \
         pcntl \
     ; \
     \

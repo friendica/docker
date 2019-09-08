@@ -15,25 +15,16 @@ RUN set -ex; \
     apk add -U --no-cache --virtual .build-deps \
         mysql-client \
         bash \
-        autoconf \
-        g++ \
-        make \
-        libpng \
+        $PHPIZE_DEPS \
         libpng-dev \
         libjpeg-turbo-dev \
         imagemagick-dev \
-        imagemagick \
         libtool \
         libmemcached-dev \
         cyrus-sasl-dev \
-        freetype \
-        libpng \
         libjpeg-turbo-dev \
         freetype-dev \
         librsvg \
-        libcurl \
-        rsync \
-        bzip2 \
         pcre-dev \
         libzip-dev \
     ; \

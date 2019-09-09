@@ -14,32 +14,18 @@ RUN set -ex; \
 RUN set -ex; \
     \
     apk add -U --no-cache --virtual .build-deps \
-        libxml2-dev \
         mysql-client \
         bash \
-        autoconf \
-        g++ \
-        make \
-        openssl \
-        openssl-dev \
-        libpng \
+        $PHPIZE_DEPS \
         libpng-dev \
         libjpeg-turbo-dev \
         imagemagick-dev \
-        imagemagick \
         libtool \
         libmemcached-dev \
         cyrus-sasl-dev \
-        freetype \
-        libpng \
         libjpeg-turbo-dev \
         freetype-dev \
         librsvg \
-        libcurl \
-        curl \
-        curl-dev \
-        rsync \
-        bzip2 \
         pcre-dev \
         libzip-dev \
     ; \
@@ -52,18 +38,10 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-install -j "$(nproc)" \
-       curl \
-       pdo \
        pdo_mysql \
-       xml \
        gd \
        zip \
        opcache \
-       mbstring \
-       posix \
-       ctype \
-       json \
-       iconv \
        pcntl \
     ; \
     \

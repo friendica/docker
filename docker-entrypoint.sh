@@ -15,6 +15,14 @@ version_greater() {
 	[ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2  | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
 }
 
+# checks if the branch and repository exists
+check_branch() {
+  repo=${1:-}
+  branch=${2:-}
+  git ls-remote --heads --tags "$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
+  [ "$?" -eq "0" ]
+}
+
 # clones the whole develop branch (Friendica and Addons)
 clone_develop() {
 	friendica_git="${FRIENDICA_VERSION}"
@@ -30,23 +38,37 @@ clone_develop() {
 		addons_git="develop"
 	fi
 
-	echo "Downloading Friendica from GitHub '${friendica_repo}/${friendica_git}' ..."
+  # Check if the branches exist before wiping the
+	if check_branch "$friendica_repo" "$friendica_git" && check_brach "$friendica_addons_repo" "$addons_git" ; then
+    echo "Downloading Friendica from GitHub '${friendica_repo}/${friendica_git}' ..."
 
-	# Removing the whole directory first
-	rm -fr /usr/src/friendica
-	sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo} /usr/src/friendica"
+    # Removing the whole directory first
+    rm -fr /usr/src/friendica
+    sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo} /usr/src/friendica"
 
-	mkdir /usr/src/friendica/addon
-	sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo} /usr/src/friendica/addon"
+    mkdir /usr/src/friendica/addon
+    sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo} /usr/src/friendica/addon"
 
-	echo "Download finished"
+    echo "Download finished"
 
-	if [ ! -f /usr/src/friendica/VERSION ]; then
-		echo "Couldn't clone repository"
-		exit 1
-	fi
+    if [ ! -f /usr/src/friendica/VERSION ]; then
+      echo "Couldn't clone repository"
+      exit 1
+    fi
 
-	/usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
+    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
+    return 0
+
+  else
+    if check_branch "$friendica_repo" "$friendica_git"; then
+      echo "$friendica_repo/$friendica_git is not valid."
+    else
+      echo "$friendica_addons_repo/$addons_git is not valid."
+    fi
+    echo "Using old version."
+    return 1
+
+  fi
 }
 
 setup_ssmtp() {
@@ -94,8 +116,10 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 	if echo "${FRIENDICA_VERSION}" | grep -Eq '^.*(\-dev|-rc|-RC)' || [ "${FRIENDICA_UPGRADE:-false}" = "true" ] || [ ! -f /usr/src/friendica/VERSION ]; then
 		# just clone & check if it's a new install or upgrade
 		clone_develop
-		image_version="$(cat /usr/src/friendica/VERSION)"
-		check=true
+		if [ "$?" -eq "0" ]; then
+  		image_version="$(cat /usr/src/friendica/VERSION)"
+	  	check=true
+	  fi
 	else
 		image_version="$(cat /usr/src/friendica/VERSION)"
 

@@ -19,7 +19,7 @@ version_greater() {
 check_branch() {
   repo=${1:-}
   branch=${2:-}
-  git ls-remote --heads --tags "$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
+  git ls-remote --heads --tags "https://github.com/$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
   [ "$?" -eq "0" ]
 }
 

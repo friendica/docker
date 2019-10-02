@@ -39,7 +39,7 @@ clone_develop() {
 	fi
 
   # Check if the branches exist before wiping the
-	if check_branch "$friendica_repo" "$friendica_git" && check_brach "$friendica_addons_repo" "$addons_git" ; then
+	if check_branch "$friendica_repo" "$friendica_git" && check_branch "$friendica_addons_repo" "$addons_git" ; then
     echo "Downloading Friendica from GitHub '${friendica_repo}/${friendica_git}' ..."
 
     # Removing the whole directory first

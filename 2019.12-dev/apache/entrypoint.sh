@@ -45,10 +45,10 @@ clone_develop() {
 
     # Removing the whole directory first
     rm -fr /usr/src/friendica
-    sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo} /usr/src/friendica"
+    git clone -q -b ${friendica_git} "https://github.com/${friendica_repo}" /usr/src/friendica
 
     mkdir /usr/src/friendica/addon
-    sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo} /usr/src/friendica/addon"
+    git clone -q -b ${addons_git} "https://github.com/${friendica_addons_repo}" /usr/src/friendica/addon
 
     echo "Download finished"
 

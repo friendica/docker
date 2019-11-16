@@ -28,6 +28,7 @@ RUN set -ex; \
         librsvg \
         pcre-dev \
         libzip-dev \
+        libldap2-dev \
     ; \
     \
     docker-php-ext-configure gd \
@@ -37,18 +38,22 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     \
+    docker-php-ext-configure ldap \
+        	--with-libdir=lib/x86_64-linux-gnu/ \
+	; \
     docker-php-ext-install -j "$(nproc)" \
        pdo_mysql \
        gd \
        zip \
        opcache \
        pcntl \
+       ldap \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.17; \
-    pecl install memcached-3.1.3; \
-    pecl install redis-5.0.2; \
+    pecl install APCu-5.1.18; \
+    pecl install memcached-3.1.4; \
+    pecl install redis-5.1.1; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \

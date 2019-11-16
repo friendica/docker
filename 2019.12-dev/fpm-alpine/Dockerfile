@@ -28,7 +28,8 @@ RUN set -ex; \
         librsvg \
         pcre-dev \
         libzip-dev \
-        libldap2-dev \
+        icu-dev \
+        openldap-dev \
     ; \
     \
     docker-php-ext-configure gd \
@@ -38,9 +39,6 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     \
-    docker-php-ext-configure ldap \
-        	--with-libdir=lib/x86_64-linux-gnu/ \
-	; \
     docker-php-ext-install -j "$(nproc)" \
        pdo_mysql \
        gd \

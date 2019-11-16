@@ -36,6 +36,9 @@ RUN set -ex; \
         libzip-dev \
         libldap2-dev \
     ; \
+    \
+        debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    \
     docker-php-ext-configure gd \
         --with-gd \
         --with-freetype-dir=/usr/include/ \
@@ -43,8 +46,8 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     docker-php-ext-configure ldap \
-    	--with-libdir=lib/x86_64-linux-gnu/ \
-    ; \
+        	--with-libdir=lib/$debMultiarch/ \
+	; \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
         gd \

@@ -27,6 +27,8 @@ RUN set -ex; \
         librsvg \
         pcre-dev \
         libzip-dev \
+        icu-dev \
+        openldap-dev \
     ; \
     \
     docker-php-ext-configure gd \
@@ -42,6 +44,7 @@ RUN set -ex; \
        zip \
        opcache \
        pcntl \
+       ldap \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

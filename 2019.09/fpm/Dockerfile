@@ -34,13 +34,20 @@ RUN set -ex; \
         libfreetype6-dev \
         librsvg2-2 \
         libzip-dev \
+        libldap2-dev \
     ; \
+    \
+        debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    \
     docker-php-ext-configure gd \
         --with-gd \
         --with-freetype-dir=/usr/include/ \
         --with-png-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
     ; \
+    docker-php-ext-configure ldap \
+        	--with-libdir=lib/$debMultiarch/ \
+	; \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
         gd \
@@ -48,12 +55,13 @@ RUN set -ex; \
         opcache \
         ctype \
         pcntl \
+        ldap \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install apcu-5.1.17; \
-    pecl install memcached-3.1.3; \
-    pecl install redis-5.0.2; \
+    pecl install apcu-5.1.18; \
+    pecl install memcached-3.1.4; \
+    pecl install redis-5.1.1; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \

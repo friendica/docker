@@ -8,4 +8,4 @@ done
 # TODO let the database and the autoinstall time to complete - not winning a beauty contest
 sleep 15s
 
-php /var/www/html/bin/daemon.php -f start
+exec php /var/www/html/bin/daemon.php -f start

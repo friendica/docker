@@ -3,7 +3,7 @@ set -eu
 
 # run an command with the www-data user
 run_as() {
-	set -- -eu -c "cd /var/www/html; $*"
+	set -- -c "cd /var/www/html; $*"
 	if [ "$(id -u)" -eq 0 ]; then
 		su - www-data -s /bin/sh "$@"
 	else
@@ -104,6 +104,8 @@ setup_ssmtp() {
 		echo "Setup finished"
 	fi
 }
+
+run_as "echo 'test';"
 
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then

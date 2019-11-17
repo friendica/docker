@@ -105,8 +105,6 @@ setup_ssmtp() {
 	fi
 }
 
-run_as "echo 'test';"
-
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 	installed_version="0.0.0.0"

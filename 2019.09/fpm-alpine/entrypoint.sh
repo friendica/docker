@@ -3,10 +3,11 @@ set -eu
 
 # run an command with the www-data user
 run_as() {
+	set -- -eu -c "cd /var/www/html; $*"
 	if [ "$(id -u)" -eq 0 ]; then
-		su - www-data -s /bin/sh -c "cd /var/www/html;$1"
+		su - www-data -s /bin/sh "$@"
 	else
-		sh -c "$1"
+		sh  "$@"
 	fi
 }
 
@@ -44,10 +45,10 @@ clone_develop() {
 
     # Removing the whole directory first
     rm -fr /usr/src/friendica
-    sh -c "git clone -q -b ${friendica_git} https://github.com/${friendica_repo} /usr/src/friendica"
+    git clone -q -b ${friendica_git} "https://github.com/${friendica_repo}" /usr/src/friendica
 
     mkdir /usr/src/friendica/addon
-    sh -c "git clone -q -b ${addons_git} https://github.com/${friendica_addons_repo} /usr/src/friendica/addon"
+    git clone -q -b ${addons_git} "https://github.com/${friendica_addons_repo}" /usr/src/friendica/addon
 
     echo "Download finished"
 
@@ -200,7 +201,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 				echo "Starting Friendica installation ..."
 				# TODO Let the database time to warm up - not winning a beauty contest
 				sleep 10s
-				run_as "cd /var/www/html; php /var/www/html/bin/console.php autoinstall $install_options"
+				run_as "php /var/www/html/bin/console.php autoinstall $install_options"
 
 				# TODO Workaround because of a strange permission issue
 				rm -fr /var/www/html/view/smarty3/compiled
@@ -217,7 +218,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 		# upgrade
 		else
 			echo "Upgrading Friendica ..."
-			run_as 'cd /var/www/html; php /var/www/html/bin/console.php dbstructure update'
+			run_as 'php /var/www/html/bin/console.php dbstructure update'
 			echo "Upgrading finished"
 		fi
 	fi

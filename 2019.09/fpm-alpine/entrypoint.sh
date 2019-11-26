@@ -56,18 +56,18 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 		installed_version="$(cat /var/www/html/VERSION)"
 	fi
 
-  image_version="$(cat /usr/src/friendica/VERSION)"
+	image_version="$(cat /usr/src/friendica/VERSION)"
 
-		# no downgrading possible
-  if version_greater "$installed_version" "$image_version"; then
-    echo 'Can'\''t copy Friendica sources because the version of the data ('$installed_version') is higher than the docker image ('$image_version')', 0
-    exit 1;
+	# no downgrading possible
+	if version_greater "$installed_version" "$image_version"; then
+		echo 'Can'\''t copy Friendica sources because the version of the data ('$installed_version') is higher than the docker image ('$image_version')', 0
+		exit 1;
 	fi
 
 	setup_ssmtp
 
-  # check it just in case the version is greater
-  if version_greater "$image_version" "$installed_version"; then
+	# check it just in case the version is greater
+	if version_greater "$image_version" "$installed_version"; then
 		echo "Initializing Friendica $image_version ..."
 
 		if [ "$installed_version" != "0.0.0.0" ]; then

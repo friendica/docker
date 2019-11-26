@@ -3,10 +3,10 @@ set -eu
 
 # checks if the branch and repository exists
 check_branch() {
-  repo=${1:-}
-  branch=${2:-}
-  git ls-remote --heads --tags "https://github.com/$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
-  [ "$?" -eq "0" ]
+	repo=${1:-}
+	branch=${2:-}
+	git ls-remote --heads --tags "https://github.com/$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
+	[ "$?" -eq "0" ]
 }
 
 # clones the whole develop branch (Friendica and Addons)
@@ -24,37 +24,37 @@ clone_develop() {
 		addons_git="develop"
 	fi
 
-  # Check if the branches exist before wiping the
+	# Check if the branches exist before wiping the
 	if check_branch "$friendica_repo" "$friendica_git" && check_branch "$friendica_addons_repo" "$addons_git" ; then
-    echo "Downloading Friendica from GitHub '${friendica_repo}/${friendica_git}' ..."
+		echo "Cloning '${friendica_git}' from GitHub repository '${friendica_repo}' ..."
 
-    # Removing the whole directory first
-    rm -fr /usr/src/friendica
-    git clone -q -b ${friendica_git} "https://github.com/${friendica_repo}" /usr/src/friendica
+		# Removing the whole directory first
+		rm -fr /usr/src/friendica
+		git clone -q -b ${friendica_git} "https://github.com/${friendica_repo}" /usr/src/friendica
 
-    mkdir /usr/src/friendica/addon
-    git clone -q -b ${addons_git} "https://github.com/${friendica_addons_repo}" /usr/src/friendica/addon
+		mkdir /usr/src/friendica/addon
+		git clone -q -b ${addons_git} "https://github.com/${friendica_addons_repo}" /usr/src/friendica/addon
 
-    echo "Download finished"
+		echo "Download finished"
 
-    if [ ! -f /usr/src/friendica/VERSION ]; then
-      echo "Couldn't clone repository"
-      exit 1
-    fi
+		if [ ! -f /usr/src/friendica/VERSION ]; then
+			echo "Couldn't clone repository"
+			exit 1
+		fi
 
-    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
-    return 0
+		/usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
+		return 0
 
-  else
-    if check_branch "$friendica_repo" "$friendica_git"; then
-      echo "$friendica_repo/$friendica_git is not valid."
-    else
-      echo "$friendica_addons_repo/$addons_git is not valid."
-    fi
-    echo "Using old version."
-    return 1
+	else
+		if check_branch "$friendica_repo" "$friendica_git"; then
+			echo "$friendica_repo/$friendica_git is not valid."
+		else
+			echo "$friendica_addons_repo/$addons_git is not valid."
+		fi
+		echo "Using old version."
+		return 1
 
-  fi
+	fi
 }
 
 # just check if we execute apache or php-fpm

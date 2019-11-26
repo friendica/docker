@@ -16,62 +16,6 @@ version_greater() {
 	[ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2  | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
 }
 
-# checks if the branch and repository exists
-check_branch() {
-  repo=${1:-}
-  branch=${2:-}
-  git ls-remote --heads --tags "https://github.com/$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
-  [ "$?" -eq "0" ]
-}
-
-# clones the whole develop branch (Friendica and Addons)
-clone_develop() {
-	friendica_git="${FRIENDICA_VERSION}"
-	addons_git="${FRIENDICA_ADDONS}"
-	friendica_repo="${FRIENDICA_REPOSITORY:-friendica/friendica}"
-	friendica_addons_repo="${FRIENDICA_ADDONS_REPO:-friendica/friendica-addons}"
-
-	if echo "{$friendica_git,,}" | grep -Eq '^.*\-dev'; then
-		friendica_git="develop"
-	fi
-
-	if echo "{$addons_git,,}" | grep -Eq '^.*\-dev'; then
-		addons_git="develop"
-	fi
-
-  # Check if the branches exist before wiping the
-	if check_branch "$friendica_repo" "$friendica_git" && check_branch "$friendica_addons_repo" "$addons_git" ; then
-    echo "Downloading Friendica from GitHub '${friendica_repo}/${friendica_git}' ..."
-
-    # Removing the whole directory first
-    rm -fr /usr/src/friendica
-    git clone -q -b ${friendica_git} "https://github.com/${friendica_repo}" /usr/src/friendica
-
-    mkdir /usr/src/friendica/addon
-    git clone -q -b ${addons_git} "https://github.com/${friendica_addons_repo}" /usr/src/friendica/addon
-
-    echo "Download finished"
-
-    if [ ! -f /usr/src/friendica/VERSION ]; then
-      echo "Couldn't clone repository"
-      exit 1
-    fi
-
-    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
-    return 0
-
-  else
-    if check_branch "$friendica_repo" "$friendica_git"; then
-      echo "$friendica_repo/$friendica_git is not valid."
-    else
-      echo "$friendica_addons_repo/$addons_git is not valid."
-    fi
-    echo "Using old version."
-    return 1
-
-  fi
-}
-
 setup_ssmtp() {
 	if [ -n "${SITENAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
 		echo "Setup SSMTP for '$SITENAME' with '$SMTP' ..."
@@ -112,33 +56,18 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 		installed_version="$(cat /var/www/html/VERSION)"
 	fi
 
-	check=false
-	# cloning from git is just possible for develop or Release Candidats
-	if echo "${FRIENDICA_VERSION}" | grep -Eq '^.*(\-dev|-rc|-RC)' || [ "${FRIENDICA_UPGRADE:-false}" = "true" ] || [ ! -f /usr/src/friendica/VERSION ]; then
-		# just clone & check if it's a new install or upgrade
-		clone_develop
-		if [ "$?" -eq "0" ]; then
-  		image_version="$(cat /usr/src/friendica/VERSION)"
-	  	check=true
-	  fi
-	else
-		image_version="$(cat /usr/src/friendica/VERSION)"
+	image_version="$(cat /usr/src/friendica/VERSION)"
 
-		# check it just in case the version is greater
-		if version_greater "$image_version" "$installed_version"; then
-			check=true
-		fi
-
-		# no downgrading possible
-		if version_greater "$installed_version" "$image_version"; then
-			echo 'Can'\''t copy Friendica sources because the version of the data ('$installed_version') is higher than the docker image ('$image_version')', 0
-			exit 1;
-		fi
+	# no downgrading possible
+	if version_greater "$installed_version" "$image_version"; then
+		echo 'Can'\''t copy Friendica sources because the version of the data ('$installed_version') is higher than the docker image ('$image_version')', 0
+		exit 1;
 	fi
 
 	setup_ssmtp
 
-	if [ "$check" = true ]; then
+	# check it just in case the version is greater
+	if version_greater "$image_version" "$installed_version"; then
 		echo "Initializing Friendica $image_version ..."
 
 		if [ "$installed_version" != "0.0.0.0" ]; then
@@ -206,7 +135,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 				# TODO Workaround because of a strange permission issue
 				rm -fr /var/www/html/view/smarty3/compiled
 
-				# load other config files (*.config.php) to the config folder (currently only local.config.php and addon.config.php supported)
+				# load other config files (*.config.php) to the config folder
 				if [ -d "/usr/src/config" ]; then
 					rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
 				fi

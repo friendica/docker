@@ -95,13 +95,6 @@ There are three options to enable the cron-job for Friendica:
 -	`REDIS_PW` (optional) The password for the redis instance (in case of locking).
 -	`REDIS_DB` (optional) The database instance of the redis instance (in case of locking).
 
-**Develop/Release Candidat Settings**
--	`FRIENDICA_UPGRADE` If set to `true`, a develop or release candidat node will get updated at startup.
--	`FRIENDICA_REPOSITORY` If set, a custom repository will be chosen (Default: `friendica`)
--	`FRIENDICA_ADDONS_REPO` If set, a custom repository for the addons will be chosen (Default: `friendica`)
--	`FRIENDICA_VERSION` If set, a custom branch will be chosen (Default is based on the chosen image version)
--	`FRIENDICA_ADDONS` If set, a custom branch for the addons will be chosen (Default is based on the chosen image version)
-
 ## Administrator account
 
 Because Friendica links the administrator account to a specific mail address, you **have** to set a valid address for `MAILNAME`.
@@ -184,19 +177,8 @@ If no other environment variable is set, this `local.config.php` will get copied
 
 ## Updating to a newer version
 
-There are differences between the deveop (everything which ends with `-rc` or `-dev`) and the stable (the rest) branches. 
-
-### Updating stable
-
 You have to pull the latest image from the hub (`docker pull friendica`).
 The stable branch gets checked at every startup and will get updated if no installation was found or a new image is used.
-
-### Updating develop
-
-You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
-Instead, the develop branch will get updated if no installation was found or the environment variable `FRIENDICA_UPGRADE` is set to `true`.
-
-It will clone the latest Friendica version and copy it to your working directory.
 
 # Running this image with docker-compose
 

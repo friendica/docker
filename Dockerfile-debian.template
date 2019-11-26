@@ -117,5 +117,5 @@ ENV FRIENDICA_ADDONS %%VERSION%%
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/%%ENTRYPOINT%%"]
 CMD ["%%CMD%%"]

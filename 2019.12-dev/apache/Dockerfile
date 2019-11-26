@@ -127,5 +127,5 @@ ENV FRIENDICA_ADDONS 2019.12-dev
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint-dev.sh"]
 CMD ["apache2-foreground"]

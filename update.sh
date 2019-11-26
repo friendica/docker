@@ -23,6 +23,11 @@ declare -A extras=(
 	[fpm-alpine]=''
 )
 
+declare -A entrypoints=(
+  [stable]='entrypoint.sh'
+  [develop]='entrypoint-dev.sh'
+)
+
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \
 		| cut -d/ -f3 \
@@ -116,11 +121,16 @@ function create_variant() {
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
+		s/%%ENTRYPOINT%%/'"${entrypoints[$install_type]}"'/g;
 	' "$dir/Dockerfile"
 
 	for name in entrypoint cron; do
 		cp "docker-$name.sh" "$dir/$name.sh"
 	done
+
+	if [[ $install_type == "develop" ]]; then
+	  cp "docker-entrypoint-dev.sh" "$dir/entrypoint-dev.sh"
+	fi
 
 	cp upgrade.exclude "$dir/"
 

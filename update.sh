@@ -135,6 +135,7 @@ function create_variant() {
 	cp upgrade.exclude "$dir/"
 
 	cp -rT .config "$dir/config"
+	cp -rT .bin "$dir/bin"
 
     travisEnvAmd64='\n    - env: VERSION='"$dockerName"' VARIANT='"$variant"' ARCH=amd64'"$travisEnvAmd64"
 	for arch in i386 amd64; do

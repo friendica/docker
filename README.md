@@ -67,7 +67,7 @@ There are three options to enable the cron-job for Friendica:
 ## Possible Environment Variables
 
 **Friendica Settings**
--	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
+-	`FRIENDICA_URL` The Friendica URL path.
 -	`FRIENDICA_TZ` The default localization of the Friendica server.
 -	`FRIENDICA_LANG` The default language of the Friendica server.
 -	`FRIENDICA_PHP_PATH` The path of the PHP binary.

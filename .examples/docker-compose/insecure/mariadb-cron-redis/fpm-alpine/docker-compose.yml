@@ -24,8 +24,9 @@ services:
      - FRIENDICA_ADMIN_MAIL=
      - FRIENDICA_TZ=
      - FRIENDICA_LANG=
-     - SITENAME=
-	 - SMTP=
+     - FRIENDICA_URL=
+     - FRIENDICA_SITENAME=
+     - SMTP=
     env_file:
       - db.env
     depends_on:

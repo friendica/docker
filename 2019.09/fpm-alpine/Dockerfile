@@ -116,6 +116,7 @@ RUN set -ex; \
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
+COPY bin/* /usr/local/bin/
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

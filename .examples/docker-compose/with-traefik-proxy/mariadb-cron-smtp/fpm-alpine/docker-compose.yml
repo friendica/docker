@@ -20,6 +20,9 @@ services:
       - FRIENDICA_ADMIN_MAIL=
       - FRIENDICA_TZ=
       - FRIENDICA_LANG=
+      - FRIENDICA_URL=
+      - FRIENDICA_SITENAME=
+      - SMTP=
     env_file:
       - db.env
     depends_on:
@@ -32,10 +35,6 @@ services:
     volumes:
       - friendica:/var/www/html
     entrypoint: /cron.sh
-    environment:
-      - MAILNAME=
-      - TZ=
-      - LANGUAGE=
     env_file:
       - db.env
     depends_on:

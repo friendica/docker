@@ -117,6 +117,7 @@ ENV FRIENDICA_ADDONS 2019.12-dev
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
+COPY bin/* /usr/local/bin/
 
 ENTRYPOINT ["/entrypoint-dev.sh"]
 CMD ["php-fpm"]

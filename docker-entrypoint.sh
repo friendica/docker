@@ -17,14 +17,14 @@ version_greater() {
 }
 
 setup_ssmtp() {
-	if [ -n "${SITENAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
-		echo "Setup SSMTP for '$SITENAME' with '$SMTP' ..."
+	if [ -n "${FRIENDICA_SITENAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
+		echo "Setup SSMTP for '$FRIENDICA_SITENAME' with '$SMTP' ..."
 
 		smtp_from=${SMTP_FROM:-no-reply}
 
 		# Setup SSMTP
-		sed -i "s/:root:/:${SITENAME}:/g" /etc/passwd
-		sed -i "s/:Linux\ User:/:${SITENAME}:/g" /etc/passwd
+		sed -i "s/:root:/:${FRIENDICA_SITENAME}:/g" /etc/passwd
+		sed -i "s/:Linux\ User:/:${FRIENDICA_SITENAME}:/g" /etc/passwd
 
 		# add possible mail-senders
 		{
@@ -100,7 +100,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 			echo "New Friendica instance"
 
 			install=false
-			if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" -o -n "${MYSQL_USERNAME+x}" ] && [ -n ${FRIENDICA_ADMIN_MAIL+x} ]; then
+			if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" -o -n "${MYSQL_USERNAME+x}" ] && [ -n "${FRIENDICA_ADMIN_MAIL+x}" ] && [ -n "${FRIENDICA_URL+x}" ]; then
 				echo "Installation with environment variables"
 
 				FRIENDICA_PHP_PATH=${FRIENDICA_PHP_PATH:-/usr/local/php}
@@ -117,30 +117,28 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 				install_options='-s --dbhost "'$MYSQL_HOST'" --dbport "'$MYSQL_PORT'" --dbdata "'$MYSQL_DATABASE'" --dbuser "'$MYSQL_USERNAMEFULL'" --dbpass "'$MYSQL_PASSWORD'"'
 
 				# shellcheck disable=SC2016
-				install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'"'
-				install=true
-			elif [ -f "/usr/src/config/local.config.php" ]; then
-				echo "Installation with prepared local.config.php"
-
-				install_options="-f /usr/src/local.config.php"
+				install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'" --url "'$FRIENDICA_URL'"'
 				install=true
 			fi
 
 			if [ "$install" = true ]; then
-				echo "Starting Friendica installation ..."
-				# TODO Let the database time to warm up - not winning a beauty contest
-				sleep 10s
-				run_as "php /var/www/html/bin/console.php autoinstall $install_options"
+				echo "Waiting for MySQL $MYSQL_HOST initialization..."
+        if /usr/local/bin/wait-for-connection "$MYSQL_HOST" "$MYSQL_PORT" 300; then
 
-				# TODO Workaround because of a strange permission issue
-				rm -fr /var/www/html/view/smarty3/compiled
+				  echo "Starting Friendica installation ..."
+          run_as "php /var/www/html/bin/console.php autoinstall $install_options"
 
-				# load other config files (*.config.php) to the config folder
-				if [ -d "/usr/src/config" ]; then
-					rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
-				fi
+          rm -fr /var/www/html/view/smarty3/compiled
 
-				echo "Installation finished"
+          # load other config files (*.config.php) to the config folder
+          if [ -d "/usr/src/config" ]; then
+            rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
+          fi
+
+          echo "Installation finished"
+        else
+          echo "[ERROR] Waited 300 seconds, no response" >&2
+        fi
 			else
 				echo "Running web-based installer on first connect!"
 			fi

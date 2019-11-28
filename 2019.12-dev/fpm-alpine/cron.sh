@@ -1,11 +1,12 @@
 #!/bin/sh
 trap "break;exit" HUP INT TERM
 
-while [ ! -f /var/www/html/config/local.ini.php ] && [ ! -f /var/www/html/config/local.config.php ]; do
+while [ ! -f /var/www/html/bin/daemon.php ]; do
     sleep 1
 done
 
-# TODO let the database and the autoinstall time to complete - not winning a beauty contest
-sleep 15s
-
-exec php /var/www/html/bin/daemon.php -f start
+echo "Waiting for MySQL $MYSQL_HOST initialization..."
+if /usr/local/bin/wait-for-connection "$MYSQL_HOST" "$MYSQL_PORT" 300; then
+  exec php /var/www/html/bin/daemon.php -f start
+  echo "[ERROR] Waited 300 seconds, no response" >&2
+fi

@@ -123,22 +123,22 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 			if [ "$install" = true ]; then
 				echo "Waiting for MySQL $MYSQL_HOST initialization..."
-        if /usr/local/bin/wait-for-connection "$MYSQL_HOST" "$MYSQL_PORT" 300; then
+				if /usr/local/bin/wait-for-connection "$MYSQL_HOST" "$MYSQL_PORT" 300; then
 
-				  echo "Starting Friendica installation ..."
-          run_as "php /var/www/html/bin/console.php autoinstall $install_options"
+					echo "Starting Friendica installation ..."
+					run_as "php /var/www/html/bin/console.php autoinstall $install_options"
 
-          rm -fr /var/www/html/view/smarty3/compiled
+					rm -fr /var/www/html/view/smarty3/compiled
 
-          # load other config files (*.config.php) to the config folder
-          if [ -d "/usr/src/config" ]; then
-            rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
-          fi
+					# load other config files (*.config.php) to the config folder
+					if [ -d "/usr/src/config" ]; then
+					  rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
+					fi
 
-          echo "Installation finished"
-        else
-          echo "[ERROR] Waited 300 seconds, no response" >&2
-        fi
+					echo "Installation finished"
+				else
+					echo "[ERROR] Waited 300 seconds, no response" >&2
+				fi
 			else
 				echo "Running web-based installer on first connect!"
 			fi

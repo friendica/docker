@@ -85,6 +85,7 @@ variants=(
 versions=(
     2019.09
     2019.12-dev
+    2019.12-rc
 )
 
 travisEnv=

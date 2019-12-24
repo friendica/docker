@@ -1,43 +1,36 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-apache-stretch
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:7.3-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
+    apk add --no-cache \
         rsync \
-        bzip2 \
         git \
 # For mail() support
-        ssmtp \
-    ; \
-    rm -rf /var/lib/apt/lists/*;
+        ssmtp;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/
 RUN set -ex; \
     \
-    savedAptMark="$(apt-mark showmanual)"; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
+    apk add -U --no-cache --virtual .build-deps \
         mysql-client \
         bash \
         $PHPIZE_DEPS \
         libpng-dev \
-        libjpeg62-turbo-dev \
+        libjpeg-turbo-dev \
+        imagemagick-dev \
         libtool \
-        libmagick++-dev \
         libmemcached-dev \
-        libgraphicsmagick1-dev \
-        libfreetype6-dev \
-        librsvg2-2 \
+        cyrus-sasl-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
+        librsvg \
+        pcre-dev \
         libzip-dev \
-        libldap2-dev \
+        icu-dev \
+        openldap-dev \
     ; \
-    \
-        debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     docker-php-ext-configure gd \
         --with-gd \
@@ -45,45 +38,37 @@ RUN set -ex; \
         --with-png-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
     ; \
-    docker-php-ext-configure ldap \
-        	--with-libdir=lib/$debMultiarch/ \
-	; \
+    \
     docker-php-ext-install -j "$(nproc)" \
-        pdo_mysql \
-        gd \
-        zip \
-        opcache \
-        ctype \
-        pcntl \
-        ldap \
+       pdo_mysql \
+       gd \
+       zip \
+       opcache \
+       pcntl \
+       ldap \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install apcu-5.1.18; \
+    pecl install APCu-5.1.18; \
     pecl install memcached-3.1.5; \
     pecl install redis-5.1.1; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
-        apcu \
+    	apcu \
         memcached \
         redis \
         imagick \
     ; \
     \
-# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-    apt-mark auto '.*' > /dev/null; \
-    apt-mark manual $savedAptMark; \
-    ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-      | awk '/=>/ { print $3 }' \
-      | sort -u \
-      | xargs -r dpkg-query -S \
-      | cut -d: -f1 \
-      | sort -u \
-      | xargs -rt apt-mark manual; \
-    \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-    rm -rf /var/lib/apt/lists/*
+    runDeps="$( \
+      scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+          | tr ',' '\n' \
+          | sort -u \
+          | awk 'system("[ -e /usr/local/lib" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )"; \
+    apk add --virtual .friendica-phpext-rundeps $runDeps; \
+    apk del .build-deps;
 
 # set recommended PHP.ini settings
 RUN set -ex; \
@@ -110,18 +95,9 @@ RUN set -ex; \
 
 VOLUME /var/www/html
 
-RUN set -ex;\
-    a2enmod rewrite remoteip ;\
-    {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-    } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
 
-ENV FRIENDICA_VERSION 2019.12-dev
-ENV FRIENDICA_ADDONS 2019.12-dev
+ENV FRIENDICA_VERSION 2020.03-dev
+ENV FRIENDICA_ADDONS 2020.03-dev
 
 
 COPY *.sh upgrade.exclude /
@@ -129,4 +105,4 @@ COPY config/* /usr/src/friendica/config/
 COPY bin/* /usr/local/bin/
 
 ENTRYPOINT ["/entrypoint-dev.sh"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]

@@ -28,16 +28,16 @@ setup_ssmtp() {
 
 		# add possible mail-senders
 		{
-		 echo "www-data:$smtp_from@$HOSTNAME:$SMTP" ;
-		 echo "root::$smtp_from@$HOSTNAME:$SMTP" ;
-		} > /etc/ssmtp/revaliases;
+		 echo "www-data:$smtp_from@$HOSTNAME:$SMTP"
+		 echo "root::$smtp_from@$HOSTNAME:$SMTP"
+		} > /etc/ssmtp/revaliases
 
 		# replace ssmtp.conf settings
 		{
-		 echo "root=:$smtp_from@$HOSTNAME" ;
-		 echo "hostname=$HOSTNAME" ;
-		 echo "mailhub=$SMTP" ;
-		 echo "FromLineOverride=YES" ;
+		 echo "root=:$smtp_from@$HOSTNAME"
+		 echo "hostname=$HOSTNAME"
+		 echo "mailhub=$SMTP"
+		 echo "FromLineOverride=YES"
 		 if [ -n "${SMTP_TLS+x}" ]; then echo "UseTLS=$SMTP_TLS"; fi
 		 if [ -n "${SMTP_STARTTLS+x}" ]; then echo "UseSTARTTLS=$SMTP_STARTTLS"; fi
 		 if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "AuthUser=$SMTP_AUTH_USER"; fi
@@ -60,8 +60,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 	# no downgrading possible
 	if version_greater "$installed_version" "$image_version"; then
-		echo 'Can'\''t copy Friendica sources because the version of the data ('$installed_version') is higher than the docker image ('$image_version')', 0
-		exit 1;
+		echo "Can't copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ($image_version)"
+		exit 1
 	fi
 
 	setup_ssmtp

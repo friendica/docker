@@ -100,21 +100,15 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 			echo "New Friendica instance"
 
 			install=false
-			if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" -o -n "${MYSQL_USERNAME+x}" ] && [ -n "${FRIENDICA_ADMIN_MAIL+x}" ] && [ -n "${FRIENDICA_URL+x}" ]; then
+			if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${FRIENDICA_ADMIN_MAIL+x}" ] && [ -n "${FRIENDICA_URL+x}" ]; then
 				echo "Installation with environment variables"
 
-				FRIENDICA_PHP_PATH=${FRIENDICA_PHP_PATH:-/usr/local/php}
 				FRIENDICA_TZ=${FRIENDICA_TZ:-America/LosAngeles}
 				FRIENDICA_LANG=${FRIENDICA_LANG:-en}
 				MYSQL_PORT=${MYSQL_PORT:-3306}
-				if [ -n "${MYSQL_USER+x}" ]; then
-					MYSQL_USERNAMEFULL=${MYSQL_USER}
-				else
-					MYSQL_USERNAMEFULL=${MYSQL_USERNAME}
-				fi
 
 				# shellcheck disable=SC2016
-				install_options='-s --dbhost "'$MYSQL_HOST'" --dbport "'$MYSQL_PORT'" --dbdata "'$MYSQL_DATABASE'" --dbuser "'$MYSQL_USERNAMEFULL'" --dbpass "'$MYSQL_PASSWORD'"'
+				install_options='-s --dbhost "'$MYSQL_HOST'" --dbport "'$MYSQL_PORT'" --dbdata "'$MYSQL_DATABASE'" --dbuser "'$MYSQL_USER'" --dbpass "'$MYSQL_PASSWORD'"'
 
 				# shellcheck disable=SC2016
 				install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'" --url "'$FRIENDICA_URL'"'

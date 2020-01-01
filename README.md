@@ -34,7 +34,7 @@ The apache image contains a webserver and exposes port 80.
 To start the container type:
 
 ```console
-$ docker run -d -p 8080:80 --link some-mysql:mysql friendica/server
+$ docker run -d -p 8080:80 --network some-network friendica/server
 ```
 
 Now you can access the Friendica installation wizard at http://localhost:8080/ from your host system.
@@ -70,7 +70,6 @@ There are three options to enable the cron-job for Friendica:
 -	`FRIENDICA_URL` The Friendica URL path.
 -	`FRIENDICA_TZ` The default localization of the Friendica server.
 -	`FRIENDICA_LANG` The default language of the Friendica server.
--	`FRIENDICA_PHP_PATH` The path of the PHP binary.
 -	`FRIENDICA_SITENAME` The Sitename of the Friendica server.
 -	`FRIENDICA_NO_VALIDATION` If set to `true`, the URL and E-Mail validation will be disabled.
 -	`FRIENDICA_DATA` If set to `true`, the fileystem will be used instead of the DB backend.
@@ -82,8 +81,7 @@ There are three options to enable the cron-job for Friendica:
 -	`FRIENDICA_LOGLEVEL` (optional) The loglevel to log (Default: notice).
 
 **Database** (**required at installation**)
--	`MYSQL_USERNAME` Username for the database user using mysql.
--	`MYSQL_USER` Username for the database user using mariadb.
+-	`MYSQL_USER` Username for the database user using mysql / mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
@@ -121,7 +119,7 @@ The following environment variables are possible for the SMTP examples.
 
 ## Database settings
 
-You have to link a running database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup.
+You have to add the Friendica container to the same network as the running database container, e. g. `--network some-network`, and then use `mysql` as the database host on setup.
 
 ## Persistent data
 
@@ -139,6 +137,7 @@ Friendica:
 ```console
 $ docker run -d \
   -v friendica-vol-1:/var/www/html \
+  --network some-network
   friendica/server
 ```
 
@@ -149,6 +148,7 @@ Database:
 ```console
 $ docker run -d \
   -v mysql-vol-1:/var/lib/mysql \
+  --network some-network
   mariadb
 ```
 
@@ -163,7 +163,7 @@ To enable the automatic installation, there are two possibilities:
 You have to set at least the following environment variables (others are optional).
 
 -	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
--	`MYSQL_USERNAME` or `MYSQL_USER` Username for the database user using mysql/mariadb.
+-	`MYSQL_USER` Username for the database user using mysql / mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.

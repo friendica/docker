@@ -66,8 +66,8 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 	setup_ssmtp
 
-	# check it just in case the version is greater
-	if version_greater "$image_version" "$installed_version"; then
+	# check it just in case the version is greater or if we force the upgrade
+	if version_greater "$image_version" "$installed_version" || [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then
 		echo "Initializing Friendica $image_version ..."
 
 		if [ "$installed_version" != "0.0.0.0" ]; then

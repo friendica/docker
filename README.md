@@ -34,7 +34,7 @@ The apache image contains a webserver and exposes port 80.
 To start the container type:
 
 ```console
-$ docker run -d -p 8080:80 --link some-mysql:mysql friendica/server
+$ docker run -d -p 8080:80 --network some-network friendica/server
 ```
 
 Now you can access the Friendica installation wizard at http://localhost:8080/ from your host system.
@@ -119,7 +119,7 @@ The following environment variables are possible for the SMTP examples.
 
 ## Database settings
 
-You have to link a running database container, e. g. `--link my-mysql:mysql`, and then use `mysql` as the database host on setup.
+You have to add the Friendica container to the same network as the running database container, e. g. `--network some-network`, and then use `mysql` as the database host on setup.
 
 ## Persistent data
 
@@ -137,6 +137,7 @@ Friendica:
 ```console
 $ docker run -d \
   -v friendica-vol-1:/var/www/html \
+  --network some-network
   friendica/server
 ```
 
@@ -147,6 +148,7 @@ Database:
 ```console
 $ docker run -d \
   -v mysql-vol-1:/var/lib/mysql \
+  --network some-network
   mariadb
 ```
 

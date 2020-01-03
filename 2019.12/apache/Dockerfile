@@ -24,7 +24,6 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         mysql-client \
         bash \
-        $PHPIZE_DEPS \
         libpng-dev \
         libjpeg62-turbo-dev \
         libtool \

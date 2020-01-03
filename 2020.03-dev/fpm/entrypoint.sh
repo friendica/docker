@@ -23,8 +23,8 @@ setup_ssmtp() {
 		smtp_from=${SMTP_FROM:-no-reply}
 
 		# Setup SSMTP
-		sed -i "s/:root:/:${FRIENDICA_SITENAME}:/g" /etc/passwd
-		sed -i "s/:Linux\ User:/:${FRIENDICA_SITENAME}:/g" /etc/passwd
+		usermod --comment "$(echo "${FRIENDICA_SITENAME}" | tr -dc '[:alnum:]')" root
+		usermod --comment "$(echo "${FRIENDICA_SITENAME}" | tr -dc '[:alnum:]')" www-data
 
 		# add possible mail-senders
 		{

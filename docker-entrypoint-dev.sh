@@ -66,4 +66,4 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 	fi
 fi
 
-/entrypoint.sh "$@"
+exec /entrypoint.sh "$@"

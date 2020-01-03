@@ -7,7 +7,8 @@ RUN set -ex; \
         rsync \
         git \
 # For mail() support
-        ssmtp;
+        ssmtp \
+        shadow;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/

@@ -17,14 +17,15 @@ version_greater() {
 }
 
 setup_ssmtp() {
-	if [ -n "${FRIENDICA_SITENAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
-		echo "Setup SSMTP for '$FRIENDICA_SITENAME' with '$SMTP' ..."
+	if [ -n "${HOSTNAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
+		SITENAME="${FRIENDICA_SITENAME:-Friendica Social Network}"
+		echo "Setup SSMTP for '$SITENAME' with '$SMTP' ..."
 
 		smtp_from=${SMTP_FROM:-no-reply}
 
 		# Setup SSMTP
-		usermod --comment "$(echo "${FRIENDICA_SITENAME}" | tr -dc '[:alnum:]')" root
-		usermod --comment "$(echo "${FRIENDICA_SITENAME}" | tr -dc '[:alnum:]')" www-data
+		usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" root
+		usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" www-data
 
 		# add possible mail-senders
 		{
@@ -117,7 +118,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 			if [ "$install" = true ]; then
 				echo "Waiting for MySQL $MYSQL_HOST initialization..."
-				if /var/www/html/bin/wait-for-connection "$MYSQL_HOST" "${MYSQL_PORT:-3306}" 300; then
+				if run_as "php /var/www/html/bin/wait-for-connection $MYSQL_HOST ${MYSQL_PORT:-3306} 300"; then
 
 					echo "Starting Friendica installation ..."
 					run_as "php /var/www/html/bin/console.php autoinstall $install_options"

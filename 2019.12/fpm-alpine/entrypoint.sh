@@ -118,7 +118,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
 			if [ "$install" = true ]; then
 				echo "Waiting for MySQL $MYSQL_HOST initialization..."
-				if run_as "php /var/www/html/bin/wait-for-connection $MYSQL_HOST ${MYSQL_PORT:-3306}" 300; then
+				if run_as "php /var/www/html/bin/wait-for-connection $MYSQL_HOST ${MYSQL_PORT:-3306} 300"; then
 
 					echo "Starting Friendica installation ..."
 					run_as "php /var/www/html/bin/console.php autoinstall $install_options"

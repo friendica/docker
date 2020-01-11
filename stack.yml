@@ -13,7 +13,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
 
   app:
-    image: friendica/server:dev-apache
+    image: friendica:apache
     restart: always
     ports:
       - 8080:80
@@ -32,7 +32,7 @@ services:
       - db
 
   cron:
-    image: friendica/server:dev-apache
+    image: friendica:apache
     restart: always
     volumes:
       - friendica:/var/www/html

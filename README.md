@@ -1,8 +1,3 @@
-# Docker Image for Friendica
-[![Build Status Travis](https://travis-ci.org/friendica/docker.svg?branch=master)](https://travis-ci.org/friendica/docker)
-
-This repository holds the official Docker Image for [Friendica](https://friendi.ca)
-
 # What is Friendica?
 
 Friendica is a decentralised communications platform that integrates social communication.
@@ -12,7 +7,7 @@ Our platform links to independent social projects and corporate services.
 
 # How to use this image
 
-The images are designed to be used in a micro-service environment.		
+The images are designed to be used in a micro-service environment.
 There are two types of the image you can choose from.
 
 The `apache` tag contains a full Friendica installation including an apache web server.
@@ -23,8 +18,7 @@ The second option is a `fpm` container.
 It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Friendica server.
 To use this image it must be combined with any Webserver that can proxy the http requests to the FastCGI-port of the container.
 
-[![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/nupplaphil/friendica-docker/fec33c98be957436279b7074ca08068b18622627/stack.yml)
-(Admin-E-Mail: `root@friendica.local`)
+[![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/friendica/docker/master/stack.yml) (Admin-E-Mail: `root@friendica.local`)
 
 ## Using the apache image
 
@@ -34,7 +28,7 @@ The apache image contains a webserver and exposes port 80.
 To start the container type:
 
 ```console
-$ docker run -d -p 8080:80 --network some-network friendica/server
+$ docker run -d -p 8080:80 --network some-network friendica
 ```
 
 Now you can access the Friendica installation wizard at http://localhost:8080/ from your host system.
@@ -45,11 +39,11 @@ To use the fpm image you need an additional web server that can proxy http-reque
 For fpm connection this container exposes port 9000.
 In most cases you might want use another container or your host as proxy.
 If you use your host you can address your Friendica container directly on port 9000.
-If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file).
+If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file). 
 In both cases you don't want to map the fpm port to you host.
 
 ```console
-$ docker run -d friendica/server:fpm
+$ docker run -d friendica:fpm
 ```
 
 As the fastCGI-Process is not capable of serving static files (style sheets, images, ...) the webserver needs access to these files.
@@ -67,7 +61,8 @@ There are three options to enable the cron-job for Friendica:
 ## Possible Environment Variables
 
 **Friendica Settings**
--	`FRIENDICA_URL` The Friendica URL path.
+
+-	`FRIENDICA_URL` The Friendica URL.
 -	`FRIENDICA_TZ` The default localization of the Friendica server.
 -	`FRIENDICA_LANG` The default language of the Friendica server.
 -	`FRIENDICA_SITENAME` The Sitename of the Friendica server.
@@ -76,11 +71,13 @@ There are three options to enable the cron-job for Friendica:
 -	`FRIENDICA_DATA_DIR` The data directory of the Friendica server (Default: /var/www/data).
 
 **Friendica Logging**
+
 -	`FRIENDICA_DEBUGGING` If set to `true`, the logging of Friendica is enabled.
 -	`FRIENDICA_LOGFILE` (optional) The path to the logfile (Default: /var/www/friendica.log).
 -	`FRIENDICA_LOGLEVEL` (optional) The loglevel to log (Default: notice).
 
 **Database** (**required at installation**)
+
 -	`MYSQL_USER` Username for the database user using mysql / mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
@@ -88,6 +85,7 @@ There are three options to enable the cron-job for Friendica:
 -	`MYSQL_PORT` Port of the database server using mysql / mariadb (Default: `3306`)
 
 **Lock Driver (Redis)**
+
 -	`REDIS_HOST` The hostname of the redis instance (in case of locking).
 -	`REDIS_PORT` (optional) The port of the redis instance (in case of locking).
 -	`REDIS_PW` (optional) The password for the redis instance (in case of locking).
@@ -126,7 +124,6 @@ You have to add the Friendica container to the same network as the running datab
 The Friendica installation and all data beyond what lives in the database (file uploads, etc) is stored in the [unnamed docker volume](https://docs.docker.com/engine/tutorials/dockervolumes/#adding-a-data-volume) volume `/var/www/html`.
 The docker daemon will store that data within the docker directory `/var/lib/docker/volumes/...`.
 That means your data is saved even if the container crashes, is stopped or deleted.
-
 To make your data persistent to upgrading and get access for backups is using named docker volume or mount a host folder.
 To achieve this you need one volume for your database container and Friendica.
 
@@ -138,7 +135,7 @@ Friendica:
 $ docker run -d \
   -v friendica-vol-1:/var/www/html \
   --network some-network
-  friendica/server
+  friendica
 ```
 
 Database:
@@ -156,22 +153,13 @@ $ docker run -d \
 
 The Friendica image supports auto configuration via environment variables.
 You can preconfigure everything that is asked on the install page on first run.
-To enable the automatic installation, there are two possibilities:
-
-### Environment Variables
-
-You have to set at least the following environment variables (others are optional).
+To enable the automatic installation, you have to the following environment variables:
 
 -	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
 -	`MYSQL_USER` Username for the database user using mysql / mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
-
-### Using a predefined config file
-
-You can create a `local.config.php` and `COPY` it to `/usr/src/config`.
-If no other environment variable is set, this `local.config.php` will get copied to the config path.
 
 # Maintenance of the image
 
@@ -214,7 +202,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
 
   app:
-    image: friendica/server
+    image: friendica
     restart: always
     volumes:
       - friendica:/var/www/html
@@ -251,8 +239,9 @@ An example can be found in the [examples section](https://github.com/friendica/d
 As this setup does **not include encryption** it should to be run behind a proxy.
 
 Prerequisites for this example:
-- Make sure to set the variable `MYSQL_PASSWORD` before you run the setup.
-- Create a `nginx.conf` in the same directory as the docker-compose.yml file (take it from [example](https://github.com/friendica/docker/tree/master/.examples/docker-compose/with-traefik-proxy/mariadb-cron-smtp/fpm/web/nginx.conf))
+
+-	Make sure to set the variable `MYSQL_PASSWORD` and `MYSQL_USER` before you run the setup.
+-	Create a `nginx.conf` in the same directory as the docker-compose.yml file (take it from [example](https://github.com/friendica/docker/tree/master/.examples/docker-compose/with-traefik-proxy/mariadb-cron-smtp/fpm/web/nginx.conf))
 
 ```yaml
 version: '2'
@@ -270,7 +259,7 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
 
   app:
-    image: friendica/server:fpm
+    image: friendica:fpm
     restart: always
     volumes:
       - friendica:/var/www/html    
@@ -306,6 +295,29 @@ networks:
 ```
 
 Then run `docker-compose up -d`, now you can access Friendica at http://localhost:8080/ from your system.
+
+# Special settings for DEV/RC images
+
+The `*-dev` and `*-rc` branches are having additional possibilities to get the latest sources of Friendica.
+
+## Possible Environment Variables
+
+The following environment variables are possible for these kind of images too:
+
+**Develop/Release Candidate Settings**
+
+-	`FRIENDICA_UPGRADE` If set to `true`, a develop or release candidat node will get updated at startup.
+-	`FRIENDICA_REPOSITORY` If set, a custom repository will be chosen (Default: `friendica`)
+-	`FRIENDICA_ADDONS_REPO` If set, a custom repository for the addons will be chosen (Default: `friendica`)
+-	`FRIENDICA_VERSION` If set, a custom branch will be chosen (Default is based on the chosen image version)
+-	`FRIENDICA_ADDONS` If set, a custom branch for the addons will be chosen (Default is based on the chosen image version)
+
+## Updating to a newer version
+
+You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
+Instead, the release candidate or develop branch will get updated if no installation was found or the environment variable `FRIENDICA_UPGRADE` is set to `true`.
+
+It will clone the latest Friendica version and copy it to your working directory.
 
 # Questions / Issues
 

@@ -29,7 +29,7 @@ if (getenv('FRIENDICA_LANG')) {
 }
 
 if (getenv('FRIENDICA_ADMIN_MAIL')) {
-	$config['config']['admin_mail'] = getenv('FRIENDICA_ADMIN_MAIL');
+	$config['config']['admin_email'] = getenv('FRIENDICA_ADMIN_MAIL');
 }
 
 if (getenv('FRIENDICA_SITENAME')) {

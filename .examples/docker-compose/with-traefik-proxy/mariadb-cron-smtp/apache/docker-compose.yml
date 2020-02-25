@@ -27,7 +27,6 @@ services:
       - db.env
     depends_on:
       - db
-    hostname: friendica.local
     labels:
       - "traefik.backend=friendica"
       - "traefik.frontend.entryPoints=https"
@@ -53,7 +52,6 @@ services:
       - db.env
     depends_on:
       - db
-    hostname: friendica.local
 
   proxy:
     build: ./proxy

@@ -27,7 +27,6 @@ services:
       - db.env
     depends_on:
       - db
-    hostname: friendica.local
 
   cron:
     build: ./app
@@ -40,7 +39,6 @@ services:
     depends_on:
       - db
       - app
-    hostname: friendica.local
 
   web:
     image: nginx

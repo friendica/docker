@@ -59,8 +59,4 @@ if (!empty(getenv('FRIENDICA_DEBUGGING'))) {
 	}
 }
 
-if (!empty(getenv('HOSTNAME'))) {
-	$config['config']['hostname'] = getenv('HOSTNAME');
-}
-
 return $config;

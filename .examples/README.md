@@ -55,7 +55,6 @@ Therefore you have to use adjust the `labels:` inside the `docker-compose.yml` t
 To use this example complete the following steps:
 
 1. open `docker-compose.yml`
-   1. insert your friendica domain behind `hostname:`
    2. insert your friendica domain at `traefik.friendica.rule=Host:friendica.local`
 2. choose a password for the database user in `db.env` behind `MYSQL_PASSWORD=`
 3. open `proxy/traefik.toml`

@@ -17,7 +17,7 @@ version_greater() {
 }
 
 setup_ssmtp() {
-	if [ -n "${HOSTNAME+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
+	if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
 		SITENAME="${FRIENDICA_SITENAME:-Friendica Social Network}"
 		echo "Setup SSMTP for '$SITENAME' with '$SMTP' ..."
 
@@ -29,14 +29,14 @@ setup_ssmtp() {
 
 		# add possible mail-senders
 		{
-		 echo "www-data:$smtp_from@$HOSTNAME:$SMTP"
-		 echo "root::$smtp_from@$HOSTNAME:$SMTP"
+		 echo "www-data:$smtp_from@$SMTP_DOMAIN:$SMTP"
+		 echo "root::$smtp_from@$SMTP_DOMAIN:$SMTP"
 		} > /etc/ssmtp/revaliases
 
 		# replace ssmtp.conf settings
 		{
-		 echo "root=:$smtp_from@$HOSTNAME"
-		 echo "hostname=$HOSTNAME"
+		 echo "root=:$smtp_from@$SMTP_DOMAIN"
+		 echo "hostname=$SMTP_DOMAIN"
 		 echo "mailhub=$SMTP"
 		 echo "FromLineOverride=YES"
 		 if [ -n "${SMTP_TLS+x}" ]; then echo "UseTLS=$SMTP_TLS"; fi

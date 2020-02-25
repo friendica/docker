@@ -31,7 +31,6 @@ services:
       - db.env
     depends_on:
       - db
-    hostname: friendica.local
     ports:
       - "80:80"
 
@@ -45,7 +44,6 @@ services:
       - db
     env_file:
       - db.env
-    hostname: friendica.local
 
 volumes:
   db:

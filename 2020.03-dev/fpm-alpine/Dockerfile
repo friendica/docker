@@ -8,7 +8,9 @@ RUN set -ex; \
         git \
 # For mail() support
         ssmtp \
-        shadow;
+        shadow \
+# Install tini for signal processing and zombie killing
+        tini;
 
 # install the PHP extensions we need
 # see https://friendi.ca/resources/requirements/

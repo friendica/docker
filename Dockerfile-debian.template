@@ -10,6 +10,8 @@ RUN set -ex; \
         git \
 # For mail() support
         ssmtp \
+# Install tini for signal processing and zombie killing
+        tini \
     ; \
     rm -rf /var/lib/apt/lists/*;
 

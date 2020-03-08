@@ -4,6 +4,7 @@ set -Eeuo pipefail
 declare -A release_channel=(
 	[stable]='2019.12'
 	[latest]='2019.12'
+	[rc]='2020.03'
 )
 
 self="$(basename "$BASH_SOURCE")"

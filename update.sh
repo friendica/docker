@@ -29,7 +29,14 @@ declare -A entrypoints=(
 )
 
 # Only for debian variant
-tini_version="0.18.0"
+tini_version="$(
+	git ls-remote --tags https://github.com/krallin/tini.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '.pre' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
 
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \

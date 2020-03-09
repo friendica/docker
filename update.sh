@@ -28,6 +28,16 @@ declare -A entrypoints=(
   [develop]='entrypoint-dev.sh'
 )
 
+# Only for debian variant
+tini_version="$(
+	git ls-remote --tags https://github.com/krallin/tini.git \
+		| cut -d/ -f3 \
+		| grep -vE -- '.pre' \
+		| sed -E 's/^v//' \
+		| sort -V \
+		| tail -1
+)"
+
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \
 		| cut -d/ -f3 \
@@ -122,6 +132,7 @@ function create_variant() {
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%ENTRYPOINT%%/'"${entrypoints[$install_type]}"'/g;
+		s/%%TINI_VERSION%%/'"${tini_version}"'/g;
 	' "$dir/Dockerfile"
 
 	for name in entrypoint cron; do

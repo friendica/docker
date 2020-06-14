@@ -56,8 +56,8 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     docker-php-ext-configure ldap \
-        	--with-libdir=lib/$debMultiarch/ \
-	; \
+        --with-libdir=lib/$debMultiarch/ \
+    ;\
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
         gd \
@@ -85,12 +85,12 @@ RUN set -ex; \
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-      | awk '/=>/ { print $3 }' \
-      | sort -u \
-      | xargs -r dpkg-query -S \
-      | cut -d: -f1 \
-      | sort -u \
-      | xargs -rt apt-mark manual; \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*

@@ -17,7 +17,7 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*;
 
 # Add tini for reaping processes
-ENV TINI_VERSION v0.18.0
+ENV TINI_VERSION v0.19.0
 RUN export BUILD_ARCH=$(dpkg-architecture --query DEB_BUILD_ARCH) \
  && curl -L -o /sbin/tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${BUILD_ARCH} \
  && curl -L -o /tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${BUILD_ARCH}.asc \
@@ -71,7 +71,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install apcu-5.1.18; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.2.1; \
+    pecl install redis-5.2.2; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \

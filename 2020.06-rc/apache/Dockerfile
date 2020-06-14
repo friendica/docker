@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-fpm-stretch
+FROM php:7.3-apache-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -120,13 +120,22 @@ RUN set -ex; \
 
 VOLUME /var/www/html
 
+RUN set -ex;\
+    a2enmod rewrite remoteip ;\
+    {\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+    } > /etc/apache2/conf-available/remoteip.conf;\
+    a2enconf remoteip
 
-ENV FRIENDICA_VERSION 2020.06-dev
-ENV FRIENDICA_ADDONS 2020.06-dev
+ENV FRIENDICA_VERSION 2020.06-rc
+ENV FRIENDICA_ADDONS 2020.06-rc
 
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
 ENTRYPOINT ["/entrypoint-dev.sh"]
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]

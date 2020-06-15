@@ -18,8 +18,8 @@ RUN set -ex; \
 # Add tini for reaping processes
 ENV TINI_VERSION v%%TINI_VERSION%%
 RUN export BUILD_ARCH=$(dpkg-architecture --query DEB_BUILD_ARCH) \
- && mkdir ~/.gnupg
- && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
+ && mkdir ~/.gnupg \
+ && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf \
  && curl -L -o /sbin/tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${BUILD_ARCH} \
  && curl -L -o /tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${BUILD_ARCH}.asc \
  && gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \

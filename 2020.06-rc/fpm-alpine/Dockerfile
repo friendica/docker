@@ -1,4 +1,5 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:7.3-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -50,10 +51,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-%%APCU_VERSION%%; \
-    pecl install memcached-%%MEMCACHED_VERSION%%; \
-    pecl install redis-%%REDIS_VERSION%%; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
+    pecl install APCu-5.1.18; \
+    pecl install memcached-3.1.5; \
+    pecl install redis-5.2.2; \
+    pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
         apcu \
@@ -95,16 +96,16 @@ RUN set -ex; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
-%%VARIANT_EXTRAS%%
 
-ENV FRIENDICA_VERSION %%VERSION%%
-ENV FRIENDICA_VERSION_YEAR %%VERSION_YEAR%%
-ENV FRIENDICA_VERSION_MONTH %%VERSION_MONTH%%
-ENV FRIENDICA_ADDONS %%VERSION%%
-%%INSTALL_EXTRAS%%
+
+ENV FRIENDICA_VERSION 2020.06-rc
+ENV FRIENDICA_VERSION_YEAR 2020
+ENV FRIENDICA_VERSION_MONTH 06-rc
+ENV FRIENDICA_ADDONS 2020.06-rc
+
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/%%ENTRYPOINT%%"]
-CMD ["%%CMD%%"]
+ENTRYPOINT ["/entrypoint-dev.sh"]
+CMD ["php-fpm"]

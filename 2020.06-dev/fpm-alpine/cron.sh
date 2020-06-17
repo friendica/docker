@@ -2,7 +2,7 @@
 trap "break;exit" HUP INT TERM
 
 while [ ! -f /var/www/html/bin/daemon.php ]; do
-    sleep 1
+  sleep 1
 done
 
 echo "Waiting for MySQL $MYSQL_HOST initialization..."

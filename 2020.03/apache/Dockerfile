@@ -17,8 +17,10 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*;
 
 # Add tini for reaping processes
-ENV TINI_VERSION v0.18.0
+ENV TINI_VERSION v0.19.0
 RUN export BUILD_ARCH=$(dpkg-architecture --query DEB_BUILD_ARCH) \
+ && mkdir ~/.gnupg \
+ && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf \
  && curl -L -o /sbin/tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${BUILD_ARCH} \
  && curl -L -o /tini.asc https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${BUILD_ARCH}.asc \
  && gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
@@ -56,8 +58,8 @@ RUN set -ex; \
         --with-jpeg-dir=/usr/include/ \
     ; \
     docker-php-ext-configure ldap \
-        	--with-libdir=lib/$debMultiarch/ \
-	; \
+        --with-libdir=lib/$debMultiarch/ \
+    ;\
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
         gd \
@@ -71,7 +73,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install apcu-5.1.18; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.2.1; \
+    pecl install redis-5.2.2; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
@@ -85,12 +87,12 @@ RUN set -ex; \
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-      | awk '/=>/ { print $3 }' \
-      | sort -u \
-      | xargs -r dpkg-query -S \
-      | cut -d: -f1 \
-      | sort -u \
-      | xargs -rt apt-mark manual; \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual; \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*
@@ -131,22 +133,23 @@ RUN set -ex;\
     a2enconf remoteip
 
 ENV FRIENDICA_VERSION 2020.03
+ENV FRIENDICA_VERSION_YEAR 2020
+ENV FRIENDICA_VERSION_MONTH 03
 ENV FRIENDICA_ADDONS 2020.03
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
-        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \
+        "https://friendi.ca/wp-content/uploads/${FRIENDICA_VERSION_YEAR}/${FRIENDICA_VERSION_MONTH}/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
     tar -xzf friendica.tar.gz -C /usr/src/; \
     rm friendica.tar.gz; \
-    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     curl -fsSL -o friendica_addons.tar.gz \
         "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \
     mkdir -p /usr/src/friendica/proxy; \
     mkdir -p /usr/src/friendica/addon; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica_addons.tar.gz; \
-    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;
+    rm friendica_addons.tar.gz;
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/

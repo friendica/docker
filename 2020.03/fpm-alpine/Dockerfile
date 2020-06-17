@@ -42,32 +42,32 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-install -j "$(nproc)" \
-       pdo_mysql \
-       gd \
-       zip \
-       opcache \
-       pcntl \
-       ldap \
+        pdo_mysql \
+        gd \
+        zip \
+        opcache \
+        pcntl \
+        ldap \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.18; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.2.1; \
+    pecl install redis-5.2.2; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
-    	apcu \
+        apcu \
         memcached \
         redis \
         imagick \
     ; \
     \
     runDeps="$( \
-      scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
-          | tr ',' '\n' \
-          | sort -u \
-          | awk 'system("[ -e /usr/local/lib" $1 " ]") == 0 { next } { print "so:" $1 }' \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
     apk add --no-network --virtual .friendica-phpext-rundeps $runDeps; \
     apk del --no-network .build-deps;
@@ -99,22 +99,23 @@ VOLUME /var/www/html
 
 
 ENV FRIENDICA_VERSION 2020.03
+ENV FRIENDICA_VERSION_YEAR 2020
+ENV FRIENDICA_VERSION_MONTH 03
 ENV FRIENDICA_ADDONS 2020.03
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
-        "https://github.com/friendica/friendica/archive/${FRIENDICA_VERSION}.tar.gz"; \
+        "https://friendi.ca/wp-content/uploads/${FRIENDICA_VERSION_YEAR}/${FRIENDICA_VERSION_MONTH}/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
     tar -xzf friendica.tar.gz -C /usr/src/; \
     rm friendica.tar.gz; \
-    mv -f /usr/src/friendica-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     curl -fsSL -o friendica_addons.tar.gz \
         "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \
     mkdir -p /usr/src/friendica/proxy; \
     mkdir -p /usr/src/friendica/addon; \
     tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica_addons.tar.gz; \
-    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica;
+    rm friendica_addons.tar.gz;
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/

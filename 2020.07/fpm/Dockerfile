@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-apache-stretch
+FROM php:7.3-fpm-stretch
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -73,7 +73,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install apcu-5.1.18; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.2.2; \
+    pecl install redis-5.3.1; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
@@ -122,20 +122,11 @@ RUN set -ex; \
 
 VOLUME /var/www/html
 
-RUN set -ex;\
-    a2enmod rewrite remoteip ;\
-    {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-    } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
 
-ENV FRIENDICA_VERSION 2020.03
+ENV FRIENDICA_VERSION 2020.07
 ENV FRIENDICA_VERSION_YEAR 2020
-ENV FRIENDICA_VERSION_MONTH 03
-ENV FRIENDICA_ADDONS 2020.03
+ENV FRIENDICA_VERSION_MONTH 07
+ENV FRIENDICA_ADDONS 2020.07
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
@@ -155,4 +146,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]

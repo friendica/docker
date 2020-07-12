@@ -73,7 +73,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install apcu-5.1.18; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.2.2; \
+    pecl install redis-5.3.1; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
@@ -123,10 +123,10 @@ RUN set -ex; \
 VOLUME /var/www/html
 
 
-ENV FRIENDICA_VERSION 2020.06-dev
+ENV FRIENDICA_VERSION 2020.09-dev
 ENV FRIENDICA_VERSION_YEAR 2020
-ENV FRIENDICA_VERSION_MONTH 06-dev
-ENV FRIENDICA_ADDONS 2020.06-dev
+ENV FRIENDICA_VERSION_MONTH 09-dev
+ENV FRIENDICA_ADDONS 2020.09-dev
 
 
 COPY *.sh upgrade.exclude /

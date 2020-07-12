@@ -55,32 +55,23 @@ jobs:
         - ./.travis/test-entrypoint.sh
 
     - stage: test images (amd64)
-      env: VERSION=2020.06-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2020.06-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=2020.06-rc VARIANT=apache ARCH=amd64
-    - env: VERSION=2020.06-dev VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2020.06-dev VARIANT=fpm ARCH=amd64
-    - env: VERSION=2020.06-dev VARIANT=apache ARCH=amd64
-    - env: VERSION=2020.03 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2020.03 VARIANT=fpm ARCH=amd64
-    - env: VERSION=2020.03 VARIANT=apache ARCH=amd64
+      env: VERSION=2020.09-dev VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2020.09-dev VARIANT=fpm ARCH=amd64
+    - env: VERSION=2020.09-dev VARIANT=apache ARCH=amd64
+    - env: VERSION=2020.07 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2020.07 VARIANT=fpm ARCH=amd64
+    - env: VERSION=2020.07 VARIANT=apache ARCH=amd64
 
     - stage: test images (full)
-      env: VERSION=2020.06-rc VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2020.06-rc VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2020.06-rc VARIANT=fpm ARCH=amd64
-    - env: VERSION=2020.06-rc VARIANT=fpm ARCH=i386
-    - env: VERSION=2020.06-rc VARIANT=apache ARCH=amd64
-    - env: VERSION=2020.06-rc VARIANT=apache ARCH=i386
-    - env: VERSION=2020.06-dev VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2020.06-dev VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2020.06-dev VARIANT=fpm ARCH=amd64
-    - env: VERSION=2020.06-dev VARIANT=fpm ARCH=i386
-    - env: VERSION=2020.06-dev VARIANT=apache ARCH=amd64
-    - env: VERSION=2020.06-dev VARIANT=apache ARCH=i386
-    - env: VERSION=2020.03 VARIANT=fpm-alpine ARCH=amd64
-    - env: VERSION=2020.03 VARIANT=fpm-alpine ARCH=i386
-    - env: VERSION=2020.03 VARIANT=fpm ARCH=amd64
-    - env: VERSION=2020.03 VARIANT=fpm ARCH=i386
-    - env: VERSION=2020.03 VARIANT=apache ARCH=amd64
-    - env: VERSION=2020.03 VARIANT=apache ARCH=i386
+      env: VERSION=2020.09-dev VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2020.09-dev VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=2020.09-dev VARIANT=fpm ARCH=amd64
+    - env: VERSION=2020.09-dev VARIANT=fpm ARCH=i386
+    - env: VERSION=2020.09-dev VARIANT=apache ARCH=amd64
+    - env: VERSION=2020.09-dev VARIANT=apache ARCH=i386
+    - env: VERSION=2020.07 VARIANT=fpm-alpine ARCH=amd64
+    - env: VERSION=2020.07 VARIANT=fpm-alpine ARCH=i386
+    - env: VERSION=2020.07 VARIANT=fpm ARCH=amd64
+    - env: VERSION=2020.07 VARIANT=fpm ARCH=i386
+    - env: VERSION=2020.07 VARIANT=apache ARCH=amd64
+    - env: VERSION=2020.07 VARIANT=apache ARCH=i386

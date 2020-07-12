@@ -124,13 +124,11 @@ VOLUME /var/www/html
 
 
 ENV FRIENDICA_VERSION 2020.07
-ENV FRIENDICA_VERSION_YEAR 2020
-ENV FRIENDICA_VERSION_MONTH 07
 ENV FRIENDICA_ADDONS 2020.07
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
-        "https://friendi.ca/wp-content/uploads/${FRIENDICA_VERSION_YEAR}/${FRIENDICA_VERSION_MONTH}/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
+        "https://github.com/friendica/friendica/releases/download/${FRIENDICA_VERSION}/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
     tar -xzf friendica.tar.gz -C /usr/src/; \
     rm friendica.tar.gz; \
     mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \

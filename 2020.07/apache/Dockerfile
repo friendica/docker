@@ -35,7 +35,7 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        mysql-client \
+        mariadb-client \
         bash \
         libpng-dev \
         libjpeg62-turbo-dev \

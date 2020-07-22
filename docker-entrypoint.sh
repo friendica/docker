@@ -50,6 +50,8 @@ setup_ssmtp() {
   fi
 }
 
+setup_ssmtp
+
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
   installed_version="0.0.0.0"
@@ -64,8 +66,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     echo "Can't copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ($image_version)"
     exit 1
   fi
-
-  setup_ssmtp
 
   # check it just in case the version is greater or if we force the upgrade
   if version_greater "$image_version" "$installed_version" || [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then

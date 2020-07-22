@@ -7,50 +7,53 @@ run_as() {
   if [ "$(id -u)" -eq 0 ]; then
     su - www-data -s /bin/sh "$@"
   else
-    sh  "$@"
+    sh "$@"
   fi
 }
 
 # checks if the the first parameter is greater than the second parameter
 version_greater() {
-  [ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2  | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
+  [ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2 | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
 }
 
-setup_ssmtp() {
+setup_msmtp() {
   if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
     SITENAME="${FRIENDICA_SITENAME:-Friendica Social Network}"
-    echo "Setup SSMTP for '$SITENAME' with '$SMTP' ..."
+    echo "Setup MSMTP for '$SITENAME' with '$SMTP' ..."
 
-    smtp_from=${SMTP_FROM:-no-reply}
+    smtp_from="${SMTP_FROM:=no-reply}"
 
-    # Setup SSMTP
+    # Setup MSMTP
     usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" root
     usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" www-data
 
     # add possible mail-senders
     {
-     echo "www-data:$smtp_from@$SMTP_DOMAIN:$SMTP"
-     echo "root::$smtp_from@$SMTP_DOMAIN:$SMTP"
-    } > /etc/ssmtp/revaliases
+      echo "www-data: $smtp_from@$SMTP_DOMAIN"
+      echo "root: $smtp_from@$SMTP_DOMAIN"
+    } >/etc/aliases
 
-    # replace ssmtp.conf settings
+    # create msmtp settings
     {
-     echo "root=:$smtp_from@$SMTP_DOMAIN"
-     echo "hostname=$SMTP_DOMAIN"
-     echo "mailhub=$SMTP"
-     echo "FromLineOverride=YES"
-     if [ -n "${SMTP_TLS+x}" ]; then echo "UseTLS=$SMTP_TLS"; fi
-     if [ -n "${SMTP_STARTTLS+x}" ]; then echo "UseSTARTTLS=$SMTP_STARTTLS"; fi
-     if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "AuthUser=$SMTP_AUTH_USER"; fi
-     if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "AuthPass=$SMTP_AUTH_PASS";fi
-     if [ -n "${SMTP_AUTH_METHOD+x}" ]; then echo "AuthMethod=$SMTP_AUTH_METHOD"; fi
-    } > /etc/ssmtp/ssmtp.conf
+      echo "account default"
+      echo "host $SMTP_DOMAIN"
+      if [ -n "${SMTP_PORT+x}" ]; then echo "port $SMTP_PORT"; else echo "port 587"; fi
+      echo "from $smtp_from@$SMTP_DOMAIN"
+      echo "tls_certcheck off" # No certcheck because of internal docker mail-hostnames
+      if [ -n "${SMTP_TLS+x}" ]; then echo "tls on"; fi
+      if [ -n "${SMTP_STARTTLS+x}" ]; then echo "tls_starttls on"; fi
+      if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "auth on"; fi
+      if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "user $SMTP_AUTH_USER"; fi
+      if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "password $SMTP_AUTH_PASS"; fi
+      echo "logfile /var/log/msmtp.log"
+      echo "aliases /etc/aliases"
+    } >/etc/msmtprc
 
     echo "Setup finished"
   fi
 }
 
-setup_ssmtp
+setup_msmtp
 
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then

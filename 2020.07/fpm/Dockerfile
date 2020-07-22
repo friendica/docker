@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-fpm-stretch
+FROM php:7.3-fpm-buster
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -10,7 +10,7 @@ RUN set -ex; \
         bzip2 \
         git \
 # For mail() support
-        ssmtp \
+        msmtp \
 # For tini installation
         gnupg dirmngr \
     ; \
@@ -35,7 +35,7 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        mysql-client \
+        mariadb-client \
         bash \
         libpng-dev \
         libjpeg62-turbo-dev \
@@ -109,7 +109,7 @@ RUN set -ex; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
-        echo sendmail_path = "/usr/sbin/sendmail -t -i"; \
+        echo sendmail_path = "/usr/bin/msmtp -t"; \
     } > /usr/local/etc/php/conf.d/sendmail.ini; \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \

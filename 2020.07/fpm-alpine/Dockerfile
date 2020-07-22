@@ -7,7 +7,7 @@ RUN set -ex; \
         rsync \
         git \
 # For mail() support
-        ssmtp \
+        msmtp \
         shadow \
         tini;
 
@@ -16,7 +16,7 @@ RUN set -ex; \
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
-        mysql-client \
+        mariadb-client \
         bash \
         $PHPIZE_DEPS \
         libpng-dev \
@@ -84,7 +84,7 @@ RUN set -ex; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
-        echo sendmail_path = "/usr/sbin/sendmail -t -i"; \
+        echo sendmail_path = "/usr/bin/msmtp -t"; \
     } > /usr/local/etc/php/conf.d/sendmail.ini; \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \

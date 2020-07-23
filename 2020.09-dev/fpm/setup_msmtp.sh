@@ -22,13 +22,13 @@ if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost"
     echo "account default"
     echo "host $SMTP"
     if [ -n "${SMTP_PORT+x}" ]; then echo "port $SMTP_PORT"; else echo "port 587"; fi
-    echo "from $smtp_from@$SMTP_DOMAIN"
+    echo "from \"$smtp_from@$SMTP_DOMAIN\""
     echo "tls_certcheck off" # No certcheck because of internal docker mail-hostnames
     if [ -n "${SMTP_TLS+x}" ]; then echo "tls on"; fi
     if [ -n "${SMTP_STARTTLS+x}" ]; then echo "tls_starttls on"; fi
     if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "auth on"; fi
-    if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "user $SMTP_AUTH_USER"; fi
-    if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "password $SMTP_AUTH_PASS"; fi
+    if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "user \"$SMTP_AUTH_USER\""; fi
+    if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "password \"$SMTP_AUTH_PASS\""; fi
     echo "logfile /var/log/msmtp.log"
     echo "aliases /etc/aliases"
   } >/etc/msmtprc

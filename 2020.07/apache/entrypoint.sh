@@ -36,7 +36,7 @@ setup_msmtp() {
     # create msmtp settings
     {
       echo "account default"
-      echo "host $SMTP_DOMAIN"
+      echo "host $SMTP"
       if [ -n "${SMTP_PORT+x}" ]; then echo "port $SMTP_PORT"; else echo "port 587"; fi
       echo "from $smtp_from@$SMTP_DOMAIN"
       echo "tls_certcheck off" # No certcheck because of internal docker mail-hostnames

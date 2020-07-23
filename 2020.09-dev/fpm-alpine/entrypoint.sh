@@ -16,44 +16,7 @@ version_greater() {
   [ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2 | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
 }
 
-setup_msmtp() {
-  if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost" ]; then
-    SITENAME="${FRIENDICA_SITENAME:-Friendica Social Network}"
-    echo "Setup MSMTP for '$SITENAME' with '$SMTP' ..."
-
-    smtp_from="${SMTP_FROM:=no-reply}"
-
-    # Setup MSMTP
-    usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" root
-    usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" www-data
-
-    # add possible mail-senders
-    {
-      echo "www-data: $smtp_from@$SMTP_DOMAIN"
-      echo "root: $smtp_from@$SMTP_DOMAIN"
-    } >/etc/aliases
-
-    # create msmtp settings
-    {
-      echo "account default"
-      echo "host $SMTP"
-      if [ -n "${SMTP_PORT+x}" ]; then echo "port $SMTP_PORT"; else echo "port 587"; fi
-      echo "from $smtp_from@$SMTP_DOMAIN"
-      echo "tls_certcheck off" # No certcheck because of internal docker mail-hostnames
-      if [ -n "${SMTP_TLS+x}" ]; then echo "tls on"; fi
-      if [ -n "${SMTP_STARTTLS+x}" ]; then echo "tls_starttls on"; fi
-      if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "auth on"; fi
-      if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "user $SMTP_AUTH_USER"; fi
-      if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "password $SMTP_AUTH_PASS"; fi
-      echo "logfile /var/log/msmtp.log"
-      echo "aliases /etc/aliases"
-    } >/etc/msmtprc
-
-    echo "Setup finished"
-  fi
-}
-
-setup_msmtp
+sh /setup_msmtp.sh
 
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then

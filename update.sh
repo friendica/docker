@@ -97,9 +97,6 @@ versions=(
   2020.09-dev
 )
 
-travisEnv=
-travisEnvAmd64=
-
 function create_variant() {
   dockerName=${1,,}
   dir="$dockerName/$variant"
@@ -146,11 +143,6 @@ function create_variant() {
   cp upgrade.exclude "$dir/"
 
   cp -rT .config "$dir/config"
-
-  travisEnvAmd64='\n    - env: VERSION='"$dockerName"' VARIANT='"$variant"' ARCH=amd64'"$travisEnvAmd64"
-  for arch in i386 amd64; do
-    travisEnv='\n    - env: VERSION='"$dockerName"' VARIANT='"$variant"' ARCH='"$arch$travisEnv"
-  done
 }
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\(\.\|\-\)[[:digit:]]\+\(-rc\|-dev\)\?' -exec rm -r '{}' \;
@@ -161,15 +153,3 @@ for version in "${versions[@]}"; do
     create_variant "$version"
   done
 done
-
-# replace the fist '-' with ' '
-travisEnv="$(echo "$travisEnv" | sed '0,/-/{s/-/ /}')"
-travisEnvAmd64="$(echo "$travisEnvAmd64" | sed '0,/-/{s/-/ /}')"
-
-# update .travis.yml
-travisAmd64="$(awk -v 'RS=\n\n' '$1 == "-" && $2 == "stage:" && $3 == "test" && $4 == "images" && $5 == "(amd64)" { $0 = "    - stage: test images (amd64)'"$travisEnvAmd64"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-echo "$travisAmd64" > .travis.yml
-
-travisFull="$(awk -v 'RS=\n\n' '$1 == "-" && $2 == "stage:" && $3 == "test" && $4 == "images" && $5 == "(full)" { $0 = "    - stage: test images (full)'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-
-echo "$travisFull" > .travis.yml

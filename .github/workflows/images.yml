@@ -23,8 +23,8 @@ jobs:
         name: Generate Jobs
         run: |
           git clone --depth 1 https://github.com/docker-library/bashbrew.git -b master ~/bashbrew
-          mkdir ~/bashbrew-cache
-          chmod 1777 ~/bashbrew-cache
+          mkdir -p ~/bashbrew-cache/git
+          chmod -R 1777 ~/bashbrew-cache/git
           strategy="$(GITHUB_REPOSITORY=friendica BASHBREW_CACHE=~/bashbrew-cache ~/bashbrew/scripts/github-actions/generate.sh)"
           strategy="$(BASHBREW_CACHE=~/bashbrew-cache ~/bashbrew/scripts/github-actions/munge-i386.sh -c <<<"$strategy")"
           jq . <<<"$strategy" # sanity check / debugging aid

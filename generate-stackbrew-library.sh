@@ -27,12 +27,12 @@ dockerfileCommit() {
   (
     cd "$dir";
     fileCommit Dockerfile \
-      "$(awk '
+      $(awk '
         toupper($1) == "COPY" {
           for (i = 2; i < NF; i++)
               print $i;
         }
-      ' Dockerfile)"
+      ' Dockerfile)
   )
 }
 
@@ -109,7 +109,7 @@ for version in "${versions[@]}"; do
     cat << EOE
 
 Tags: $(join ', ' "${variantAliases[@]}")
-Architectures: $(join ', ' "$variantArches")
+Architectures: $(join ', ' $variantArches)
 GitCommit: $commit
 Directory: $version/$variant
 EOE

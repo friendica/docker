@@ -18,7 +18,7 @@ The second option is a `fpm` container.
 It is based on the [php-fpm](https://hub.docker.com/_/php/) image and runs a fastCGI-Process that serves your Friendica server.
 To use this image it must be combined with any Webserver that can proxy the http requests to the FastCGI-port of the container.
 
-[![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/friendica/docker/master/stack.yml) (Admin-E-Mail: `root@friendica.local`)
+[![Try in PWD](https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png)](http://play-with-docker.com?stack=https://raw.githubusercontent.com/friendica/docker/stable/stack.yml) (Admin-E-Mail: `root@friendica.local`)
 
 ## Using the apache image
 
@@ -56,7 +56,7 @@ There are three options to enable the cron-job for Friendica:
 
 -	Using the default Image and activate the cron-job (see [Installation](https://friendi.ca/resources/installation/), sector `Activating scheduled tasks`)
 -	Using the default image (apache, fpm, fpm-alpine) and creating **two** container (one for cron and one for the main app)
--	Using one of the additional, prepared [`cron dockerfiles`](https://github.com/friendica/docker/tree/master/.examples/dockerfiles/cron)
+-	Using one of the additional, prepared [`cron dockerfiles`](https://github.com/friendica/docker/tree/stable/.examples/dockerfiles/cron)
 
 ## Possible Environment Variables
 
@@ -233,14 +233,14 @@ The nginx container also need access to static files from your Friendica install
 It gets access to all the volumes mounted to Friendica via the `volumes_from` option.
 The configuration for nginx is stored in the configuration file `nginx.conf` that is mounted into the container.
 
-An example can be found in the [examples section](https://github.com/friendica/docker/tree/master/.examples).
+An example can be found in the [examples section](https://github.com/friendica/docker/tree/stable/.examples).
 
 As this setup does **not include encryption** it should to be run behind a proxy.
 
 Prerequisites for this example:
 
 -	Make sure to set the variable `MYSQL_PASSWORD` and `MYSQL_USER` before you run the setup.
--	Create a `nginx.conf` in the same directory as the docker-compose.yml file (take it from [example](https://github.com/friendica/docker/tree/master/.examples/docker-compose/with-traefik-proxy/mariadb-cron-smtp/fpm/web/nginx.conf))
+-	Create a `nginx.conf` in the same directory as the docker-compose.yml file (take it from [example](https://github.com/friendica/docker/tree/stable/.examples/docker-compose/with-traefik-proxy/mariadb-cron-smtp/fpm/web/nginx.conf))
 
 ```yaml
 version: '2'

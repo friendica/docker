@@ -16,6 +16,30 @@ version_greater() {
   [ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2 | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
 }
 
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+file_env() {
+    local var="$1"
+    local fileVar="${var}_FILE"
+    local def="${2:-}"
+    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
+    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
+    if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
+        echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+        exit 1
+    fi
+    if [ -n "${varValue}" ]; then
+        export "$var"="${varValue}"
+    elif [ -n "${fileVarValue}" ]; then
+        export "$var"="$(cat "${fileVarValue}")"
+    elif [ -n "${def}" ]; then
+        export "$var"="$def"
+    fi
+    unset "$fileVar"
+}
+
 sh /setup_msmtp.sh
 
 # just check if we execute apache or php-fpm
@@ -65,6 +89,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     # install
     if [ "$installed_version" = "0.0.0.0" ]; then
       echo "New Friendica instance"
+
+      file_env FRIENDICA_ADMIN_MAIL
+
+      file_env MYSQL_DATABASE
+      file_env MYSQL_USER
+      file_env MYSQL_PASSWORD
 
       install=false
       if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${FRIENDICA_ADMIN_MAIL+x}" ] && [ -n "${FRIENDICA_URL+x}" ]; then

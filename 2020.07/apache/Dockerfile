@@ -137,7 +137,7 @@ ENV FRIENDICA_ADDONS 2020.07
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \
-        "https://github.com/friendica/friendica/releases/download/${FRIENDICA_VERSION}/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
     tar -xzf friendica.tar.gz -C /usr/src/; \
     rm friendica.tar.gz; \
     mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \

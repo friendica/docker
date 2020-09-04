@@ -82,7 +82,7 @@ declare -A pecl_versions=(
 )
 
 declare -A install_extras=(
-  ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica.tar.gz \\\n        "https://github.com/friendica/friendica/releases/download/${FRIENDICA_VERSION}/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    tar -xzf friendica.tar.gz -C /usr/src/; \\\n    rm friendica.tar.gz; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica_addons.tar.gz \\\n        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica_addons.tar.gz;'
+  ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica.tar.gz \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    tar -xzf friendica.tar.gz -C /usr/src/; \\\n    rm friendica.tar.gz; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica_addons.tar.gz \\\n        "https://github.com/friendica/friendica-addons/archive/${FRIENDICA_ADDONS}.tar.gz"; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica_addons.tar.gz;'
   ['develop']=''
 )
 
@@ -92,10 +92,12 @@ variants=(
   fpm-alpine
 )
 
-versions=(
-  2020.07
-  2020.09-dev
-)
+min_version='2020.03'
+
+# version_greater_or_equal A B returns whether A >= B
+function version_greater_or_equal() {
+	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
+}
 
 function create_variant() {
   dockerName=${1,,}
@@ -145,11 +147,45 @@ function create_variant() {
   cp -rT .config "$dir/config"
 }
 
+curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
+	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+' | \
+	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
+	sort -uV | \
+	tail -1 > latest.txt
+
+curl -fsSl 'https://raw.githubusercontent.com/friendica/friendica/develop/VERSION' > develop.txt
+
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\(\.\|\-\)[[:digit:]]\+\(-rc\|-dev\)\?' -exec rm -r '{}' \;
 
+fullversions=( $( curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
+	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+' | \
+	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
+	sort -urV ) )
+versions=( $( printf '%s\n' "${fullversions[@]}" | cut -d. -f1-2 | sort -urV ) )
 for version in "${versions[@]}"; do
-  for variant in "${variants[@]}"; do
+	fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
 
-    create_variant "$version"
-  done
+	if version_greater_or_equal "$version" "$min_version"; then
+    for variant in "${variants[@]}"; do
+
+      create_variant "$version"
+    done
+  fi
+done
+
+githubversions_rc=( $( git ls-remote --heads -q 'https://github.com/friendica/friendica' | \
+  grep -oE '[[:digit:]]+\.[[:digit:]]+\-rc' || true | \
+  sort -urV ) )
+versions_rc=( $( printf '%s\n' "${githubversions_rc[@]}" | cut -d. -f1-2 | sort -urV ) )
+for version in "${versions_rc[@]}"; do
+	if version_greater_or_equal "$version" "$min_version"; then
+    for variant in "${variants[@]}"; do
+
+      create_variant "$version"
+    done
+  fi
+done
+
+for variant in "${variants[@]}"; do
+  create_variant "$(cat develop.txt)"
 done

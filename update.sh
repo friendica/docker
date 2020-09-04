@@ -173,12 +173,8 @@ for version in "${versions[@]}"; do
   fi
 done
 
-for variant in "${variants[@]}"; do
-  create_variant "$(cat develop.txt)"
-done
-
-githubversions_rc=( $( git ls-remote --heads 'https://github.com/friendica/friendica' | \
-  grep -oE '[[:digit:]]+\.[[:digit:]]+\-(rc)' | \
+githubversions_rc=( $( git ls-remote --heads -q 'https://github.com/friendica/friendica' | \
+  grep -oE '[[:digit:]]+\.[[:digit:]]+\-rc' || true | \
   sort -urV ) )
 versions_rc=( $( printf '%s\n' "${githubversions_rc[@]}" | cut -d. -f1-2 | sort -urV ) )
 for version in "${versions_rc[@]}"; do
@@ -188,4 +184,8 @@ for version in "${versions_rc[@]}"; do
       create_variant "$version"
     done
   fi
+done
+
+for variant in "${variants[@]}"; do
+  create_variant "$(cat develop.txt)"
 done

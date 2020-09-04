@@ -3,7 +3,6 @@ set -Eeuo pipefail
 
 declare -A release_channel=(
   [stable]='2020.07'
-  [latest]='2020.07'
 )
 
 self="$(basename "${BASH_SOURCE[0]}")"
@@ -67,6 +66,9 @@ join() {
   echo "${out#$sep}"
 }
 
+latest=$( cat latest.txt )
+develop=$( cat develop.txt )
+
 # Generate each of the tags.
 versions=( */ )
 versions=( "${versions[@]%/}" )
@@ -82,10 +84,14 @@ for version in "${versions[@]}"; do
     versionPostfix=""
 
     versionAliases+=( "$version$versionPostfix" )
+    if [ "$version" = "$latest" ]; then
+			versionAliases+=( "latest" )
+		fi
+
     if [[ "$version" == *-rc ]]; then
       versionAliases+=( "rc" )
     fi
-    if [[ "$version" == *-dev ]]; then
+    if [[ "$version" == "$develop" ]]; then
       versionAliases+=( "dev" )
     fi
 

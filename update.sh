@@ -92,11 +92,15 @@ variants=(
   fpm-alpine
 )
 
-min_version='2020.03'
+min_version='2020.07-1'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
+}
+
+function get_hotfix_version() {
+  printf '%s\n' "${fullversions[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
 }
 
 function create_variant() {
@@ -122,7 +126,7 @@ function create_variant() {
   sed -ri -e '
     s/%%PHP_VERSION%%/'"${php_version[$version]-${php_version[default]}}"'/g;
     s/%%VARIANT%%/'"$variant"'/g;
-    s/%%VERSION%%/'"$1"'/g;
+    s/%%VERSION%%/'"$2"'/g;
     s/%%CMD%%/'"${cmd[$variant]}"'/g;
     s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
     s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type]}"'|g;
@@ -148,27 +152,26 @@ function create_variant() {
 }
 
 curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
-	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+' | \
-	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
+	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
+	grep -oE '[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
 	sort -uV | \
 	tail -1 > latest.txt
 
 curl -fsSl 'https://raw.githubusercontent.com/friendica/friendica/develop/VERSION' > develop.txt
 
-find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\(\.\|\-\)[[:digit:]]\+\(-rc\|-dev\)\?' -exec rm -r '{}' \;
+find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\(\.\|\-\)[[:digit:]]\+\(-rc\|-dev\|\-[[:digit:]]\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
-	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+' | \
-	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
+	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
+	grep -oE '[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
 	sort -urV ) )
-versions=( $( printf '%s\n' "${fullversions[@]}" | cut -d. -f1-2 | sort -urV ) )
-for version in "${versions[@]}"; do
-	fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
+for version in "${fullversions[@]}"; do
+  fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
 
-	if version_greater_or_equal "$version" "$min_version"; then
+	if version_greater_or_equal "$fullversion" "$min_version"; then
     for variant in "${variants[@]}"; do
 
-      create_variant "$version"
+      create_variant "$version" "$fullversion"
     done
   fi
 done

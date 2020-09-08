@@ -123,8 +123,8 @@ RUN set -ex; \
 VOLUME /var/www/html
 
 
-ENV FRIENDICA_VERSION 2020.03
-ENV FRIENDICA_ADDONS 2020.03
+ENV FRIENDICA_VERSION "2020.07-1"
+ENV FRIENDICA_ADDONS "2020.07-1"
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \

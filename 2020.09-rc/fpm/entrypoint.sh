@@ -13,7 +13,7 @@ run_as() {
 
 # checks if the the first parameter is greater than the second parameter
 version_greater() {
-  [ "$(printf '%s\n' "$@" | sort -r -t '-' -k2,2 | sort -t '.' -n -k1,1 -k2,2 -s | head -n 1)" != "$1" ]
+  [ "$(printf '%s\n' "$@" | sed -e 's/-rc/.1/' | sed -e 's/-dev/.2/' | sort -t '.' -k1,1n -k2,2n -k3,3nbr | head -n 1)" != "$(printf "$1" | sed -e 's/-rc/.1/' | sed -e 's/-dev/.2/')" ]
 }
 
 # usage: file_env VAR [DEFAULT]

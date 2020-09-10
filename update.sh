@@ -92,15 +92,15 @@ variants=(
   fpm-alpine
 )
 
-min_version='2020.07-1'
+min_version='2020.07'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
 }
 
-function get_hotfix_version() {
-  printf '%s\n' "${fullversions[@]}" | grep -qE "^$( echo "$1" | grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' )"
+function is_hotfix() {
+  [[ "$1" =~ ^.*-[[:digit:]]+$ ]]
 }
 
 function create_variant() {
@@ -126,7 +126,7 @@ function create_variant() {
   sed -ri -e '
     s/%%PHP_VERSION%%/'"${php_version[$version]-${php_version[default]}}"'/g;
     s/%%VARIANT%%/'"$variant"'/g;
-    s/%%VERSION%%/'"$2"'/g;
+    s/%%VERSION%%/'"${2:-${1}}"'/g;
     s/%%CMD%%/'"${cmd[$variant]}"'/g;
     s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
     s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type]}"'|g;
@@ -151,9 +151,10 @@ function create_variant() {
   cp -rT .config "$dir/config"
 }
 
+# latest, stable version (just save the major version, not every hotfix)
 curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
-	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
-	grep -oE '[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
+	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
+	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
 	sort -uV | \
 	tail -1 > latest.txt
 
@@ -162,11 +163,16 @@ curl -fsSl 'https://raw.githubusercontent.com/friendica/friendica/develop/VERSIO
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\(\.\|\-\)[[:digit:]]\+\(-rc\|-dev\|\-[[:digit:]]\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
-	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
+	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
 	grep -oE '[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
 	sort -urV ) )
 for version in "${fullversions[@]}"; do
-  fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | head -1 )"
+  # hotfixes are just for Version ENV in the Dockerfile
+  if is_hotfix "$version"; then
+    continue;
+  fi
+
+  fullversion="$( printf '%s\n' "${fullversions[@]}" | grep -E "^$version" | sort -urV | head -1 )"
 
 	if version_greater_or_equal "$fullversion" "$min_version"; then
     for variant in "${variants[@]}"; do

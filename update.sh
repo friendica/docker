@@ -92,7 +92,7 @@ variants=(
   fpm-alpine
 )
 
-min_version='2020.07'
+min_version='2020.09'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {

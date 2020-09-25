@@ -132,8 +132,8 @@ RUN set -ex;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV FRIENDICA_VERSION "2020.09"
-ENV FRIENDICA_ADDONS "2020.09"
+ENV FRIENDICA_VERSION "2020.09-1"
+ENV FRIENDICA_ADDONS "2020.09-1"
 
 RUN set -ex; \
     curl -fsSL -o friendica.tar.gz \

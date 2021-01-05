@@ -20,8 +20,8 @@ The official Docker image is available at https://hub.docker.com/_/friendica.
 ## How to update the Docker Image
 
 1. Review your changes based on the official Docker [Review guidelines](https://github.com/docker-library/official-images#review-guidelines). 
-2. Check for a new stable version (see chapter `generate-stackbrew-library.sh`)
-3. Check if you have to adjust the minimum version (see chapter `update.sh`)
+2. (optional) Check for possible release channels (see chapter `generate-stackbrew-library.sh`)
+3. (optional) Check if you have to adjust the minimum version (see chapter `update.sh`)
 4. Check if all tests are green (common issue: you forgot to commit all changes because of `update.sh`)
 5. Check if all commits are available at the stable branch (= all required PRs are committed into stable)
 6. Download & install [`bashbrew`](https://github.com/docker-library/bashbrew)
@@ -119,4 +119,3 @@ This is the input-file for the official-images in a later step :-)
 
 Please adjust the `release_channel` array.
 It maps additional tags onto Docker image versions.
-Most important is the `stable` tag.

@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 declare -A release_channel=(
-  [stable]='2021.01'
+  [stable]=$( cat latest.txt )
 )
 
 self="$(basename "${BASH_SOURCE[0]}")"

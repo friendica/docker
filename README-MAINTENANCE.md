@@ -8,14 +8,14 @@ The structure and usage of this repository is influenced by other, official dock
 
 The `update.sh` script automatically deletes all non-`.`-directories (= version directories) at first.
 
-Never ever change a file/folder inside a directory without a `.` a t the beginning (`2018.05-rc`, ...).
+Never ever change a file/folder inside a directory without a `.` at the beginning (`2018.05-rc`, ...).
 This folder will get updated automatically based on the templates you want to change.
 All changes in such folders will get overwritten during an update.
 
 # How to update
 
 This section describes how to update the official Friendica docker images.
-The official docker image is available at https://hub.docker.com/_/friendica.
+The official Docker image is available at https://hub.docker.com/_/friendica.
 
 ## How to update the Docker Image
 
@@ -42,7 +42,7 @@ Check the official Docker Continuous Deployment server https://doi-janky.infosif
 
 ## Github Action
 
-GitHub Actions helps to automate tasks for Continuous Integration (= autotest docker images) and Continuous Deployment (= autocreate docker images based on the friendica upstream).
+GitHub Actions helps to automate tasks for Continuous Integration (= autotest Docker images) and Continuous Deployment (= autocreate Docker images based on the friendica upstream).
 
 For mor details see [Introduction to github actions](https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/introduction-to-github-actions).
 
@@ -53,10 +53,10 @@ In case there are changes because of `update.sh`, it starts `images.yml`.
 
 ### [`images.yml`](https://github.com/friendica/docker/blob/stable/.github/workflows/images.yml)
 
-This script automatically creates autotests actions based on the docker image version structure and variants.
+This script automatically creates autotests actions based on the Docker image version structure and variants.
 For example if there are two versions (like `2021.03-dev` and `2021.01`), it would create 3 runs (apache, apache-fpm, fpm-alpine) for each version, having 6 runs at all.
 
-Therefore, the script uses the official docker github action tool [`bashbrew`](https://github.com/docker-library/bashbrew.git) to transform the repository version structure into github action commands
+The script uses the official docker GitHub Action tool [`bashbrew`](https://github.com/docker-library/bashbrew.git) to transform the repository version structure into GitHub Action commands.
 
 This workflow is automatically executed because of a PR, a commit to `stable` or if the cronjob has found new updates.
 
@@ -84,13 +84,13 @@ Any other pattern will completely be ignored(!)
 #### Minimum version
 
 Please adjust the `min_version` variable.
-It contains the minimum supported version, which will automatically be available as a docker image.
-Any other versions lower than this won't be available from the official docker hub anymore.
+It contains the minimum supported version, which will automatically be available as a Docker image.
+Any other versions lower than this won't be available from the official Docker Hub anymore.
 
 ### [`generate-stackbrew-library.sh`](https://github.com/friendica/docker/blob/stable/generate-stackbrew-library.sh)
 
 This file creates a "manifest" for the docker-images.
-This "manifest" is used to create a new PR in the official-images [repository](https://github.com/docker-library/official-images/) for deploying the changes to the docker hub.
+This "manifest" is used to create a new PR in the official-images [repository](https://github.com/docker-library/official-images/) for deploying the changes to the Docker Hub.
 Like:
 
 ```console   
@@ -118,5 +118,5 @@ This is the input-file for the official-images in a later step :-)
 #### Release channels
 
 Please adjust the `release_channel` array.
-It maps additional tags onto docker image versions.
+It maps additional tags onto Docker image versions.
 Most important is the `stable` tag.

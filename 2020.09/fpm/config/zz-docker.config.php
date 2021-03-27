@@ -59,4 +59,10 @@ if (!empty(getenv('FRIENDICA_DEBUGGING'))) {
 	}
 }
 
+if (!empty(getenv('SMTP_DOMAIN'))) {
+	$smtp_from = !empty(getenv('SMTP_FROM')) ? getenv('SMTP_FROM') : 'no-reply';
+
+	$config['config']['sender_email'] = $smtp_from . "@" . getenv('SMTP_DOMAIN');
+}
+
 return $config;

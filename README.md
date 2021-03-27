@@ -156,6 +156,7 @@ The Friendica image supports auto configuration via environment variables.
 You can preconfigure everything that is asked on the install page on first run.
 To enable the automatic installation, you have to the following environment variables:
 
+-	`FRIENDICA_URL` The Friendica URL.
 -	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
 -	`MYSQL_USER` Username for the database user using mysql / mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.

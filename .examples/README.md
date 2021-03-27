@@ -1,21 +1,11 @@
 # Examples section
 
 In this subfolder are some examples how to use the docker images.
-There are two section:
+There is currently one section:
 
-* [`dockerfiles`](https://github.com/friendica/docker/tree/stable/.examples/dockerfiles)
 * [`docker-compose`](https://github.com/friendica/docker/tree/stable/.examples/docker-compose)
 
-The `dockerfiles` are derived images that add or alter certain functionalities of the default docker images.
 In the `docker-compose` subfolder are examples for deployment of the application.
-
-## Dockerfiles
-
-The Dockerfiles use the default images as base image and build on top of it.
-
-Examples | Descriptions
--------- | -------
-[cron](https://github.com/friendica/docker/tree/stable/.examples/dockerfiles/cron) | uses supervisor to run the cron job inside the container (so no extra container is needed).
 
 ## docker-compose
 

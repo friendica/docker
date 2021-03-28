@@ -63,7 +63,7 @@ There are two options to enable background tasks for Friendica:
 
 **Friendica Settings**
 
--	`FRIENDICA_URL` The Friendica URL.
+-	`FRIENDICA_URL` The Friendica complete URL including protocol, domain and subpath (example: https://friendica.local/sub/ ).
 -	`FRIENDICA_TZ` The default localization of the Friendica server.
 -	`FRIENDICA_LANG` The default language of the Friendica server.
 -	`FRIENDICA_SITENAME` The Sitename of the Friendica server.
@@ -156,7 +156,7 @@ The Friendica image supports auto configuration via environment variables.
 You can preconfigure everything that is asked on the install page on first run.
 To enable the automatic installation, you have to the following environment variables:
 
--	`FRIENDICA_URL` The Friendica URL.
+-	`FRIENDICA_URL` The Friendica complete URL including protocol, domain and subpath (example: https://friendica.local/sub/ ).
 -	`FRIENDICA_ADMIN_MAIL` E-Mail address of the administrator.
 -	`MYSQL_USER` Username for the database user using mysql / mariadb.
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.

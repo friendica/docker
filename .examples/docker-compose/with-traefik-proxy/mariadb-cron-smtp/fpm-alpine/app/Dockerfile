@@ -1,5 +1,5 @@
 # Based on .exmples/dockerfiles/smtp/fpm-alpine
-FROM friendica/server:fpm-alpine
+FROM friendica:fpm-alpine
 
 ENV SMTP_HOST smtp.example.org
 

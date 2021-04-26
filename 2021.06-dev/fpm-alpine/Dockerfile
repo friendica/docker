@@ -98,8 +98,8 @@ RUN set -ex; \
 VOLUME /var/www/html
 
 
-ENV FRIENDICA_VERSION "2021.03-dev"
-ENV FRIENDICA_ADDONS "2021.03-dev"
+ENV FRIENDICA_VERSION "2021.06-dev"
+ENV FRIENDICA_ADDONS "2021.06-dev"
 
 
 COPY *.sh upgrade.exclude /

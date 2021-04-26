@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-fpm-buster
+FROM php:7.3-apache-buster
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -122,13 +122,35 @@ RUN set -ex; \
 
 VOLUME /var/www/html
 
+RUN set -ex;\
+    a2enmod rewrite remoteip ;\
+    {\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+    } > /etc/apache2/conf-available/remoteip.conf;\
+    a2enconf remoteip
 
-ENV FRIENDICA_VERSION "2021.03-dev"
-ENV FRIENDICA_ADDONS "2021.03-dev"
+ENV FRIENDICA_VERSION "2021.04"
+ENV FRIENDICA_ADDONS "2021.04"
 
+RUN set -ex; \
+    curl -fsSL -o friendica.tar.gz \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
+    tar -xzf friendica.tar.gz -C /usr/src/; \
+    rm friendica.tar.gz; \
+    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    curl -fsSL -o friendica_addons.tar.gz \
+        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
+    mkdir -p /usr/src/friendica/proxy; \
+    mkdir -p /usr/src/friendica/addon; \
+    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
+    rm friendica_addons.tar.gz;
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/entrypoint-dev.sh"]
-CMD ["php-fpm"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["apache2-foreground"]

@@ -132,8 +132,8 @@ RUN set -ex;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV FRIENDICA_VERSION "2021.03-rc"
-ENV FRIENDICA_ADDONS "2021.03-rc"
+ENV FRIENDICA_VERSION "2021.06-rc"
+ENV FRIENDICA_ADDONS "2021.06-rc"
 
 
 COPY *.sh upgrade.exclude /

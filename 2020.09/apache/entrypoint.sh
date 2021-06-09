@@ -136,7 +136,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     # upgrade
     else
       echo "Upgrading Friendica ..."
-      run_as 'php /var/www/html/bin/console.php dbstructure update -f'
+      run_as 'php /var/www/html/bin/console.php dbstructure update'
       echo "Upgrading finished"
     fi
   fi

@@ -1,0 +1,67 @@
+version: '2.1'
+services:
+
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - db:/var/lib/mysql/
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    env_file:
+      - db.env
+
+  app:
+    image: friendica
+    restart: always
+    volumes:
+      - friendica:/var/www/html
+    environment:
+      - FRIENDICA_ADMIN_MAIL=
+      - FRIENDICA_TZ=
+      - FRIENDICA_LANG=
+      - FRIENDICA_URL=
+      - FRIENDICA_SITENAME=
+      - SMTP=smtp.office365.com
+      - SMTP_PORT=587
+      - SMTP_DOMAIN=hotmail.com
+      - SMTP_FROM=user
+      - SMTP_TLS=true
+      - SMTP_STARTTLS=true
+      - SMTP_AUTH=on
+      - SMTP_AUTH_USER=xxx@hotmail.com
+      - SMTP_AUTH_PASS=password
+    env_file:
+      - db.env
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+
+  cron:
+    image: friendica
+    restart: always
+    volumes:
+      - friendica:/var/www/html
+    entrypoint: /cron.sh
+    environment:
+      - FRIENDICA_ADMIN_MAIL=
+      - FRIENDICA_TZ=
+      - SMTP=smtp.office365.com
+      - SMTP_PORT=587
+      - SMTP_DOMAIN=hotmail.com
+      - SMTP_FROM=user
+      - SMTP_TLS=true
+      - SMTP_STARTTLS=true
+      - SMTP_AUTH=on
+      - SMTP_AUTH_USER=xxx@hotmail.com
+      - SMTP_AUTH_PASS=password
+    depends_on:
+      - app
+      - db
+    env_file:
+      - db.env
+
+volumes:
+  db:
+  friendica:

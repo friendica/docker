@@ -74,7 +74,7 @@ RUN set -ex; \
     pecl install apcu-5.1.20; \
     pecl install memcached-3.1.5; \
     pecl install redis-5.3.4; \
-    pecl install imagick-3.5.0; \
+    pecl install imagick-3.5.1; \
     \
     docker-php-ext-enable \
         apcu \

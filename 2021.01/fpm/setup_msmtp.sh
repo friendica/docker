@@ -34,13 +34,5 @@ if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost"
     echo "aliases /etc/aliases"
   } >/etc/msmtprc
 
-  # enable msmtp setup
-  {
-    echo sendmail_path = "/usr/bin/msmtp -t";
-  } > /usr/local/etc/php/conf.d/sendmail.ini
-
-  # reload php-config per signal
-  kill -USR2 1
-
   echo "Setup finished"
 fi

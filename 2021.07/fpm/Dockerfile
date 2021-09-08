@@ -117,29 +117,24 @@ VOLUME /var/www/html
 
 ENV FRIENDICA_VERSION "2021.07"
 ENV FRIENDICA_ADDONS "2021.07"
+ENV FRIENDICA_DOWNLOAD_SHA256 "d57ebb33ff733f0ad023ad63e8992d8f61cec06363b951d00f1452760eeeda12"
+ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "9752046c5af1003338a668683b24476cfb3f8dfeaef466703492a0883581c790"
 
 RUN set -ex; \
     curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
         "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
-    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256 \
-        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256"; \
-    sha256sum -c friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" | sha256sum -c; \
     tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
     rm friendica-full-${FRIENDICA_VERSION}.tar.gz; \
-    rm friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256; \
     mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
             "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256 \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256"; \
-    sha256sum -c friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256; \
+    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
     mkdir -p /usr/src/friendica/proxy; \
     mkdir -p /usr/src/friendica/addon; \
     tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256;
-
+    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz;
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 

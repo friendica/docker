@@ -126,29 +126,24 @@ RUN set -ex;\
 
 ENV FRIENDICA_VERSION "2021.04"
 ENV FRIENDICA_ADDONS "2021.04"
+ENV FRIENDICA_DOWNLOAD_SHA256 "440d3a39cd701c3a4179f89fcb1a7197c3bf03f02c087c4a6e1bbe88932a1ce4"
+ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "6c798634ce75d25bb71c80a00fcd3b6dd48be3ca2e233ca0f9ed80981cba83af"
 
 RUN set -ex; \
     curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
         "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
-    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256 \
-        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256"; \
-    sha256sum -c friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" | sha256sum -c; \
     tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
     rm friendica-full-${FRIENDICA_VERSION}.tar.gz; \
-    rm friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256; \
     mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
             "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256 \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256"; \
-    sha256sum -c friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256; \
+    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
     mkdir -p /usr/src/friendica/proxy; \
     mkdir -p /usr/src/friendica/addon; \
     tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256;
-
+    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz;
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 

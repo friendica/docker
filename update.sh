@@ -82,7 +82,7 @@ declare -A pecl_versions=(
 )
 
 declare -A install_extras=(
-  ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256 \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256"; \\\n    sha256sum -c friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256; \\\n    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \\\n    rm friendica-full-${FRIENDICA_VERSION}.tar.gz; \\\n    rm friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \\\n            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256 \\\n        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256"; \\\n    sha256sum -c friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \\\n    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256;'
+  ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \\\n    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \\\n    rm friendica-full-${FRIENDICA_VERSION}.tar.gz; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \\\n            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \\\n    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz;'
   ['develop']=''
 )
 
@@ -101,6 +101,16 @@ function version_greater_or_equal() {
 
 function is_hotfix() {
   [[ "$1" =~ ^.*-[[:digit:]]+$ ]]
+}
+
+function get_sha256_string() {
+  install_type="$1"
+  version="${2,,}"
+  if [[ $install_type == "develop" ]]; then
+    echo ""
+  else
+    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-full-${version}.tar.gz.sum256 | cut -d' ' -f1)\"\nENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-addons-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
+  fi
 }
 
 function create_variant() {
@@ -129,6 +139,7 @@ function create_variant() {
     s/%%VERSION%%/'"${2:-${1}}"'/g;
     s/%%CMD%%/'"${cmd[$variant]}"'/g;
     s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
+    s|%%DOWNLOAD_SHA256%%|'"$(get_sha256_string $install_type ${2:-${1}})"'|g;
     s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type]}"'|g;
     s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
     s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;

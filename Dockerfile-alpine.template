@@ -127,8 +127,8 @@ VOLUME /var/www/html
 
 ENV FRIENDICA_VERSION "%%VERSION%%"
 ENV FRIENDICA_ADDONS "%%VERSION%%"
+%%DOWNLOAD_SHA256%%
 %%INSTALL_EXTRAS%%
-
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 

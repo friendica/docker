@@ -121,20 +121,43 @@ ENV FRIENDICA_DOWNLOAD_SHA256 "440d3a39cd701c3a4179f89fcb1a7197c3bf03f02c087c4a6
 ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "6c798634ce75d25bb71c80a00fcd3b6dd48be3ca2e233ca0f9ed80981cba83af"
 
 RUN set -ex; \
+    fetchDeps=" \
+        gnupg \
+    "; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends $fetchDeps; \
+    \
+    export GNUPGHOME="$(mktemp -d)"; \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
+    \
     curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
         "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
+    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \
+    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \
     echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" | sha256sum -c; \
     tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
-    rm friendica-full-${FRIENDICA_VERSION}.tar.gz; \
+    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \
     mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
+    \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
             "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
+    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
+            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
+    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
     echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
     mkdir -p /usr/src/friendica/proxy; \
     mkdir -p /usr/src/friendica/addon; \
     tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz;
+    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
+    \
+    gpgconf --kill all; \
+    rm -rf "$GNUPGHOME"; \
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+    rm -rf /var/lib/apt/lists/*
+
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 

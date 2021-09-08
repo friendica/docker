@@ -128,7 +128,7 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends $fetchDeps; \
     \
     export GNUPGHOME="$(mktemp -d)"; \
-    gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
     \
     curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
         "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \

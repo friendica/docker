@@ -26,7 +26,7 @@ if (expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]) && [ "${FRIENDICA_
   curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"
   curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"
   gpg --batch --logger-fd=1 --no-tty --quiet --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz
-  echo "Addon source (${FRIENDICA_ADDONS}) verified"
+  echo "Addon sources (${FRIENDICA_ADDONS}) verified"
 
   mkdir -p /usr/src/friendica/addon
   tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1

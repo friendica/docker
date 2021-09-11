@@ -359,26 +359,8 @@ Then run `docker-compose up -d`, now you can access Friendica at http://localhos
 
 # Special settings for DEV/RC images
 
-The `*-dev` and `*-rc` branches are having additional possibilities to get the latest sources of Friendica.
-
-## Possible Environment Variables
-
-The following environment variables are possible for these kind of images too:
-
-**Develop/Release Candidate Settings**
-
--	`FRIENDICA_UPGRADE` If set to `true`, a develop or release candidat node will get updated at startup.
--	`FRIENDICA_REPOSITORY` If set, a custom repository will be chosen (Default: `friendica`)
--	`FRIENDICA_ADDONS_REPO` If set, a custom repository for the addons will be chosen (Default: `friendica`)
--	`FRIENDICA_VERSION` If set, a custom branch will be chosen (Default is based on the chosen image version)
--	`FRIENDICA_ADDONS` If set, a custom branch for the addons will be chosen (Default is based on the chosen image version)
-
-## Updating to a newer version
-
-You don't need to pull the image for each commit in [friendica](https://github.com/friendica/friendica/).
-Instead, the release candidate or develop branch will get updated if no installation was found or the environment variable `FRIENDICA_UPGRADE` is set to `true`.
-
-It will clone the latest Friendica version and copy it to your working directory.
+The `*-dev` and `*-rc` branches are directly downloaded and verified at each docker start to ensure that the latest sources are used.
+It's possible to disable this behaviour by setting the environment variable `FRIENDICA_DISABLE_UPGRADE` to `true`.
 
 # Questions / Issues
 

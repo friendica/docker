@@ -5,7 +5,6 @@ FROM php:7.3-fpm-alpine
 RUN set -ex; \
     apk add --no-cache \
         rsync \
-        git \
 # For mail() support
         msmtp \
         shadow \

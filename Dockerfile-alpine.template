@@ -4,7 +4,6 @@ FROM php:%%PHP_VERSION%%-%%VARIANT%%
 RUN set -ex; \
     apk add --no-cache \
         rsync \
-        git \
 # For mail() support
         msmtp \
         shadow \

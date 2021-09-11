@@ -8,7 +8,6 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         rsync \
         bzip2 \
-        git \
 # For mail() support
         msmtp \
         tini \

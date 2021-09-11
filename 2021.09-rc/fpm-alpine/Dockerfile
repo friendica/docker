@@ -5,7 +5,6 @@ FROM php:7.3-fpm-alpine
 RUN set -ex; \
     apk add --no-cache \
         rsync \
-        git \
 # For mail() support
         msmtp \
         shadow \
@@ -129,6 +128,10 @@ VOLUME /var/www/html
 ENV FRIENDICA_VERSION "2021.09-rc"
 ENV FRIENDICA_ADDONS "2021.09-rc"
 
+RUN set -ex; \
+     apk add --no-cache --virtual .fetch-deps \
+            gnupg \
+        ;
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/

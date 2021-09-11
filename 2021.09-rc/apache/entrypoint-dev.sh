@@ -1,69 +1,40 @@
 #!/bin/sh
 set -eu
 
-# checks if the branch and repository exists
-check_branch() {
-  repo=${1:-}
-  branch=${2:-}
-  git ls-remote --heads --tags "https://github.com/$repo" | grep -E "refs/(heads|tags)/${branch}$" >/dev/null
-  [ "$?" -eq "0" ]
-}
-
-# clones the whole develop branch (Friendica and Addons)
-clone_develop() {
-  friendica_git="${FRIENDICA_VERSION}"
-  addons_git="${FRIENDICA_ADDONS}"
-  friendica_repo="${FRIENDICA_REPOSITORY:-friendica/friendica}"
-  friendica_addons_repo="${FRIENDICA_ADDONS_REPO:-friendica/friendica-addons}"
-
-  if echo "{$friendica_git,,}" | grep -Eq '^.*\-dev'; then
-    friendica_git="develop"
-  fi
-
-  if echo "{$addons_git,,}" | grep -Eq '^.*\-dev'; then
-    addons_git="develop"
-  fi
-
-  # Check if the branches exist before wiping the
-  if check_branch "$friendica_repo" "$friendica_git" && check_branch "$friendica_addons_repo" "$addons_git" ; then
-    echo "Cloning '${friendica_git}' from GitHub repository '${friendica_repo}' ..."
-
-    # Removing the whole directory first
-    rm -fr /usr/src/friendica
-    git clone -q -b ${friendica_git} "https://github.com/${friendica_repo}" /usr/src/friendica
-
-    mkdir /usr/src/friendica/addon
-    git clone -q -b ${addons_git} "https://github.com/${friendica_addons_repo}" /usr/src/friendica/addon
-
-    echo "Download finished"
-
-    if [ ! -f /usr/src/friendica/VERSION ]; then
-      echo "Couldn't clone repository"
-      exit 1
-    fi
-
-    /usr/src/friendica/bin/composer.phar install --no-dev -d /usr/src/friendica
-    return 0
-
-  else
-    if check_branch "$friendica_repo" "$friendica_git"; then
-      echo "$friendica_repo/$friendica_git is not valid."
-    else
-      echo "$friendica_addons_repo/$addons_git is not valid."
-    fi
-    echo "Using old version."
-    return 1
-
-  fi
-}
-
 # just check if we execute apache or php-fpm
-if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
-  # cloning from git is just possible for develop or Release Candidate
-  if echo "${FRIENDICA_VERSION}" | grep -Eq '^.*(\-dev|-rc|-RC)' || [ "${FRIENDICA_UPGRADE:-false}" = "true" ] || [ ! -f /usr/src/friendica/VERSION ]; then
-    # just clone & check if it's a new install or upgrade
-    clone_develop
-  fi
+if (expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]) && [ "${FRIENDICA_DISABLE_UPGRADE:-false}" = "false" ]; then
+  echo "Download sources for ${FRIENDICA_VERSION} (Addon: ${FRIENDICA_ADDONS})"
+
+  # Removing the whole directory first
+  rm -fr /usr/src/friendica
+  export GNUPGHOME="$(mktemp -d)"
+
+  gpg --batch --logger-fd=1 --no-tty --quiet --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287
+
+  curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"
+  curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc";
+  gpg --batch --logger-fd=1 --no-tty --quiet --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz
+  echo "Core sources (${FRIENDICA_VERSION}) verified"
+
+  tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/
+  rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc
+  mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica
+  echo "Core sources (${FRIENDICA_VERSION}) extracted"
+
+  chmod 777 /usr/src/friendica/view/smarty3
+
+  curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"
+  curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"
+  gpg --batch --logger-fd=1 --no-tty --quiet --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz
+  echo "Addon source (${FRIENDICA_ADDONS}) verified"
+
+  mkdir -p /usr/src/friendica/addon
+  tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1
+  rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc
+  echo "Addon sources (${FRIENDICA_ADDONS}) extracted"
+
+  gpgconf --kill all
+  rm -rf "$GNUPGHOME"
 fi
 
 exec /entrypoint.sh "$@"

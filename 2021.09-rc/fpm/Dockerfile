@@ -8,7 +8,6 @@ RUN set -ex; \
     apt-get install -y --no-install-recommends \
         rsync \
         bzip2 \
-        git \
 # For mail() support
         msmtp \
         tini \
@@ -118,6 +117,12 @@ VOLUME /var/www/html
 ENV FRIENDICA_VERSION "2021.09-rc"
 ENV FRIENDICA_ADDONS "2021.09-rc"
 
+RUN set -ex; \
+    fetchDeps=" \
+        gnupg \
+    "; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends $fetchDeps;
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/

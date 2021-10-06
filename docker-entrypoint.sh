@@ -123,7 +123,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
           # load other config files (*.config.php) to the config folder
           if [ -d "/usr/src/config" ]; then
-            rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
+            rsync $rsync_options --ignore-existing /usr/src/friendica/config/ /var/www/html/config/
           fi
 
           echo "Installation finished"

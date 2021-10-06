@@ -82,8 +82,10 @@ declare -A pecl_versions=(
 )
 
 declare -A install_extras=(
-  ['stable']='\nRUN set -ex; \\\n    curl -fsSL -o friendica.tar.gz \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    tar -xzf friendica.tar.gz -C /usr/src/; \\\n    rm friendica.tar.gz; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    curl -fsSL -o friendica_addons.tar.gz \\\n        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica_addons.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica_addons.tar.gz;'
-  ['develop']=''
+  ['stable-debian']='\nRUN set -ex; \\\n    fetchDeps=" \\\n        gnupg \\\n    "; \\\n    apt-get update; \\\n    apt-get install -y --no-install-recommends $fetchDeps; \\\n    \\\n    export GNUPGHOME="$(mktemp -d)"; \\\n    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \\\n    \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \\\n    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \\\n    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \\\n    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \\\n    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \\\n            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \\\n            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \\\n    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \\\n    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \\\n    \\\n    gpgconf --kill all; \\\n    rm -rf "$GNUPGHOME"; \\\n    \\\n    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \\\n    rm -rf /var/lib/apt/lists/*\n'
+  ['stable-alpine']='\nRUN set -ex; \\\n     apk add --no-cache --virtual .fetch-deps \\\n            gnupg \\\n        ; \\\n        \\\n    export GNUPGHOME="$(mktemp -d)"; \\\n    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \\\n    \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \\\n    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \\\n        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \\\n    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \\\n    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \\\n    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \\\n    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \\\n    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \\\n    chmod 777 /usr/src/friendica/view/smarty3; \\\n    \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \\\n            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \\\n    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \\\n            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \\\n    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \\\n    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \\\n    mkdir -p /usr/src/friendica/proxy; \\\n    mkdir -p /usr/src/friendica/addon; \\\n    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \\\n    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \\\n    \\\n    gpgconf --kill all; \\\n    rm -rf "$GNUPGHOME"; \\\n    \\\n    apk del .fetch-deps\n'
+  ['develop-debian']='RUN set -ex; \\\n    fetchDeps=" \\\n        gnupg \\\n    "; \\\n    apt-get update; \\\n    apt-get install -y --no-install-recommends $fetchDeps;\n'
+  ['develop-alpine']='RUN set -ex; \\\n     apk add --no-cache --virtual .fetch-deps \\\n            gnupg \\\n        ;\n'
 )
 
 variants=(
@@ -92,7 +94,7 @@ variants=(
   fpm-alpine
 )
 
-min_version='2020.09'
+min_version='2021.09'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -101,6 +103,16 @@ function version_greater_or_equal() {
 
 function is_hotfix() {
   [[ "$1" =~ ^.*-[[:digit:]]+$ ]]
+}
+
+function get_sha256_string() {
+  install_type="$1"
+  version="${2,,}"
+  if [[ $install_type == "develop" ]]; then
+    echo ""
+  else
+    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-full-${version}.tar.gz.sum256 | cut -d' ' -f1)\"\nENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-addons-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
+  fi
 }
 
 function create_variant() {
@@ -129,7 +141,8 @@ function create_variant() {
     s/%%VERSION%%/'"${2:-${1}}"'/g;
     s/%%CMD%%/'"${cmd[$variant]}"'/g;
     s|%%VARIANT_EXTRAS%%|'"${extras[$variant]}"'|g;
-    s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type]}"'|g;
+    s|%%DOWNLOAD_SHA256%%|'"$(get_sha256_string $install_type ${2:-${1}})"'|g;
+    s|%%INSTALL_EXTRAS%%|'"${install_extras[$install_type-${base[$variant]}]}"'|g;
     s/%%APCU_VERSION%%/'"${pecl_versions[APCu]}"'/g;
     s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
     s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;

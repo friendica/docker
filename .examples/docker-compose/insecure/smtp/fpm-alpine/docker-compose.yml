@@ -1,0 +1,74 @@
+version: '2.1'
+services:
+
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - db:/var/lib/mysql/
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    env_file:
+      - db.env
+
+  app:
+    image: friendica:fpm-alpine
+    restart: always
+    volumes:
+      - friendica:/var/www/html
+    environment:
+      - FRIENDICA_ADMIN_MAIL=
+      - FRIENDICA_TZ=
+      - FRIENDICA_LANG=
+      - FRIENDICA_URL=
+      - FRIENDICA_SITENAME=
+      - SMTP=smtp.office365.com
+      - SMTP_PORT=587
+      - SMTP_DOMAIN=hotmail.com
+      - SMTP_FROM=user
+      - SMTP_TLS=true
+      - SMTP_STARTTLS=true
+      - SMTP_AUTH=on
+      - SMTP_AUTH_USER=xxx@hotmail.com
+      - SMTP_AUTH_PASS=password
+    env_file:
+      - db.env
+    depends_on:
+      - db
+
+  cron:
+    image: friendica:fpm-alpine
+    restart: always
+    volumes:
+      - friendica:/var/www/html
+    environment:
+      - FRIENDICA_ADMIN_MAIL=
+      - FRIENDICA_TZ=
+      - SMTP=smtp.office365.com
+      - SMTP_PORT=587
+      - SMTP_DOMAIN=hotmail.com
+      - SMTP_FROM=user
+      - SMTP_TLS=true
+      - SMTP_STARTTLS=true
+      - SMTP_AUTH=on
+      - SMTP_AUTH_USER=xxx@hotmail.com
+      - SMTP_AUTH_PASS=password
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - app
+
+  web:
+    image: nginx
+    restart: always
+    volumes:
+      - friendica:/var/www/html:ro
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+
+volumes:
+  db:
+  friendica:

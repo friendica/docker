@@ -1,4 +1,5 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:7.3-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -77,10 +78,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-%%APCU_VERSION%%; \
-    pecl install memcached-%%MEMCACHED_VERSION%%; \
-    pecl install redis-%%REDIS_VERSION%%; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
+    pecl install APCu-5.1.20; \
+    pecl install memcached-3.1.5; \
+    pecl install redis-5.3.4; \
+    pecl install imagick-3.5.1; \
     \
     docker-php-ext-enable \
         apcu \
@@ -122,14 +123,50 @@ RUN set -ex; \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
-%%VARIANT_EXTRAS%%
 
-ENV FRIENDICA_VERSION "%%VERSION%%"
-ENV FRIENDICA_ADDONS "%%VERSION%%"
-%%DOWNLOAD_SHA256%%
-%%INSTALL_EXTRAS%%
+
+ENV FRIENDICA_VERSION "2021.09"
+ENV FRIENDICA_ADDONS "2021.09"
+ENV FRIENDICA_DOWNLOAD_SHA256 "49cad34edf1b500b4623d0b92ba32265fe322aac9a3efb08fa234f600bfd817a"
+ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "1910e732b3ca3fc35e57835f217746d6e1fbed1f76d8da1c989742ac2237090d"
+
+RUN set -ex; \
+     apk add --no-cache --virtual .fetch-deps \
+            gnupg \
+        ; \
+        \
+    export GNUPGHOME="$(mktemp -d)"; \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
+    \
+    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
+    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \
+    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" | sha256sum -c; \
+    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
+    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \
+    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    \
+    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
+            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
+    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
+            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
+    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
+    mkdir -p /usr/src/friendica/proxy; \
+    mkdir -p /usr/src/friendica/addon; \
+    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
+    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
+    \
+    gpgconf --kill all; \
+    rm -rf "$GNUPGHOME"; \
+    \
+    apk del .fetch-deps
+
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/%%ENTRYPOINT%%"]
-CMD ["%%CMD%%"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["php-fpm"]

@@ -74,7 +74,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/friendica/ /var/www/html/
 
     # Update docker-based config files, but never delete other config files
-    rsync $rsync_options --update /usr/src/friendica/config/ /var/www/html/config/
+    rsync $rsync_options --update --exclude=/addon.config.php --exclude=/local.config.php /usr/src/friendica/config/ /var/www/html/config/
 
     # In case there is no .htaccess, copy it from the default dist file
     if [ ! -f "/var/www/html/.htaccess" ]; then
@@ -123,7 +123,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
           # load other config files (*.config.php) to the config folder
           if [ -d "/usr/src/config" ]; then
-            rsync $rsync_options --ignore-existing /usr/src/config/ /var/www/html/config/
+            rsync $rsync_options --ignore-existing /usr/src/friendica/config/ /var/www/html/config/
           fi
 
           echo "Installation finished"

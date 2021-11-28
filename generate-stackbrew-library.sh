@@ -57,6 +57,7 @@ cat <<-EOH
 
 Maintainers: Friendica <info@friendi.ca> (@friendica), Philipp Holzer <admin@philipp.info> (@nupplaphil)
 GitRepo: https://github.com/friendica/docker.git
+GitFetch: refs/heads/stable
 EOH
 
 # prints "$2$1$3$1...$N"

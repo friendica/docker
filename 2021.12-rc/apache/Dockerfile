@@ -153,8 +153,8 @@ RUN set -ex;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV FRIENDICA_VERSION "2021.12-dev"
-ENV FRIENDICA_ADDONS "2021.12-dev"
+ENV FRIENDICA_VERSION "2021.12-rc"
+ENV FRIENDICA_ADDONS "2021.12-rc"
 
 RUN set -ex; \
     fetchDeps=" \

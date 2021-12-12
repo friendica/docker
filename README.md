@@ -92,6 +92,13 @@ There are two options to enable background tasks for Friendica:
 -	`REDIS_PW` (optional) The password for the redis instance (in case of locking).
 -	`REDIS_DB` (optional) The database instance of the redis instance (in case of locking).
 
+**PHP limits**
+
+-	`PHP_MEMORY_LIMIT` (default `512M`) This sets the maximum amount of memory in bytes that a script is allowed to allocate.
+This is meant to help prevent poorly written scripts from eating up all available memory, but it can prevent normal operation if set too tight.
+-	`PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files.
+Note that you may have to change other limits depending on your client, webserver or operating system. 
+
 ## Administrator account
 
 Because Friendica links the administrator account to a specific mail address, you **have** to set a valid address for `MAILNAME`.

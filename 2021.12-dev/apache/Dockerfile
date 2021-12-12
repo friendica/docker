@@ -159,6 +159,7 @@ RUN set -ex;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
+ENV FRIENDICA_SYSLOG_FLAGS 39 // LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_VERSION "2021.12-dev"
 ENV FRIENDICA_ADDONS "2021.12-dev"
 

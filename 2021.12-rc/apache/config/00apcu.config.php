@@ -7,6 +7,5 @@
 return [
 	'system' => [
 		'cache_driver' => 'apcu',
-		'session_handler' => 'cache',
 	],
 ];

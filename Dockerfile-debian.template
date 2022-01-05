@@ -64,6 +64,7 @@ RUN set -ex; \
         libmemcached-dev \
         libgraphicsmagick1-dev \
         libfreetype6-dev \
+        libwebp-dev \
         librsvg2-2 \
         libzip-dev \
         libldap2-dev \
@@ -74,6 +75,7 @@ RUN set -ex; \
     docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
+        --with-webp \
     ; \
     docker-php-ext-configure ldap \
         --with-libdir=lib/$debMultiarch/ \
@@ -81,6 +83,7 @@ RUN set -ex; \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
         gd \
+        exif \
         zip \
         opcache \
         ctype \

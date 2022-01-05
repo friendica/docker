@@ -54,6 +54,7 @@ RUN set -ex; \
         cyrus-sasl-dev \
         libjpeg-turbo-dev \
         freetype-dev \
+        libwebp-dev \
         librsvg \
         pcre-dev \
         libzip-dev \
@@ -64,10 +65,12 @@ RUN set -ex; \
     docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
+        --with-webp \
     ; \
     \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
+        exif \
         gd \
         zip \
         opcache \

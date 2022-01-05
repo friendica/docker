@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.3-fpm-alpine
+FROM php:7.4-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -54,6 +54,7 @@ RUN set -ex; \
         cyrus-sasl-dev \
         libjpeg-turbo-dev \
         freetype-dev \
+        libwebp-dev \
         librsvg \
         pcre-dev \
         libzip-dev \
@@ -62,14 +63,14 @@ RUN set -ex; \
     ; \
     \
     docker-php-ext-configure gd \
-        --with-gd \
-        --with-freetype-dir=/usr/include/ \
-        --with-png-dir=/usr/include/ \
-        --with-jpeg-dir=/usr/include/ \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
     ; \
     \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
+        exif \
         gd \
         zip \
         opcache \

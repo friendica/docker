@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.3-apache-buster
+FROM php:7.4-apache-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -65,6 +65,7 @@ RUN set -ex; \
         libmemcached-dev \
         libgraphicsmagick1-dev \
         libfreetype6-dev \
+        libwebp-dev \
         librsvg2-2 \
         libzip-dev \
         libldap2-dev \
@@ -73,10 +74,9 @@ RUN set -ex; \
         debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     docker-php-ext-configure gd \
-        --with-gd \
-        --with-freetype-dir=/usr/include/ \
-        --with-png-dir=/usr/include/ \
-        --with-jpeg-dir=/usr/include/ \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
     ; \
     docker-php-ext-configure ldap \
         --with-libdir=lib/$debMultiarch/ \
@@ -84,6 +84,7 @@ RUN set -ex; \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
         gd \
+        exif \
         zip \
         opcache \
         ctype \

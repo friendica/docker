@@ -70,6 +70,7 @@ There are two options to enable background tasks for Friendica:
 -	`FRIENDICA_NO_VALIDATION` If set to `true`, the URL and E-Mail validation will be disabled.
 -	`FRIENDICA_DATA` Set the name of the storage provider (e.g `Filesystem` to use filesystem), default is the DB backend.
 -	`FRIENDICA_DATA_DIR` The data directory of the Friendica server (Default: /var/www/data).
+-	`FRIENDICA_UPDATE` Force starting the Friendica update even it's the same version (Default: `false`).
 
 **Friendica Logging**
 
@@ -370,7 +371,7 @@ Then run `docker-compose up -d`, now you can access Friendica at http://localhos
 # Special settings for DEV/RC images
 
 The `*-dev` and `*-rc` branches are directly downloaded and verified at each docker start to ensure that the latest sources are used.
-It's possible to disable this behaviour by setting the environment variable `FRIENDICA_DISABLE_UPGRADE` to `true`.
+The parameter `FRIENDICA_UPGRADE` is required to be `true` (Default: `false`) to activate this behavior.
 
 # Questions / Issues
 

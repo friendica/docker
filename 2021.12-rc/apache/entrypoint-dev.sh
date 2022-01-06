@@ -2,7 +2,7 @@
 set -eu
 
 # just check if we execute apache or php-fpm
-if (expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]) && [ "${FRIENDICA_DISABLE_UPGRADE:-false}" = "false" ]; then
+if (expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]) && [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then
   curl -fsSL -o "/usr/src/friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256" "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.sum256"
   curl -fsSL -o "/usr/src/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.sum256" "https://files.friendi.ca/friendica-full-${FRIENDICA_ADDONS}.tar.gz.sum256"
 

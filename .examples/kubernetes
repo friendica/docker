@@ -1,0 +1,417 @@
+apiVersion: v1
+items:
+
+- apiVersion: v1 (created by using "Create an application" in portainer)
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-01-09T17:56:08Z"
+    generateName: friendica-7f886799f9-
+    labels:
+      app: friendica
+      io.portainer.kubernetes.application.name: friendica
+      pod-template-hash: 7f886799f9
+    name: friendica-7f886799f9-rf6x5
+    namespace: friendica-base
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: friendica-7f886799f9
+      uid: 43d1dc0f-6932-4268-bec0-7df1050e467e
+    resourceVersion: "11351056"
+    uid: 95537b80-fa4d-4623-b8ad-cd9c5097de38
+  spec:
+    containers:
+    - env:
+      - name: FRIENDICA_TZ
+        value: America/Chicago
+      - name: MYSQL_DATABASE
+        value: MYSQL_DATABASE
+      - name: MYSQL_HOST
+        value: MYSQL_HOST
+      - name: MYSQL_PASSWORD
+        value: MYSQL_PASSWORD
+      - name: MYSQL_USER
+        value: MYSQL_USER
+      - name: SMTP
+        value: smtp.gmail.com
+      - name: SMTP_AUTH
+        value: "on"
+      - name: SMTP_AUTH_PASS
+        value: SMTP_AUTH_PASS
+      - name: SMTP_AUTH_USER
+        value: SMTP@AUTH.USER
+      - name: SMTP_DOMAIN
+        value: SMTP.DOMAIN
+      - name: SMTP_FROM
+        value: SMTP_FROM
+      - name: SMTP_PORT
+        value: "587"
+      - name: SMTP_STARTTLS
+        value: "on"
+      - name: SMTP_TLS
+        value: "on"
+      image: friendica:stable
+      imagePullPolicy: IfNotPresent
+      name: friendica
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/www/html
+        name: friendica-f8400c86-d7cd-4a13-a8c0-1c57a74a3885
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-k7vt2
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: node1
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: friendica-f8400c86-d7cd-4a13-a8c0-1c57a74a3885
+      persistentVolumeClaim:
+        claimName: friendica-f8400c86-d7cd-4a13-a8c0-1c57a74a3885
+    - name: kube-api-access-k7vt2
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-09T17:56:08Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-10T00:17:26Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-10T00:17:26Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-09T17:56:08Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://caed84194b8f612bd7a690ed4fd655e9da4821bcc072f20c327e3a127909c4fa
+      image: docker.io/library/friendica:stable
+      imageID: docker.io/library/friendica@sha256:cbc1daaf680eb26b169dbf1b712b32b2893c923322b77fe56e70db82a573dd10
+      lastState:
+        terminated:
+          containerID: containerd://8aef259cb03be99056e22d48925c3aa88bf6384c3bda2a02e682ecae87036ded
+          exitCode: 255
+          finishedAt: "2022-01-10T00:17:00Z"
+          reason: Unknown
+          startedAt: "2022-01-09T17:56:10Z"
+      name: friendica
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-01-10T00:17:26Z"
+    hostIP: hostIP
+    phase: Running
+    podIP: podip
+    podIPs:
+    - ip: ip
+    qosClass: BestEffort
+    startTime: "2022-01-09T17:56:08Z"
+
+- apiVersion: v1 (created using "Create from manifest" with "Web editor" with kubernetes selected)
+  kind: Pod
+  metadata:
+    creationTimestamp: "2022-01-09T20:22:39Z"
+    generateName: cron-6bfbffbfb7-
+    labels:
+      name: cron
+      octopusexport: OctopusExport
+      pod-template-hash: 6bfbffbfb7
+    name: cron-6bfbffbfb7-qm4mr
+    namespace: friendica-base
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: cron-6bfbffbfb7
+      uid: feefc9e9-a39e-4514-91a9-1d778c7f5d0f
+    resourceVersion: "11351066"
+    uid: 067b9e66-ef5f-4ddd-a2c7-e10d8aae362b
+  spec:
+    containers:
+    - args:
+      - /cron.sh
+      command:
+      - /bin/sh
+      env:
+      - name: MYSQL_USER
+        value: MYSQL_USER
+      - name: MYSQL_PASSWORD
+        value: MYSQL_PASSWORD
+      - name: MYSQL_HOST
+        value: MYSQL_HOST
+      - name: MYSQL_DATABASE
+        value: MYSQL_DATABASE
+      image: friendica:stable
+      imagePullPolicy: IfNotPresent
+      name: cron
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/www/html
+        name: friendica
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-2km6k
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: node1
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: friendica
+      persistentVolumeClaim:
+        claimName: friendica-f8400c86-d7cd-4a13-a8c0-1c57a74a3885
+    - name: kube-api-access-2km6k
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-09T20:22:39Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-10T00:17:26Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-10T00:17:26Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-09T20:22:39Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://817309d667b767ef4f30065da29a7149562875faf72419cf9f333fab57e10563
+      image: docker.io/library/friendica:stable
+      imageID: docker.io/library/friendica@sha256:cbc1daaf680eb26b169dbf1b712b32b2893c923322b77fe56e70db82a573dd10
+      lastState:
+        terminated:
+          containerID: containerd://87ac21ca1a926259b4d3fde90f424c5a7a2dfdecaaa38c8388ef6b58e6ddf144
+          exitCode: 255
+          finishedAt: "2022-01-10T00:17:00Z"
+          reason: Unknown
+          startedAt: "2022-01-09T20:22:41Z"
+      name: cron
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2022-01-10T00:17:26Z"
+    hostIP: hostIP
+    phase: Running
+    podIP: podIP
+    podIPs:
+    - ip: ip
+    qosClass: BestEffort
+    startTime: "2022-01-09T20:22:39Z"
+
+- apiVersion: v1 (created by using "Create an application" in portainer)
+  kind: Pod
+  metadata:
+    creationTimestamp: "2021-10-21T20:14:13Z"
+    generateName: mariadb-6dcc7f5545-
+    labels:
+      app: mariadb
+      io.portainer.kubernetes.application.name: mariadb
+      pod-template-hash: 6dcc7f5545
+    name: mariadb-6dcc7f5545-8wt7p
+    namespace: friendica-base
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: mariadb-6dcc7f5545
+      uid: c8d4773b-07fd-42c7-8186-d5f7cfd21955
+    resourceVersion: "11351337"
+    uid: 43c599df-d52a-4b19-9b4f-7839d5b3c645
+  spec:
+    containers:
+    - env:
+      - name: MYSQL_DATABASE
+        value: MYSQL_DATABASE
+      - name: MYSQL_PASSWORD
+        value: MYSQL_PASSWORD
+      - name: MYSQL_RANDOM_ROOT_PASSWORD
+        value: "yes"
+      - name: MYSQL_USER
+        value: MYSQL_USER
+      image: mariadb
+      imagePullPolicy: Always
+      name: mariadb
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/lib/mysql
+        name: mariadb-cedac3ef-94a4-433a-a7ff-2f329a46ec98
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fb74g
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: node2
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: mariadb-cedac3ef-94a4-433a-a7ff-2f329a46ec98
+      persistentVolumeClaim:
+        claimName: mariadb-cedac3ef-94a4-433a-a7ff-2f329a46ec98
+    - name: kube-api-access-fb74g
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-22T01:45:50Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-10T00:20:27Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2022-01-10T00:20:27Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2021-10-22T01:45:50Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://ec883758b8673faa53574145c30ed84ce695b7e6678b176953b0df0e565520bb
+      image: docker.io/library/mariadb:latest
+      imageID: docker.io/library/mariadb@sha256:5a37e65a6414d78f60d523c4ddcf93d715854337beb46f8beeb1a23d83262184
+      lastState:
+        terminated:
+          containerID: containerd://55a6481bca697efcf39813d8367a7333d67df0f929b32333a99ae1069708118b
+          exitCode: 255
+          finishedAt: "2022-01-10T00:18:40Z"
+          reason: Unknown
+          startedAt: "2022-01-06T04:36:44Z"
+      name: mariadb
+      ready: true
+      restartCount: 12
+      started: true
+      state:
+        running:
+          startedAt: "2022-01-10T00:20:26Z"
+    hostIP: hostIP
+    phase: Running
+    podIP: podIP
+    podIPs:
+    - ip: ip
+    qosClass: BestEffort
+    startTime: "2021-10-22T01:45:50Z"
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

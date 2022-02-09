@@ -3,11 +3,10 @@ set -eu
 
 # run an command with the www-data user
 run_as() {
-  set -- -c "cd /var/www/html; $*"
   if [ "$(id -u)" -eq 0 ]; then
-    su - www-data -s /bin/sh "$@"
+    su -p www-data -s /bin/sh -c "$1"
   else
-    sh "$@"
+    sh -c "$1"
   fi
 }
 

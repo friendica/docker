@@ -99,7 +99,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
       if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${FRIENDICA_ADMIN_MAIL+x}" ] && [ -n "${FRIENDICA_URL+x}" ]; then
         echo "Installation with environment variables"
 
-        FRIENDICA_TZ=${FRIENDICA_TZ:-America/LosAngeles}
+        FRIENDICA_TZ=${FRIENDICA_TZ:-America/New_York}
         FRIENDICA_LANG=${FRIENDICA_LANG:-en}
         MYSQL_PORT=${MYSQL_PORT:-3306}
 

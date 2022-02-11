@@ -43,6 +43,32 @@ sh /setup_msmtp.sh
 
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
+  if [ -n "${REDIS_HOST+x}" ]; then
+    echo "Configuring Redis as session handler"
+    {
+      file_env REDIS_PW
+      echo 'session.save_handler = redis'
+      # check if redis host is an unix socket path
+      if [ "${REDIS_HOST:0:1}" = "/" ]; then
+        if [ -n "${REDIS_PW+x}" ]; then
+          echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_PW}\""
+        else
+          echo "session.save_path = \"unix://${REDIS_HOST}\""
+        fi
+      # check if redis password has been set
+      elif [ -n "${REDIS_PW+x}" ]; then
+          echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_PORT:=6379}?auth=${REDIS_PW}\""
+      else
+          echo "session.save_path = \"tcp://${REDIS_HOST}:${REDIS_PORT:=6379}\""
+      fi
+      echo "redis.session.locking_enabled = 1"
+      echo "redis.session.lock_retries = -1"
+      # redis.session.lock_wait_time is specified in microseconds.
+      # Wait 10ms before retrying the lock rather than the default 2ms.
+      echo "redis.session.lock_wait_time = 10000"
+    } > /usr/local/etc/php/conf.d/redis-session.ini
+  fi
+
   installed_version="0.0.0.0"
   if [ -f /var/www/html/VERSION ]; then
     installed_version="$(cat /var/www/html/VERSION)"

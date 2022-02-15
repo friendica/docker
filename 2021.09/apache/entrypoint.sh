@@ -3,8 +3,9 @@ set -eu
 
 # run an command with the www-data user
 run_as() {
+  set -- -c "cd /var/www/html; $*"
   if [ "$(id -u)" -eq 0 ]; then
-    su -p www-data -s /bin/sh -c "$1"
+    su - www-data -s /bin/sh -c "export PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}; export PHP_UPLOAD_LIMIT=${PHP_UPLOAD_LIMIT}; $1"
   else
     sh -c "$1"
   fi

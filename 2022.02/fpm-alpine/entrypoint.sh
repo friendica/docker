@@ -3,12 +3,11 @@ set -eu
 
 # run an command with the www-data user
 run_as() {
-  set -- -c "cd /var/www/html; $*"
+  set -- sh -c "cd /var/www/html; $*"
   if [ "$(id -u)" -eq 0 ]; then
-    su - www-data -s /bin/sh -c "export PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT}; export PHP_UPLOAD_LIMIT=${PHP_UPLOAD_LIMIT}; $1"
-  else
-    sh -c "$1"
+    set -- gosu www-data "$@"
   fi
+  "$@"
 }
 
 # checks if the the first parameter is greater than the second parameter

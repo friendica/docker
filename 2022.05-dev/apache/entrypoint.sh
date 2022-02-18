@@ -3,11 +3,11 @@ set -eu
 
 # run an command with the www-data user
 run_as() {
+  set -- sh -c "cd /var/www/html; $*"
   if [ "$(id -u)" -eq 0 ]; then
-    su -p www-data -s /bin/sh -c "$1"
-  else
-    sh -c "$1"
+    set -- gosu www-data "$@"
   fi
+  "$@"
 }
 
 # checks if the the first parameter is greater than the second parameter
@@ -20,11 +20,11 @@ version_greater() {
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
 #  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
 file_env() {
-    local var="$1"
-    local fileVar="${var}_FILE"
-    local def="${2:-}"
-    local varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
-    local fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
+    var="$1"
+    fileVar="${var}_FILE"
+    def="${2:-}"
+    varValue=$(env | grep -E "^${var}=" | sed -E -e "s/^${var}=//")
+    fileVarValue=$(env | grep -E "^${fileVar}=" | sed -E -e "s/^${fileVar}=//")
     if [ -n "${varValue}" ] && [ -n "${fileVarValue}" ]; then
         echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
         exit 1
@@ -49,7 +49,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
       file_env REDIS_PW
       echo 'session.save_handler = redis'
       # check if redis host is an unix socket path
-      if [ "${REDIS_HOST:0:1}" = "/" ]; then
+      if expr "${REDIS_HOST}" : "/" 1>/dev/null; then
         if [ -n "${REDIS_PW+x}" ]; then
           echo "session.save_path = \"unix://${REDIS_HOST}?auth=${REDIS_PW}\""
         else

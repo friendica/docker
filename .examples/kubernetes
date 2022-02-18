@@ -53,7 +53,7 @@ items:
       - name: SMTP_TLS
         value: "on"
       image: friendica:stable
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       name: friendica
       resources: {}
       terminationMessagePath: /dev/termination-log
@@ -186,7 +186,7 @@ items:
       - name: MYSQL_DATABASE
         value: MYSQL_DATABASE
       image: friendica:stable
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       name: cron
       resources: {}
       terminationMessagePath: /dev/termination-log

@@ -74,7 +74,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
     installed_version="$(cat /var/www/html/VERSION)"
   fi
 
-  image_version="$(cat /usr/src/friendica/VERSION)"
+  image_version="0.0.0.0"
+  if [ -f /usr/src/friendica/VERSION ]; then
+    image_version="$(cat /usr/src/friendica/VERSION)"
+  else
+    echo "No new Friendica sources found (enable FRIENDICA_UPGRADE for new sources)"
+  fi
 
   # no downgrading possible
   if version_greater "$installed_version" "$image_version"; then

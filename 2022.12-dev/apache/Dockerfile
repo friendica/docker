@@ -69,6 +69,7 @@ RUN set -ex; \
         librsvg2-2 \
         libzip-dev \
         libldap2-dev \
+        libgmp-dev \
     ; \
     \
         debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -90,6 +91,7 @@ RUN set -ex; \
         ctype \
         pcntl \
         ldap \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

@@ -2,7 +2,6 @@
 set -eo pipefail
 
 declare -A php_version=(
-  [2022.10]='7.4'
   [default]='8.0'
 )
 

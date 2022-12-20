@@ -136,16 +136,48 @@ VOLUME /var/www/html
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39
-ENV FRIENDICA_VERSION "2022.12-dev"
-ENV FRIENDICA_ADDONS "2022.12-dev"
+ENV FRIENDICA_VERSION "2022.12"
+ENV FRIENDICA_ADDONS "2022.12"
+ENV FRIENDICA_DOWNLOAD_SHA256 "05c6b8152314dc45fd2e574994b531e7f1e1509a70dc56cd78bf1e3c07227092"
+ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "feff1548f01431bd3822372a6c228c872d70e2831c0877b248aae66e1ded8315"
 
 RUN set -ex; \
      apk add --no-cache --virtual .fetch-deps \
             gnupg \
-        ;
+        ; \
+        \
+    export GNUPGHOME="$(mktemp -d)"; \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
+    \
+    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
+    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \
+        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \
+    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" | sha256sum -c; \
+    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
+    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \
+    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    \
+    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
+            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
+    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
+            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
+    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
+    mkdir -p /usr/src/friendica/proxy; \
+    mkdir -p /usr/src/friendica/addon; \
+    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
+    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
+    \
+    gpgconf --kill all; \
+    rm -rf "$GNUPGHOME"; \
+    \
+    apk del .fetch-deps
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/entrypoint-dev.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

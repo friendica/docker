@@ -69,6 +69,7 @@ RUN set -ex; \
         libzip-dev \
         libldap2-dev \
         libgmp-dev \
+        libmagickcore-6.q16-6-extra \
     ; \
     \
         debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \

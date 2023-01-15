@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.0-apache-bullseye
+FROM php:8.0-fpm-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -153,22 +153,13 @@ RUN set -ex; \
 
 VOLUME /var/www/html
 
-RUN set -ex;\
-    a2enmod rewrite remoteip ;\
-    {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-    } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39
-ENV FRIENDICA_VERSION "2022.12"
-ENV FRIENDICA_ADDONS "2022.12"
-ENV FRIENDICA_DOWNLOAD_SHA256 "05c6b8152314dc45fd2e574994b531e7f1e1509a70dc56cd78bf1e3c07227092"
-ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "feff1548f01431bd3822372a6c228c872d70e2831c0877b248aae66e1ded8315"
+ENV FRIENDICA_VERSION "2023.01"
+ENV FRIENDICA_ADDONS "2023.01"
+ENV FRIENDICA_DOWNLOAD_SHA256 "4496990805142d20051a5273904a47809ae12f1cadd74de305d5ae167b7cdf6e"
+ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "48117926a6ffeb58aaf81795cfbd5ad24acf76693744e92817593e310acc5262"
 
 RUN set -ex; \
     fetchDeps=" \
@@ -212,4 +203,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]

@@ -1,31 +1,24 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.0-fpm-bullseye
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:8.0-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
+    apk add --no-cache \
         rsync \
-        bzip2 \
+        imagemagick \
 # For mail() support
         msmtp \
-        tini \
-    ;
+        shadow \
+        tini;
 
 ENV GOSU_VERSION 1.14
 RUN set -eux; \
-# save list of currently installed packages for later so we can clean up
-	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends ca-certificates wget; \
-	if ! command -v gpg; then \
-		apt-get install -y --no-install-recommends gnupg2 dirmngr; \
-	elif gpg --version | grep -q '^gpg (GnuPG) 1\.'; then \
-# "This package provides support for HKPS keyservers." (GnuPG 1.x only)
-		apt-get install -y --no-install-recommends gnupg-curl; \
-	fi; \
-	rm -rf /var/lib/apt/lists/*; \
+	\
+	apk add --no-cache --virtual .gosu-deps \
+		ca-certificates \
+		dpkg \
+		gnupg \
+	; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -39,9 +32,7 @@ RUN set -eux; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
 # clean up fetch dependencies
-	apt-mark auto '.*' > /dev/null; \
-	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	apk del --no-network .gosu-deps; \
 	\
 	chmod +x /usr/local/bin/gosu; \
 # verify that the binary works
@@ -52,51 +43,46 @@ RUN set -eux; \
 # see https://friendi.ca/resources/requirements/
 RUN set -ex; \
     \
-    savedAptMark="$(apt-mark showmanual)"; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
+    apk add --no-cache --virtual .build-deps \
         mariadb-client \
         bash \
+        $PHPIZE_DEPS \
         libpng-dev \
-        libjpeg62-turbo-dev \
+        libjpeg-turbo-dev \
+        imagemagick-dev \
         libtool \
-        libmagick++-dev \
         libmemcached-dev \
-        libgraphicsmagick1-dev \
-        libfreetype6-dev \
+        cyrus-sasl-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
         libwebp-dev \
-        librsvg2-2 \
+        librsvg \
+        pcre-dev \
         libzip-dev \
-        libldap2-dev \
-        libgmp-dev \
-        libmagickcore-6.q16-6-extra \
+        icu-dev \
+        openldap-dev \
+        gmp-dev \
     ; \
-    \
-        debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
         --with-webp \
     ; \
-    docker-php-ext-configure ldap \
-        --with-libdir=lib/$debMultiarch/ \
-    ;\
+    \
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
-        gd \
         exif \
+        gd \
         zip \
         opcache \
-        ctype \
         pcntl \
         ldap \
         gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install apcu-5.1.22; \
+    pecl install APCu-5.1.22; \
     pecl install memcached-3.2.0RC2; \
     pecl install redis-5.3.7; \
     pecl install imagick-3.7.0; \
@@ -108,19 +94,14 @@ RUN set -ex; \
         imagick \
     ; \
     \
-# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-    apt-mark auto '.*' > /dev/null; \
-    apt-mark manual $savedAptMark; \
-    ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-        | awk '/=>/ { print $3 }' \
-        | sort -u \
-        | xargs -r dpkg-query -S \
-        | cut -d: -f1 \
-        | sort -u \
-        | xargs -rt apt-mark manual; \
-    \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-    rm -rf /var/lib/apt/lists/*
+    runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )"; \
+    apk add --no-network --virtual .friendica-phpext-rundeps $runDeps; \
+    apk del --no-network .build-deps;
 
 # set recommended PHP.ini settings
 ENV PHP_MEMORY_LIMIT 512M
@@ -156,18 +137,16 @@ VOLUME /var/www/html
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39
-ENV FRIENDICA_VERSION "2022.12"
-ENV FRIENDICA_ADDONS "2022.12"
-ENV FRIENDICA_DOWNLOAD_SHA256 "05c6b8152314dc45fd2e574994b531e7f1e1509a70dc56cd78bf1e3c07227092"
-ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "feff1548f01431bd3822372a6c228c872d70e2831c0877b248aae66e1ded8315"
+ENV FRIENDICA_VERSION "2023.01"
+ENV FRIENDICA_ADDONS "2023.01"
+ENV FRIENDICA_DOWNLOAD_SHA256 "4496990805142d20051a5273904a47809ae12f1cadd74de305d5ae167b7cdf6e"
+ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "48117926a6ffeb58aaf81795cfbd5ad24acf76693744e92817593e310acc5262"
 
 RUN set -ex; \
-    fetchDeps=" \
-        gnupg \
-    "; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends $fetchDeps; \
-    \
+     apk add --no-cache --virtual .fetch-deps \
+            gnupg \
+        ; \
+        \
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
     \
@@ -196,8 +175,7 @@ RUN set -ex; \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"; \
     \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
-    rm -rf /var/lib/apt/lists/*
+    apk del .fetch-deps
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/

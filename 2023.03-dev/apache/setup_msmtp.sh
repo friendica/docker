@@ -30,7 +30,7 @@ if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost"
     if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "auth $smtp_auth"; fi
     if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "user \"$SMTP_AUTH_USER\""; fi
     if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "password \"$SMTP_AUTH_PASS\""; fi
-    echo "logfile /var/log/msmtp.log"
+    echo "logfile -"
     echo "aliases /etc/aliases"
   } >/etc/msmtprc
 

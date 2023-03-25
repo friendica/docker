@@ -56,7 +56,7 @@ Friendica requires background tasks to fetch and send all kind of messages and m
 This setup is crucial for the Friendica node.
 There are two options to enable background tasks for Friendica:
 
--	Using the default Image and manually setup background tasks (see Friendica [Install](https://github.com/friendica/friendica/blob/2021.03-rc/doc/Install.md#required-background-tasks))
+-	Using the default Image and manually setup background tasks (see Friendica [Install](https://github.com/friendica/friendica/blob/stable/doc/Install.md#required-background-tasks))
 -	Using the default image (apache, fpm, fpm-alpine) and starting a dedicated `cron` instance and use `cron.sh` as startup command (like this [Example](https://github.com/friendica/docker/blob/stable/.examples/docker-compose/insecure/mariadb-cron-redis/apache/docker-compose.yml))
 
 ## Possible Environment Variables

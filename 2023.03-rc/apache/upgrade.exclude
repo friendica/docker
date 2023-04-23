@@ -1,9 +1,0 @@
-/photo/
-/proxy/
-/.htconfig.php
-/.htaccess
-/home.*
-/config/
-/storage/
-/log/
-*.log

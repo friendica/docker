@@ -7,3 +7,4 @@
 /storage/
 /log/
 *.log
+/nextcloud-init-sync.lock

@@ -7,3 +7,4 @@
 /storage/
 /log/
 *.log
+/friendica-init-sync.lock

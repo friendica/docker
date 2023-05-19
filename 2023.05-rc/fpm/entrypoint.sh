@@ -74,7 +74,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
   (
     if ! flock -n 9; then
         # If we couldn't get it immediately, show a message, then wait for real
-        echo "Another process is initializing Nextcloud. Waiting..."
+        echo "Another process is initializing Friendica. Waiting..."
         flock 9
     fi
 
@@ -179,7 +179,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
         echo "Upgrading finished"
       fi
     fi
-  ) 9> /var/www/html/nextcloud-init-sync.lock
+  ) 9> /var/www/html/friendica-init-sync.lock
 fi
 
 exec "$@"

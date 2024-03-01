@@ -7,6 +7,8 @@ if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost"
 
   smtp_from="${SMTP_FROM:=no-reply}"
   smtp_auth="${SMTP_AUTH:=on}"
+  # https://github.com/friendica/docker/issues/233
+  smtp_starttls="${SMTP_STARTTLS:=on}"
 
   # Setup MSMTP
   usermod --comment "$(echo "$SITENAME" | tr -dc '[:print:]')" root
@@ -26,7 +28,7 @@ if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost"
     echo "from \"$smtp_from@$SMTP_DOMAIN\""
     echo "tls_certcheck off" # No certcheck because of internal docker mail-hostnames
     if [ -n "${SMTP_TLS+x}" ]; then echo "tls on"; fi
-    if [ -n "${SMTP_STARTTLS+x}" ]; then echo "tls_starttls on"; fi
+    echo "tls_starttls $smtp_starttls";
     if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "auth $smtp_auth"; fi
     if [ -n "${SMTP_AUTH_USER+x}" ]; then echo "user \"$SMTP_AUTH_USER\""; fi
     if [ -n "${SMTP_AUTH_PASS+x}" ]; then echo "password \"$SMTP_AUTH_PASS\""; fi

@@ -147,6 +147,7 @@ RUN set -ex; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
     } > /usr/local/etc/php/conf.d/friendica.ini; \
+    ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \

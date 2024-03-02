@@ -79,6 +79,7 @@ RUN set -ex; \
         pcntl \
         ldap \
         gmp \
+        intl \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

@@ -1,0 +1,148 @@
+version: '3'
+services:
+
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - friendica-redis-vol-1:/data
+    command:
+      - --save 60 1
+      - --loglevel warning
+
+  app:
+    build: ./app
+    restart: always
+    command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '5.00'
+          memory: '10g'
+        reservations:
+          cpus: '1.00'
+          memory: '1.5g'
+    depends_on:
+      - redis
+    volumes:
+      - friendica-vol-1:/var/www/html
+      - friendica-avatar-1:/var/www/avatar
+      - ./config/app/www.overload.conf:/usr/local/etc/php-fpm.d/www.overload.conf:ro
+      - ./config/app/friendica.ini:/usr/local/etc/php/conf.d/friendica.ini:ro
+    environment:
+      - MYSQL_USER_FILE=/run/secrets/mysql_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/mysql_password
+      - MYSQL_DATABASE_FILE=/run/secrets/mysql_database
+      - MYSQL_HOST=${DBHOST}
+      - MYSQL_PORT=${DBPORT}
+      - FRIENDICA_ADMIN_MAIL=${MAILNAME}
+      - FRIENDICA_TZ=${TZ}
+      - FRIENDICA_LANG=${LANGUAGE}
+      - FRIENDICA_UPDATE=true
+      - SITENAME=${SITENAME}
+      - SMTP=${SMTP}
+      - SMTP_DOMAIN=${SMTP_DOMAIN}
+      - SMTP_AUTH_USER=${SMTP_AUTH_USER}
+      - SMTP_AUTH_PASS=${SMTP_AUTH_PASS}
+      - SMTP_TLS=${SMTP_TLS}
+      - SMTP_STARTTLS=${SMTP_STARTTLS}
+      - REDIS_HOST=redis
+      - FRIENDICA_DISTRIBUTED_CACHE_DRIVER=redis
+      - FRIENDICA_LOGGER=syslog
+      - FRIENDICA_SYSLOG_FLAGS=39
+      - FRIENDICA_DATA=Filesystem
+      - FRIENDICA_DEBUGGING=true
+    secrets:
+      - mysql_database
+      - mysql_user
+      - mysql_password
+
+  cron:
+    build: ./app
+    restart: always
+    volumes:
+      - friendica-vol-1:/var/www/html
+      - friendica-avatar-1:/var/www/avatar
+      - ./config/app/www.overloaded.conf:/usr/local/etc/php-fpm.d/www.overloaded.conf:ro
+      - ./config/app/friendica.ini:/usr/local/etc/php/conf.d/friendica.ini:ro
+    environment:
+      - SITENAME=${SITENAME}
+      - SMTP=${SMTP}
+      - SMTP_DOMAIN=${SMTP_DOMAIN}
+      - SMTP_AUTH_USER=${SMTP_AUTH_USER}
+      - SMTP_AUTH_PASS=${SMTP_AUTH_PASS}
+      - SMTP_TLS=${SMTP_TLS}
+      - SMTP_STARTTLS=${SMTP_STARTTLS}
+      - MYSQL_HOST=${DBHOST}
+      - MYSQL_PORT=${DBPORT}
+      - MYSQL_USERNAME=${DBUSER}
+      - MYSQL_PASSWORD=${DBPASS}
+      - MYSQL_DATABASE=${DBDATA}
+      - FRIENDICA_ADMIN_MAIL=${MAILNAME}
+      - FRIENDICA_DISTRIBUTED_CACHE_DRIVER=redis
+      - FRIENDICA_DEBUGGING=true
+      - FRIENDICA_LOGLEVEL=notice
+      - FRIENDICA_LOGGER=syslog
+      - FRIENDICA_SYSLOG_FLAGS=39
+    depends_on:
+      - app
+    entrypoint: /cron.sh
+
+  avatar:
+    build: ./avatar
+    deploy:
+      replicas: 3
+    restart: on-failure:3
+    volumes:
+      - friendica-avatar-1:/var/www/avatar:ro
+    environment:
+      - HOSTNAME=${HOSTNAME}
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.avatar.entrypoints=websecure"
+      - "traefik.http.routers.domain.rule=(Host(`www.your.domain`) || Host(`your.domain`)) && PathPrefix(`/avatar`)"
+      - "traefik.http.routers.domain.middlewares=https-chain@file"
+      - "traefik.http.routers.domain.tls=true"
+      - "traefik.http.routers.domain.tls.certresolver=default"
+
+  web:
+    build: ./web
+    restart: always
+    deploy:
+      replicas: 3
+    volumes:
+      - friendica-vol-1:/var/www/html:ro
+    environment:
+      - HOSTNAME=${HOSTNAME}
+    depends_on:
+      - app
+    networks:
+      - web
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yourdomain.entrypoints=websecure"
+      - "traefik.http.routers.yourdomain.rule=Host(`www.your.domain`) || Host(`your.domain`)"
+      - "traefik.http.routers.yourdomain.middlewares=https-chain@file"
+      - "traefik.http.routers.yourdomain.tls=true"
+      - "traefik.http.routers.yourdomain.tls.certresolver=default"
+
+secrets:
+  mysql_database:
+    file: ./config/secrets/mysql_database.txt
+  mysql_user:
+    file: ./config/secrets/mysql_user.txt
+  mysql_password:
+    file: ./config/secrets/mysql_password.txt
+
+volumes:
+  friendica-avatar-1:
+  friendica-vol-1:
+  friendica-redis-vol-1:
+
+networks:
+  web:
+    external: true

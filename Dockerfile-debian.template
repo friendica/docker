@@ -1,4 +1,4 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%-bullseye
+FROM php:%%PHP_VERSION%%-%%VARIANT%%-bookworm
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -62,6 +62,8 @@ RUN set -ex; \
         libtool \
         libmagick++-dev \
         libmemcached-dev \
+        zlib1g-dev \
+        libssl-dev \
         libgraphicsmagick1-dev \
         libfreetype6-dev \
         libwebp-dev \

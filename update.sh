@@ -165,11 +165,12 @@ function create_variant() {
 }
 
 # latest, stable version (just save the major version, not every hotfix)
-curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
+latest_version=( $(curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
 	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
 	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
 	sort -uV | \
-	tail -1 > latest.txt
+	tail -1) )
+ echo $latest_version > latest.txt
 
 curl -fsSl 'https://raw.githubusercontent.com/friendica/friendica/develop/VERSION' > develop.txt
 
@@ -200,7 +201,7 @@ githubversions_rc=( $( git ls-remote --heads -q 'https://github.com/friendica/fr
   sort -urV ) )
 versions_rc=( $( printf '%s\n' "${githubversions_rc[@]}" | cut -d. -f1-2 | sort -urV ) )
 for version in "${versions_rc[@]}"; do
-	if version_greater_or_equal "$version" "$min_version"; then
+	if version_greater_or_equal "$version" "$latest_version"; then
     for variant in "${variants[@]}"; do
 
       create_variant "$version"

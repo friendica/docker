@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.1-apache-bullseye
+FROM php:8.2-apache-bookworm
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -63,6 +63,8 @@ RUN set -ex; \
         libtool \
         libmagick++-dev \
         libmemcached-dev \
+        zlib1g-dev \
+        libssl-dev \
         libgraphicsmagick1-dev \
         libfreetype6-dev \
         libwebp-dev \

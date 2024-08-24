@@ -2,19 +2,14 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
 	"name": "friendica-docker",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	// Download and install bashbrew 
+    "postCreateCommand": "sudo curl -o /usr/local/bin/bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64 && sudo chmod +x /usr/local/bin/bashbrew",
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Configure tool-specific properties.
 	"customizations": {
         "vscode": {
 			"extensions": [

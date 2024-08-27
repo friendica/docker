@@ -50,8 +50,9 @@ apcu_version="$(
 memcached_version="$(
   git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
     | cut -d/ -f3 \
-    | grep -vE -- '-rc|-b' \
     | sed -E 's/^[rv]//' \
+    | grep -viE '[a-z]' \
+    | tr -d '^{}' \
     | sort -V \
     | tail -1
 )"

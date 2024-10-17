@@ -10,7 +10,7 @@ RUN set -ex; \
         shadow \
         tini;
 
-ENV GOSU_VERSION 1.14
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
 	\
 	apk add --no-cache --virtual .gosu-deps \

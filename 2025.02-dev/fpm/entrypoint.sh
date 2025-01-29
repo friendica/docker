@@ -193,7 +193,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
         run_as 'php /var/www/html/bin/console.php dbstructure update -f'
         echo "Upgrading finished"
       fi
-
     fi
   ) 9> /var/www/html/friendica-init-sync.lock
 fi

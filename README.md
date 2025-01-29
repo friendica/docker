@@ -105,7 +105,7 @@ Note that you may have to change other limits depending on your client, webserve
 
 ## Administrator account
 
-Because Friendica links the administrator account to a specific mail address, you **have** to set a valid address for `MAILNAME`.
+Because Friendica links the administrator account to a specific mail address, you **have** to set a valid address for `FRIENDICA_ADMIN_MAIL`.
 
 ## Mail settings
 
@@ -179,6 +179,9 @@ To enable the automatic installation, you have to the following environment vari
 -	`MYSQL_PASSWORD` Password for the database user using mysql / mariadb.
 -	`MYSQL_DATABASE` Name of the database using mysql / mariadb.
 -	`MYSQL_HOST` Hostname of the database server using mysql / mariadb.
+
+**During the first run, you will be given the `FRIENDICA_ADMIN_MAIL` administrator's account first random password.**
+**It is important to note it down and change it after first login.**
 
 # Docker Secrets
 As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container.

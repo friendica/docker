@@ -149,6 +149,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
           # shellcheck disable=SC2016
           install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'" --url "'$FRIENDICA_URL'"'
           install=true
+          install=true
+        else
+          echo "One or more environment variable is not set, skipping automated installation"
         fi
 
         if [ "$install" = true ]; then
@@ -165,6 +168,18 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
               rsync $rsync_options --ignore-existing /usr/src/friendica/config/ /var/www/html/config/
             fi
 
+            # Add the administrator account
+            changeme=`head -c 30 /dev/urandom | base64`
+            FRIENDICA_ADMIN_NICKNAME=`echo $FRIENDICA_ADMIN_MAIL | sed 's/@.*//'`
+            echo " "
+            echo "Adding the administrator account named: $FRIENDICA_ADMIN_NICKNAME"
+            run_as "php /var/www/html/bin/console.php user add $FRIENDICA_ADMIN_NICKNAME $FRIENDICA_ADMIN_NICKNAME $FRIENDICA_ADMIN_MAIL EN $FRIENDICA_URL/images/person-300.jpg"
+            echo "Setting password"
+            run_as "php /var/www/html/bin/console.php user password $FRIENDICA_ADMIN_NICKNAME $changeme"
+            echo " "
+            echo "YOUR ADMINISTRATOR PASSWORD IS: $changeme"
+            echo "NOTE IT DOWN AND CHANGE IT ON FIRST LOGIN"
+            echo " "
             echo "Installation finished"
           else
             echo "[ERROR] Waited 300 seconds, no response" >&2
@@ -178,6 +193,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
         run_as 'php /var/www/html/bin/console.php dbstructure update -f'
         echo "Upgrading finished"
       fi
+
     fi
   ) 9> /var/www/html/friendica-init-sync.lock
 fi

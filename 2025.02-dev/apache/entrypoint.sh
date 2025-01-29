@@ -149,7 +149,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
           # shellcheck disable=SC2016
           install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'" --url "'$FRIENDICA_URL'"'
           install=true
-          install=true
         else
           echo "One or more environment variable is not set, skipping automated installation"
         fi

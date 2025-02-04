@@ -109,29 +109,56 @@ Because Friendica links the administrator account to a specific mail address, yo
 
 ## Mail settings
 
-The binary `ssmtp` is used for the `mail()` support of Friendica.
+The binary `msmtp` is used for the mail support of Friendica.
 
-You have to set the `--hostname/-h` parameter correctly to use the right domainname for the `mail()` command.
+The mail functionality is e.g. used for sending confirmation emails for registration (including the password for newly registered users).
 
-You have to set a valid SMTP-MTA for the `SMTP` environment variable to enable mail support in Friendica.
-A valid SMTP-MTA would be, for example, `mx.example.org`.
+To make use of the mail functionality you need a working email account with which you can send emails.
+This may be an account on GMail, GMX or any other provider of public email.
+If you have your own email server you can use it as well.
+It is recommended to not use your personal email account for this.
+But you may use it if you just want to test Friendica or during the installation.
+You can change it afterwards by simply changing the following environment variables.
 
-The following environment variables are possible for the SMTP examples.
+The example is based on sending emails via SMTP submission as this is the standard for sending email with nearly all providers of public email accounts.
+We use the server for *outgoing emails*.
 
--	`SMTP` Address of the SMTP Mail-Gateway. (**required**)
+The setup uses STARTTLS with authentication by default.
+It is possible to use plain TLS connection (usually using port 465) or even unencrypted connections by setting the environment variables accordingly.
+Using unencrypted connections is not recommended though.
+
+The following environment define the Mail-Gateway and its connection for the SMTP setup.
+
+-	`SMTP` **required** Address of the SMTP Mail-Gateway, e.g. smtp.gmx.net
 -	`SMTP_PORT` Port of the SMTP Mail-Gateway. (Default: 587)
--	`SMTP_DOMAIN` The sender domain. (**required** - e.g. `friendica.local`)
+-	`SMTP_TLS` Use TLS for connecting the SMTP Mail-Gateway. (Default: `on`, shall also be `on` when using STARTTLS)
+-	`SMTP_STARTTLS` Use STARTTLS for connecting the SMTP Mail-Gateway. (Default: `on`, `off` when `SMTP_PORT` is 465)
+
+Sending emails usually requires authentication or login to the Mail-Gateway. This is controlled by
+
+-	`SMTP_AUTH_USER` **usually necessary** Username for the SMTP Mail-Gateway. (Default: empty)
+-	`SMTP_AUTH_PASS` **usually necessary** Password for the SMTP Mail-Gateway. (Default: empty)
+-	`SMTP_AUTH` Auth mode for the SMTP Mail-Gateway. (Optional: Default `on` when `SMTP_AUTH_USER` and `SMTP_AUTH_PASS` are set)
+
+The user used for sending emails is controlled by
+
+-	`SMTP_DOMAIN` **required** The sender domain. This is the part after the @ in the email address.
 -	`SMTP_FROM` Sender user-part of the address. (Default: `no-reply` - e.g. no-reply@friendica.local)
--	`SMTP_TLS` Use TLS for connecting the SMTP Mail-Gateway. (Default: empty)
--	`SMTP_STARTTLS` Use STARTTLS for connecting the SMTP Mail-Gateway. (Default: `On`)
--	`SMTP_AUTH` Auth mode for the SMTP Mail-Gateway. (Default: `On`)
--	`SMTP_AUTH_USER` Username for the SMTP Mail-Gateway. (Default: empty)
--	`SMTP_AUTH_PASS` Password for the SMTP Mail-Gateway. (Default: empty)
 
-**Addition to STARTTLS**
+If a public email provider is used it may most certainly reject your emails if you use the default `no-reply` for `SMTP_FROM`.
+You should then use a different name.
 
-the `tls_starttls` setting is either `On` or `Off`, but never unset.
-That's because in case it's unset, `starttls` would be activated by default (which would need additional configuration like a separate port).
+A minimum setup for using a gmx.de account would look like this:
+
+```yaml
+
+  environment:
+    - SMTP=smtp.gmx.net
+    - SMTP_DOMAIN=gmx.de
+    - SMTP_AUTH_USER=<your account login or user>
+    - SMTP_AUTH_PASS=<your account password>
+
+```
 
 ## Database settings
 

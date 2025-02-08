@@ -150,7 +150,8 @@ RUN set -ex; \
     } > /usr/local/etc/php/conf.d/friendica.ini; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini; \
     \
-        echo 'access.format ="%{HTTP_X_FORWARDED_FOR}e - %u %t \"%m %r\" %s"' >> /usr/local/etc/php-fpm.d/docker.conf; \
+# Only append this client IP log settings to FPM image variants
+    if [ "%%VARIANT%%" != "apache" ]; then echo 'access.format = "%{HTTP_X_FORWARDED_FOR}e - %u %t \"%m %r\" %s"' 1>> /usr/local/etc/php-fpm.d/docker.conf; fi; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \

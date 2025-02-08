@@ -129,6 +129,8 @@ RUN set -ex; \
     } > /usr/local/etc/php/conf.d/friendica.ini; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini; \
     \
+        echo 'access.format ="%{HTTP_X_FORWARDED_FOR}e - %u %t \"%m %r\" %s"' >> /usr/local/etc/php-fpm.d/docker.conf; \
+    \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www

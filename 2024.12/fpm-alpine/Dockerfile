@@ -134,8 +134,9 @@ RUN set -ex; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
 
+
+VOLUME /var/www/html
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39
@@ -145,10 +146,10 @@ ENV FRIENDICA_DOWNLOAD_SHA256 "37bb0fad549c955fced70059b62cd4f3364e344363011a2d0
 ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "fbbece635dfaec9d2365581aaafb913cec00128e5815087c9d9b8a46d8dc7ed5"
 
 RUN set -ex; \
-     apk add --no-cache --virtual .fetch-deps \
-            gnupg \
-        ; \
-        \
+    apk add --no-cache --virtual .fetch-deps \
+      gnupg \
+    ; \
+    \
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
     \
@@ -164,9 +165,9 @@ RUN set -ex; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
+        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
+        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
     gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
     echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
     mkdir -p /usr/src/friendica/proxy; \

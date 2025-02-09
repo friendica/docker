@@ -155,17 +155,19 @@ RUN set -ex; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
 
+
+VOLUME /var/www/html
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39
 ENV FRIENDICA_VERSION "2025.02-dev"
 ENV FRIENDICA_ADDONS "2025.02-dev"
 
+
 RUN set -ex; \
     fetchDeps=" \
-        gnupg \
+      gnupg \
     "; \
     apt-get update; \
     apt-get install -y --no-install-recommends $fetchDeps;

@@ -150,14 +150,6 @@ RUN set -ex; \
     } > /usr/local/etc/php/conf.d/friendica.ini; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini; \
     \
-# Set remote client IP logging for apache and fpm image variants
-    if [ "%%VARIANT%%" != "apache" ]; then \
-        echo 'access.format = "%{HTTP_X_FORWARDED_FOR}e - %u %t \"%m %r\" %s"' 1>> /usr/local/etc/php-fpm.d/docker.conf; \
-    else \
-        cat /etc/apache2/apache2.conf | sed 's/LogFormat "%h/LogFormat "%{X-Forwarded-for}i/' > /tmp/apache2.conf; \
-        cat /tmp/apache2.conf > /etc/apache2/apache2.conf ; rm -f /tmp/apache2.conf; \
-    fi; \
-    \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www

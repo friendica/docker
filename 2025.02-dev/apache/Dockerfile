@@ -158,7 +158,8 @@ RUN set -ex; \
 RUN set -ex; \
     a2enmod rewrite remoteip; \
     { \
-     echo RemoteIPHeader X-Real-IP; \
+     echo RemoteIPHeader X-Forwarded-For; \
+     echo RemoteIPTrustedProxy 127.0.0.0/8; \
      echo RemoteIPTrustedProxy 10.0.0.0/8; \
      echo RemoteIPTrustedProxy 172.16.0.0/12; \
      echo RemoteIPTrustedProxy 192.168.0.0/16; \

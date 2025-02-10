@@ -155,17 +155,17 @@ RUN set -ex; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-VOLUME /var/www/html
+RUN set -ex; \
+    a2enmod rewrite remoteip; \
+    { \
+     echo RemoteIPHeader X-Real-IP; \
+     echo RemoteIPTrustedProxy 10.0.0.0/8; \
+     echo RemoteIPTrustedProxy 172.16.0.0/12; \
+     echo RemoteIPTrustedProxy 192.168.0.0/16; \
+    } > /etc/apache2/conf-available/remoteip.conf; \
+    a2enconf remoteip;
 
-RUN set -ex;\
-    a2enmod rewrite remoteip ;\
-    {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-    } > /etc/apache2/conf-available/remoteip.conf;\
-    a2enconf remoteip
+VOLUME /var/www/html
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39
@@ -196,9 +196,9 @@ RUN set -ex; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
+        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
     curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-            "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
+        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
     gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
     echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
     mkdir -p /usr/src/friendica/proxy; \

@@ -21,14 +21,17 @@ declare -A extras=(
   [apache]='RUN set -ex; \
     a2enmod rewrite remoteip; \
     { \
-     echo RemoteIPHeader X-Real-IP; \
+     echo RemoteIPHeader X-Forwarded-For; \
+     echo RemoteIPTrustedProxy 127.0.0.0/8; \
      echo RemoteIPTrustedProxy 10.0.0.0/8; \
      echo RemoteIPTrustedProxy 172.16.0.0/12; \
      echo RemoteIPTrustedProxy 192.168.0.0/16; \
     } > /etc/apache2/conf-available/remoteip.conf; \
     a2enconf remoteip;'
-  [fpm]=''
-  [fpm-alpine]=''
+  [fpm]='RUN set -ex; \
+    echo access.format = '\''%{REMOTE_ADDR}e - %u %t \"%m %r\" %s'\'' >> /usr/local/etc/php-fpm.d/docker.conf;'
+  [fpm-alpine]='RUN set -ex; \
+    echo access.format = '\''%{REMOTE_ADDR}e - %u %t \"%m %r\" %s'\'' >> /usr/local/etc/php-fpm.d/docker.conf;'
 )
 
 declare -A entrypoints=(

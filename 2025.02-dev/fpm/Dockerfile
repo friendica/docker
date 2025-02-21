@@ -155,7 +155,8 @@ RUN set -ex; \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
-
+RUN set -ex; \
+    echo access.format = '%{REMOTE_ADDR}e - %u %t "%m %r" %s' >> /usr/local/etc/php-fpm.d/docker.conf;
 
 VOLUME /var/www/html
 

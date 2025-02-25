@@ -18,8 +18,7 @@ declare -A base=(
 )
 
 declare -A extras=(
-  [apache]='RUN set -ex; \
-    a2enmod rewrite remoteip; \
+  [apache]='RUN a2enmod headers rewrite remoteip; \
     { \
      echo RemoteIPHeader X-Forwarded-For; \
      echo RemoteIPTrustedProxy 127.0.0.0/8; \
@@ -29,9 +28,9 @@ declare -A extras=(
     } > /etc/apache2/conf-available/remoteip.conf; \
     a2enconf remoteip;'
   [fpm]='RUN set -ex; \
-    echo access.format = '\''%{REMOTE_ADDR}e - %u %t \"%m %r\" %s'\'' >> /usr/local/etc/php-fpm.d/docker.conf;'
+    echo access.format = '\''\"%{REMOTE_ADDR}e - %u %t \\\"%m %r\\\" %s\"'\'' >> /usr/local/etc/php-fpm.d/docker.conf;'
   [fpm-alpine]='RUN set -ex; \
-    echo access.format = '\''%{REMOTE_ADDR}e - %u %t \"%m %r\" %s'\'' >> /usr/local/etc/php-fpm.d/docker.conf;'
+    echo access.format = '\''\"%{REMOTE_ADDR}e - %u %t \\\"%m %r\\\" %s'\"\'' >> /usr/local/etc/php-fpm.d/docker.conf;'
 )
 
 declare -A entrypoints=(

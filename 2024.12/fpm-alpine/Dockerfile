@@ -131,7 +131,7 @@ RUN set -ex; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN set -ex; \
-    echo access.format = '%{REMOTE_ADDR}e - %u %t "%m %r" %s' >> /usr/local/etc/php-fpm.d/docker.conf;
+    echo access.format = '"%{REMOTE_ADDR}e - %u %t \"%m %r\" %s"' >> /usr/local/etc/php-fpm.d/docker.conf;
 
 RUN set -ex; \
     mkdir -p -m 775 /var/www/data; \

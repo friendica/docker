@@ -149,11 +149,7 @@ RUN set -ex; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
     } > /usr/local/etc/php/conf.d/friendica.ini; \
-    ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini; \
-    \
-    mkdir /var/www/data; \
-    chown -R www-data:root /var/www; \
-    chmod -R g=u /var/www
+    ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN set -ex; \
     a2enmod rewrite remoteip; \
@@ -166,7 +162,12 @@ RUN set -ex; \
     } > /etc/apache2/conf-available/remoteip.conf; \
     a2enconf remoteip;
 
+RUN set -ex; \
+    mkdir -p -m 775 /var/www/data; \
+    chown -R www-data:www-data /var/www/data
+
 VOLUME /var/www/html
+VOLUME /var/www/data
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS 39

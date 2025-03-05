@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.2-fpm-bullseye
+FROM php:8.2-fpm-bookworm
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -75,7 +75,7 @@ RUN set -ex; \
         libmagickcore-6.q16-6-extra \
     ; \
     \
-        debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     docker-php-ext-configure gd \
         --with-freetype \
@@ -101,7 +101,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install apcu-5.1.24; \
     pecl install memcached-3.3.0; \
-    pecl install redis-6.1.0; \
+    pecl install redis-6.1.0 --configureoptions 'enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
@@ -110,12 +110,13 @@ RUN set -ex; \
         redis \
         imagick \
     ; \
+    rm -r /tmp/pear; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
     apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-        | awk '/=>/ { print $3 }' \
+        | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
         | sort -u \
         | xargs -r dpkg-query -S \
         | cut -d: -f1 \
@@ -135,7 +136,9 @@ RUN set -ex; \
         echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=128'; \
         echo 'opcache.save_comments=1'; \
-        echo 'opcache.revalidte_freq=1'; \
+        echo 'opcache.revalidte_freq=60'; \
+        echo 'opcache.jit=tracing'; \
+        echo 'opcache.jit_buffer_size=32M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \
@@ -152,7 +155,7 @@ RUN set -ex; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN set -ex; \
-    echo access.format = '%{REMOTE_ADDR}e - %u %t "%m %r" %s' >> /usr/local/etc/php-fpm.d/docker.conf;
+    echo access.format = '"%{REMOTE_ADDR}e - %u %t \"%m %r\" %s"' >> /usr/local/etc/php-fpm.d/docker.conf;
 
 RUN set -ex; \
     mkdir -p -m 775 /var/www/data; \

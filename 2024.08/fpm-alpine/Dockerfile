@@ -114,7 +114,9 @@ RUN set -ex; \
         echo 'opcache.max_accelerated_files=10000'; \
         echo 'opcache.memory_consumption=128'; \
         echo 'opcache.save_comments=1'; \
-        echo 'opcache.revalidte_freq=1'; \
+        echo 'opcache.revalidte_freq=60'; \
+        echo 'opcache.jit=tracing'; \
+        echo 'opcache.jit_buffer_size=32M'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini; \
     \
     { \

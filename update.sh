@@ -2,7 +2,7 @@
 set -eo pipefail
 
 declare -A php_version=(
-  [default]='8.2'
+  [default]='8.3'
 )
 
 declare -A cmd=(

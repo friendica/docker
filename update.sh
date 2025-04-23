@@ -18,7 +18,8 @@ declare -A base=(
 )
 
 declare -A extras=(
-  [apache]='RUN a2enmod headers rewrite remoteip; \
+  [apache]='RUN set -ex; \
+    a2enmod headers rewrite remoteip; \
     { \
      echo RemoteIPHeader X-Forwarded-For; \
      echo RemoteIPTrustedProxy 127.0.0.0/8; \

@@ -154,7 +154,8 @@ RUN set -ex; \
     } > /usr/local/etc/php/conf.d/friendica.ini; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
-RUN a2enmod headers rewrite remoteip; \
+RUN set -ex; \
+    a2enmod headers rewrite remoteip; \
     { \
      echo RemoteIPHeader X-Forwarded-For; \
      echo RemoteIPTrustedProxy 127.0.0.0/8; \

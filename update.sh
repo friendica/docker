@@ -240,7 +240,7 @@ function create_variant() {
     s/%%TINI_VERSION%%/'"${tini_version}"'/g;
   ' "$dir/Dockerfile"
 
-  for name in entrypoint cron setup_msmtp; do
+  for name in entrypoint cron setup_msmtp setup_database; do
     cp "docker-$name.sh" "$dir/$name.sh"
   done
 

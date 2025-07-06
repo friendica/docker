@@ -40,6 +40,7 @@ file_env() {
 }
 
 sh /setup_msmtp.sh
+sh /setup_database.sh
 
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then

@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.3-fpm-bookworm
+FROM php:8.3-fpm-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -13,7 +13,7 @@ RUN set -ex; \
         tini \
     ;
 
-ENV GOSU_VERSION 1.17
+ENV GOSU_VERSION=1.17
 RUN set -eux; \
 # save list of currently installed packages for later so we can clean up
 	savedAptMark="$(apt-mark showmanual)"; \
@@ -72,7 +72,7 @@ RUN set -ex; \
         libzip-dev \
         libldap2-dev \
         libgmp-dev \
-        libmagickcore-6.q16-6-extra \
+        libmagickcore-7.q16-10-extra \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -127,8 +127,8 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*
 
 # set recommended PHP.ini settings
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
+ENV PHP_MEMORY_LIMIT=512M
+ENV PHP_UPLOAD_LIMIT=512M
 RUN set -ex; \
     { \
         echo 'opcache.enable=1' ; \
@@ -165,9 +165,9 @@ VOLUME /var/www/html
 VOLUME /var/www/data
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
-ENV FRIENDICA_SYSLOG_FLAGS 39
-ENV FRIENDICA_VERSION "2025.02-dev"
-ENV FRIENDICA_ADDONS "2025.02-dev"
+ENV FRIENDICA_SYSLOG_FLAGS=39
+ENV FRIENDICA_VERSION="2025.02-dev"
+ENV FRIENDICA_ADDONS="2025.02-dev"
 
 
 RUN set -ex; \

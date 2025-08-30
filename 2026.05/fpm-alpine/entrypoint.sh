@@ -39,15 +39,7 @@ file_env() {
     unset "$fileVar"
 }
 
-# initialize the email configuration
 sh /setup_msmtp.sh
-
-# ensure we have a logfile writeable by www-data
-FRIENDICA_LOGFILE=${FRIENDICA_LOGFILE:-/var/www/html/friendica.log}
-if sudo -u www-data test -w "$(dirname "$FRIENDICA_LOGFILE")"; then
-   touch "$FRIENDICA_LOGFILE"
-   chown www-data:www-data "$FRIENDICA_LOGFILE"
-fi
 
 # just check if we execute apache or php-fpm
 if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then

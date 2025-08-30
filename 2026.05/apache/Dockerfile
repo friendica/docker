@@ -6,7 +6,6 @@ RUN set -ex; \
     \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        sudo \
         rsync \
         bzip2 \
 # For mail() support
@@ -170,6 +169,9 @@ RUN set -ex; \
 RUN set -ex; \
     mkdir -p -m 775 /var/www/data; \
     chown -R www-data:www-data /var/www/data
+
+RUN set -ex; \
+    ln -sf /dev/stdout /var/log/friendica.log
 
 VOLUME /var/www/html
 VOLUME /var/www/data

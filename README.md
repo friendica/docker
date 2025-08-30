@@ -75,11 +75,6 @@ There are two options to enable background tasks for Friendica:
 **Friendica Logging**
 
 -	`FRIENDICA_DEBUGGING` If set to `true`, the logging of Friendica is enabled.
--	`FRIENDICA_LOGFILE` (optional) The path to the logfile (Default: /var/www/friendica.log).
--	`FRIENDICA_LOGLEVEL` (optional) The loglevel to log (Default: notice).
--	`FRIENDICA_LOGGER` (optional) Set the type - stream, syslog, monolog (Default: stream).
--	`FRIENDICA_SYSLOG_FLAGS` (optional) In case syslog is used, set the corresponding flags (Default: `LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR`).
--	`FRIENDICA_SYSLOG_FACTORY` (optional) In case syslog is used, set the corresponding factory (Default: `LOG_USER`).
 
 **Database** (**required at installation**)
 
@@ -106,6 +101,12 @@ Note that you may have to change other limits depending on your client, webserve
 ## Administrator account
 
 Because Friendica links the administrator account to a specific mail address, you **have** to set a valid address for `MAILNAME`.
+
+## Logging settings
+
+Friendica logs to /var/log/friendica.log by default. This location inside the container should not be changed (and the corresponding setting
+in Friendica is disabled). The output of /var/log/friendica.log is available in the Docker log of the container (see Docker logging for 
+details). If you prefer you can still mount a file to /var/log/friendica.log into the container.
 
 ## Mail settings
 

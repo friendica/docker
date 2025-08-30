@@ -11,7 +11,7 @@ RUN set -ex; \
         shadow \
         tini;
 
-ENV GOSU_VERSION 1.17
+ENV GOSU_VERSION=1.17
 RUN set -eux; \
 	\
 	apk add --no-cache --virtual .gosu-deps \
@@ -105,8 +105,8 @@ RUN set -ex; \
     apk del --no-network .build-deps;
 
 # set recommended PHP.ini settings
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
+ENV PHP_MEMORY_LIMIT=512M
+ENV PHP_UPLOAD_LIMIT=512M
 RUN set -ex; \
     { \
         echo 'opcache.enable=1' ; \
@@ -143,9 +143,9 @@ VOLUME /var/www/html
 VOLUME /var/www/data
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
-ENV FRIENDICA_SYSLOG_FLAGS 39
-ENV FRIENDICA_VERSION "2025.02-dev"
-ENV FRIENDICA_ADDONS "2025.02-dev"
+ENV FRIENDICA_SYSLOG_FLAGS=39
+ENV FRIENDICA_VERSION="2025.02-dev"
+ENV FRIENDICA_ADDONS="2025.02-dev"
 
 
 RUN set -ex; \

@@ -115,17 +115,6 @@ declare -A install_extras=(
     mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
     \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
-    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \
-    mkdir -p /usr/src/friendica/proxy; \
-    mkdir -p /usr/src/friendica/addon; \
-    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
-    \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"; \
     \
@@ -149,17 +138,6 @@ declare -A install_extras=(
     rm friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc; \
     mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
-    \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
-    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \
-    mkdir -p /usr/src/friendica/proxy; \
-    mkdir -p /usr/src/friendica/addon; \
-    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
     \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"; \
@@ -200,7 +178,7 @@ function get_sha256_string() {
   if [[ $install_type == "develop" ]]; then
     echo ""
   else
-    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-all-in-one-${version}.tar.gz.sum256 | cut -d' ' -f1)\"\nENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-addons-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
+    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-all-in-one-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
   fi
 }
 

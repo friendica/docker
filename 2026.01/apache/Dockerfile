@@ -175,9 +175,7 @@ VOLUME /var/www/data
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS=39
 ENV FRIENDICA_VERSION="2026.01"
-ENV FRIENDICA_ADDONS="2026.01"
 ENV FRIENDICA_DOWNLOAD_SHA256 "49b51f67072ca2b121b76c7f6d4f61824347d06e2f4d9f2fb27649af70218add"
-ENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 "fcc42e364c55ab953ff5e7bd31254dd3cc69c51d73711595dc8ec8476d5e4ab4"
 
 RUN set -ex; \
     fetchDeps=" \
@@ -199,17 +197,6 @@ RUN set -ex; \
     rm friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc; \
     mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
-    \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
-    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" | sha256sum -c; \
-    mkdir -p /usr/src/friendica/proxy; \
-    mkdir -p /usr/src/friendica/addon; \
-    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
     \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"; \

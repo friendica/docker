@@ -104,27 +104,16 @@ declare -A install_extras=(
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
     \
-    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
-        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
-    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \
-    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \
-    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
-    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \
-    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz \
+        "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz"; \
+    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc \
+        "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc"; \
+    gpg --batch --verify friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \
+    tar -xzf friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
+    rm friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc; \
+    mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
-    \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
-    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \
-    mkdir -p /usr/src/friendica/proxy; \
-    mkdir -p /usr/src/friendica/addon; \
-    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
     \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"; \
@@ -139,27 +128,16 @@ declare -A install_extras=(
     export GNUPGHOME="$(mktemp -d)"; \
     gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
     \
-    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz \
-        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz"; \
-    curl -fsSL -o friendica-full-${FRIENDICA_VERSION}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-full-${FRIENDICA_VERSION}.tar.gz.asc"; \
-    gpg --batch --verify friendica-full-${FRIENDICA_VERSION}.tar.gz.asc friendica-full-${FRIENDICA_VERSION}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-full-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \
-    tar -xzf friendica-full-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
-    rm friendica-full-${FRIENDICA_VERSION}.tar.gz friendica-full-${FRIENDICA_VERSION}.tar.gz.asc; \
-    mv -f /usr/src/friendica-full-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz \
+        "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz"; \
+    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc \
+        "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc"; \
+    gpg --batch --verify friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz" \| sha256sum -c; \
+    tar -xzf friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
+    rm friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc; \
+    mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica; \
     chmod 777 /usr/src/friendica/view/smarty3; \
-    \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz"; \
-    curl -fsSL -o friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc \
-        "https://files.friendi.ca/friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc"; \
-    gpg --batch --verify friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc friendica-addons-${FRIENDICA_ADDONS}.tar.gz; \
-    echo "${FRIENDICA_DOWNLOAD_ADDONS_SHA256} *friendica-addons-${FRIENDICA_ADDONS}.tar.gz" \| sha256sum -c; \
-    mkdir -p /usr/src/friendica/proxy; \
-    mkdir -p /usr/src/friendica/addon; \
-    tar -xzf friendica-addons-${FRIENDICA_ADDONS}.tar.gz -C /usr/src/friendica/addon --strip-components=1; \
-    rm friendica-addons-${FRIENDICA_ADDONS}.tar.gz friendica-addons-${FRIENDICA_ADDONS}.tar.gz.asc; \
     \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"; \
@@ -200,7 +178,7 @@ function get_sha256_string() {
   if [[ $install_type == "develop" ]]; then
     echo ""
   else
-    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-full-${version}.tar.gz.sum256 | cut -d' ' -f1)\"\nENV FRIENDICA_DOWNLOAD_ADDONS_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-addons-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
+    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-all-in-one-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
   fi
 }
 
@@ -255,7 +233,7 @@ function create_variant() {
 
 # latest, stable version (just save the major version, not every hotfix)
 latest_version=( $(curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
-	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
+	grep -oE 'friendica-all-in-one-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
 	grep -oE '[[:digit:]]+\.[[:digit:]]+' | \
 	sort -uV | \
 	tail -1) )
@@ -266,7 +244,7 @@ curl -fsSl 'https://raw.githubusercontent.com/friendica/friendica/develop/VERSIO
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\(\.\|\-\)[[:digit:]]\+\(-rc\|-dev\|\-[[:digit:]]\)\?' -exec rm -r '{}' \;
 
 fullversions=( $( curl -fsSL 'https://files.friendi.ca/' |tac|tac| \
-	grep -oE 'friendica-full-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
+	grep -oE 'friendica-all-in-one-[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}\.tar\.gz' | \
 	grep -oE '[[:digit:]]+\.[[:digit:]]+(\-[[:digit:]]+){0,1}' | \
 	sort -urV ) )
 for version in "${fullversions[@]}"; do

@@ -62,6 +62,7 @@ RUN set -ex; \
         icu-dev \
         openldap-dev \
         gmp-dev \
+        gettext \
     ; \
     \
     docker-php-ext-configure gd \

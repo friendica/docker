@@ -73,6 +73,7 @@ RUN set -ex; \
         libldap2-dev \
         libgmp-dev \
         libmagickcore-7.q16-10-extra \
+        gettext \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \

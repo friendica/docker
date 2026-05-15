@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.3-fpm-trixie
+FROM php:8.3-apache-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -156,7 +156,15 @@ RUN set -ex; \
     ln -s /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN set -ex; \
-    echo access.format = '"%{REMOTE_ADDR}e - %u %t \"%m %r\" %s"' >> /usr/local/etc/php-fpm.d/docker.conf;
+    a2enmod headers rewrite remoteip; \
+    { \
+     echo RemoteIPHeader X-Forwarded-For; \
+     echo RemoteIPTrustedProxy 127.0.0.0/8; \
+     echo RemoteIPTrustedProxy 10.0.0.0/8; \
+     echo RemoteIPTrustedProxy 172.16.0.0/12; \
+     echo RemoteIPTrustedProxy 192.168.0.0/16; \
+    } > /etc/apache2/conf-available/remoteip.conf; \
+    a2enconf remoteip;
 
 RUN set -ex; \
     mkdir -p -m 775 /var/www/data; \
@@ -167,7 +175,7 @@ VOLUME /var/www/data
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS=39
-ENV FRIENDICA_VERSION="2026.04-dev"
+ENV FRIENDICA_VERSION="2026.08-dev"
 
 
 RUN set -ex; \
@@ -181,4 +189,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
 ENTRYPOINT ["/entrypoint-dev.sh"]
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]

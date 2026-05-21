@@ -2,9 +2,13 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
 	"name": "friendica-docker",
-	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "latest",
+			"enableNonRootDocker": "true",
+			"moby": "true"
+		}
 	},
 
 	// Download and install bashbrew 

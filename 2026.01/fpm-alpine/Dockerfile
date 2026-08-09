@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -146,7 +146,7 @@ VOLUME /var/www/data
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS=39
 ENV FRIENDICA_VERSION="2026.01"
-ENV FRIENDICA_DOWNLOAD_SHA256 "d985715f368e106f070519e1e30240b023f31604b3d9e4cc09f23d4d5150147d"
+ENV FRIENDICA_DOWNLOAD_SHA256="d985715f368e106f070519e1e30240b023f31604b3d9e4cc09f23d4d5150147d"
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \

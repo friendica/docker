@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.3-apache-trixie
+FROM php:8.4-apache-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \

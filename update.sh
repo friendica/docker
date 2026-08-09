@@ -2,7 +2,7 @@
 set -eo pipefail
 
 declare -A php_version=(
-  [default]='8.3'
+  [default]='8.4'
 )
 
 declare -A cmd=(
@@ -178,7 +178,7 @@ function get_sha256_string() {
   if [[ $install_type == "develop" ]]; then
     echo ""
   else
-    echo "ENV FRIENDICA_DOWNLOAD_SHA256 \"$(curl -fsSL https://files.friendi.ca/friendica-all-in-one-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
+    echo "ENV FRIENDICA_DOWNLOAD_SHA256=\"$(curl -fsSL https://files.friendi.ca/friendica-all-in-one-${version}.tar.gz.sum256 | cut -d' ' -f1)\""
   fi
 }
 

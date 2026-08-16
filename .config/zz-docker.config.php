@@ -12,7 +12,7 @@ $config = [
 		// Necessary because otherwise the daemon isn't working
 		'pidfile' => '/var/run/friendica.pid',
 
-		'logfile' => '/var/www/html/friendica.log',
+		'logfile' => '/var/log/friendica.log',
 		'loglevel' => 'notice',
 	],
 	'storage' => [

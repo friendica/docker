@@ -166,18 +166,38 @@ VOLUME /var/www/data
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS=39
-ENV FRIENDICA_VERSION="2026.04-rc"
-
+ENV FRIENDICA_VERSION="2026.05"
+ENV FRIENDICA_DOWNLOAD_SHA256 "b0a1e218c4a5a30d25b8be5a66cb97a4f4f802b98e7cf3d0d34ce045b2714ab2"
 
 RUN set -ex; \
     fetchDeps=" \
-      gnupg \
+        gnupg \
     "; \
     apt-get update; \
-    apt-get install -y --no-install-recommends $fetchDeps;
+    apt-get install -y --no-install-recommends $fetchDeps; \
+    \
+    export GNUPGHOME="$(mktemp -d)"; \
+    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287; \
+    \
+    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz \
+        "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz"; \
+    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc \
+        "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc"; \
+    gpg --batch --verify friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz; \
+    echo "${FRIENDICA_DOWNLOAD_SHA256} *friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz" | sha256sum -c; \
+    tar -xzf friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz -C /usr/src/; \
+    rm friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc; \
+    mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica; \
+    chmod 777 /usr/src/friendica/view/smarty3; \
+    \
+    gpgconf --kill all; \
+    rm -rf "$GNUPGHOME"; \
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/
 
-ENTRYPOINT ["/entrypoint-dev.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]

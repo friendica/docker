@@ -20,6 +20,12 @@ if [ -n "${SMTP_DOMAIN+x}" ] && [ -n "${SMTP+x}" ] && [ "${SMTP}" != "localhost"
     echo "root: $smtp_from@$SMTP_DOMAIN"
   } >/etc/aliases
 
+  # Restrict new and existing files before writing any credentials.
+  # PHP invokes msmtp as www-data, so root-only permissions would break mail.
+  touch /etc/msmtprc
+  chmod 0640 /etc/msmtprc
+  chown root:www-data /etc/msmtprc
+
   # create msmtp settings
   {
     echo "account default"

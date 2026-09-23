@@ -1,13 +1,12 @@
 #!/bin/sh
 set -eu
 
-# run an command with the www-data user
+# Run an argument vector with the www-data user
 run_as() {
-  set -- sh -c "cd /var/www/html; $*"
   if [ "$(id -u)" -eq 0 ]; then
     set -- gosu www-data "$@"
   fi
-  "$@"
+  ( cd /var/www/html && exec "$@" )
 }
 
 # checks if the the first parameter is greater than the second parameter
@@ -32,7 +31,8 @@ file_env() {
     if [ -n "${varValue}" ]; then
         export "$var"="${varValue}"
     elif [ -n "${fileVarValue}" ]; then
-        export "$var"="$(cat "${fileVarValue}")"
+        fileValue=$(cat "${fileVarValue}") || exit 1
+        export "$var"="$fileValue"
     elif [ -n "${def}" ]; then
         export "$var"="$def"
     fi
@@ -143,20 +143,19 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
           FRIENDICA_LANG=${FRIENDICA_LANG:-en}
           MYSQL_PORT=${MYSQL_PORT:-3306}
 
-          # shellcheck disable=SC2016
-          install_options='-s --dbhost "'$MYSQL_HOST'" --dbport "'$MYSQL_PORT'" --dbdata "'$MYSQL_DATABASE'" --dbuser "'$MYSQL_USER'" --dbpass "'$MYSQL_PASSWORD'"'
-
-          # shellcheck disable=SC2016
-          install_options=$install_options' --admin "'$FRIENDICA_ADMIN_MAIL'" --tz "'$FRIENDICA_TZ'" --lang "'$FRIENDICA_LANG'" --url "'$FRIENDICA_URL'"'
           install=true
         fi
 
         if [ "$install" = true ]; then
           echo "Waiting for MySQL $MYSQL_HOST initialization..."
-          if run_as "php /var/www/html/bin/wait-for-connection $MYSQL_HOST ${MYSQL_PORT:-3306} 300"; then
+          if run_as php /var/www/html/bin/wait-for-connection "$MYSQL_HOST" "${MYSQL_PORT:-3306}" 300; then
 
             echo "Starting Friendica installation ..."
-            run_as "php /var/www/html/bin/console.php autoinstall $install_options"
+            run_as php /var/www/html/bin/console.php autoinstall --savedb \
+              --dbhost "$MYSQL_HOST" --dbport "$MYSQL_PORT" \
+              --dbdata "$MYSQL_DATABASE" --dbuser "$MYSQL_USER" \
+              --admin "$FRIENDICA_ADMIN_MAIL" --tz "$FRIENDICA_TZ" \
+              --lang "$FRIENDICA_LANG" --url "$FRIENDICA_URL"
 
             rm -fr /var/www/html/view/smarty3/compiled
 
@@ -175,7 +174,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
       # upgrade
       else
         echo "Upgrading Friendica ..."
-        run_as 'php /var/www/html/bin/console.php dbstructure update -f'
+        run_as php /var/www/html/bin/console.php dbstructure update -f
         echo "Upgrading finished"
       fi
     fi

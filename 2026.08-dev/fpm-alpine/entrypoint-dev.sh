@@ -19,13 +19,13 @@ if (expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]) && [ "${FRIENDICA_
 
     gpg --batch --logger-fd=1 --no-tty --quiet --keyserver keyserver.ubuntu.com --recv-keys 08656443618E6567A39524083EE197EF3F9E4287
 
-    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz"
-    curl -fsSL -o friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc";
-    gpg --batch --logger-fd=1 --no-tty --quiet --verify friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz
+    curl -fsSL -o "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz" "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz"
+    curl -fsSL -o "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc" "https://files.friendi.ca/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc";
+    gpg --batch --logger-fd=1 --no-tty --quiet --verify "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc" "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz"
     echo "Core sources (${FRIENDICA_VERSION}) verified"
 
-    tar -xzf friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz -C /usr/src/
-    rm friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc
+    tar -xzf "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz" -C /usr/src/
+    rm "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz" "/usr/src/friendica-all-in-one-${FRIENDICA_VERSION}.tar.gz.asc"
     cp -an /usr/src/friendica/config/* /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/config/    
     rm -fr /usr/src/friendica
     mv -f /usr/src/friendica-all-in-one-${FRIENDICA_VERSION}/ /usr/src/friendica

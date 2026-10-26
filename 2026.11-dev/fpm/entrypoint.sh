@@ -92,8 +92,13 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
 
     # no downgrading possible
     if version_greater "$installed_version" "$image_version"; then
-      echo "Can't copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ($image_version)"
-      exit 1
+      # dev/rc images ship no sources unless FRIENDICA_UPGRADE is enabled, keep the installed version
+      if [ "$image_version" = "0.0.0.0" ] && [ "${FRIENDICA_UPGRADE:-}" = "false" ]; then
+        echo "Keeping installed Friendica $installed_version (FRIENDICA_UPGRADE=false)"
+      else
+        echo "Can't copy Friendica sources because the version of the data ($installed_version) is higher than the docker image ($image_version)"
+        exit 1
+      fi
     fi
 
     # check it just in case the version is greater or if we force the upgrade

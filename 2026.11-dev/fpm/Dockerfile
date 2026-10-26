@@ -1,24 +1,31 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:8.4-fpm-alpine
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
+FROM php:8.4-fpm-trixie
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
-    apk add --no-cache \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
         rsync \
-        imagemagick \
+        bzip2 \
 # For mail() support
         msmtp \
-        shadow \
-        tini;
+        tini \
+    ;
 
 ENV GOSU_VERSION=1.19
 RUN set -eux; \
-	\
-	apk add --no-cache --virtual .gosu-deps \
-		ca-certificates \
-		dpkg \
-		gnupg \
-	; \
+# save list of currently installed packages for later so we can clean up
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends ca-certificates wget; \
+	if ! command -v gpg; then \
+		apt-get install -y --no-install-recommends gnupg2 dirmngr; \
+	elif gpg --version | grep -q '^gpg (GnuPG) 1\.'; then \
+# "This package provides support for HKPS keyservers." (GnuPG 1.x only)
+		apt-get install -y --no-install-recommends gnupg-curl; \
+	fi; \
+	rm -rf /var/lib/apt/lists/*; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -32,7 +39,9 @@ RUN set -eux; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
 	\
 # clean up fetch dependencies
-	apk del --no-network .gosu-deps; \
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 	chmod +x /usr/local/bin/gosu; \
 # verify that the binary works
@@ -43,40 +52,47 @@ RUN set -eux; \
 # see https://friendi.ca/resources/requirements/
 RUN set -ex; \
     \
-    apk add --no-cache --virtual .build-deps \
+    savedAptMark="$(apt-mark showmanual)"; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
         mariadb-client \
         bash \
-        $PHPIZE_DEPS \
         libpng-dev \
-        libjpeg-turbo-dev \
-        imagemagick-dev \
+        libjpeg62-turbo-dev \
         libtool \
+        libmagick++-dev \
         libmemcached-dev \
-        cyrus-sasl-dev \
-        libjpeg-turbo-dev \
-        freetype-dev \
+        zlib1g-dev \
+        libssl-dev \
+        libgraphicsmagick1-dev \
+        libfreetype6-dev \
         libwebp-dev \
-        librsvg \
-        pcre-dev \
+        librsvg2-2 \
         libzip-dev \
-        icu-dev \
-        openldap-dev \
-        gmp-dev \
+        libldap2-dev \
+        libgmp-dev \
+        libmagickcore-7.q16-10-extra \
         gettext \
     ; \
+    \
+    debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
         --with-webp \
     ; \
-    \
+    docker-php-ext-configure ldap \
+        --with-libdir=lib/$debMultiarch/ \
+    ;\
     docker-php-ext-install -j "$(nproc)" \
         pdo_mysql \
-        exif \
         gd \
+        exif \
         zip \
         opcache \
+        ctype \
         pcntl \
         ldap \
         gmp \
@@ -84,9 +100,9 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.28; \
+    pecl install apcu-5.1.28; \
     pecl install memcached-3.4.0; \
-    pecl install redis-6.3.0; \
+    pecl install redis-6.3.0 --configureoptions 'enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     pecl install imagick-3.8.1; \
     \
     docker-php-ext-enable \
@@ -95,15 +111,21 @@ RUN set -ex; \
         redis \
         imagick \
     ; \
+    rm -r /tmp/pear; \
     \
-    runDeps="$( \
-        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
-            | tr ',' '\n' \
-            | sort -u \
-            | awk 'system("[ -e /usr/local/lib" $1 " ]") == 0 { next } { print "so:" $1 }' \
-    )"; \
-    apk add --no-network --virtual .friendica-phpext-rundeps $runDeps; \
-    apk del --no-network .build-deps;
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+    apt-mark auto '.*' > /dev/null; \
+    apt-mark manual $savedAptMark; \
+    ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { so = $(NF-1); if (index(so, "/usr/local/") == 1) { next }; gsub("^/(usr/)?", "", so); print so }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual; \
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    rm -rf /var/lib/apt/lists/*
 
 # set recommended PHP.ini settings
 ENV PHP_MEMORY_LIMIT=512M
@@ -145,13 +167,15 @@ VOLUME /var/www/data
 
 # 39 = LOG_PID | LOG_ODELAY | LOG_CONS | LOG_PERROR
 ENV FRIENDICA_SYSLOG_FLAGS=39
-ENV FRIENDICA_VERSION="2026.08-dev"
+ENV FRIENDICA_VERSION="2026.11-dev"
 
 
 RUN set -ex; \
-    apk add --no-cache --virtual .fetch-deps \
+    fetchDeps=" \
       gnupg \
-    ;
+    "; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends $fetchDeps;
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/friendica/config/

@@ -101,8 +101,14 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
       fi
     fi
 
+    # dev/rc images: checksum of the downloaded tarball, stored in the web root once installed
+    sources_sum=/usr/src/friendica.tar.gz.sum256
+    installed_sum=/var/www/html/friendica.tar.gz.sum256
+
+    if [ "$image_version" = "$installed_version" ] && [ -f "$sources_sum" ] && cmp -s "$sources_sum" "$installed_sum"; then
+      echo "Friendica $installed_version is already installed from the same sources - skipped upgrade"
     # check it just in case the version is greater or if we force the upgrade
-    if version_greater "$image_version" "$installed_version" || [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then
+    elif version_greater "$image_version" "$installed_version" || [ "${FRIENDICA_UPGRADE:-false}" = "true" ]; then
       echo "Initializing Friendica $image_version ..."
 
       if [ "$installed_version" != "0.0.0.0" ]; then
@@ -170,6 +176,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
             fi
 
             echo "Installation finished"
+            if [ -f "$sources_sum" ]; then cp "$sources_sum" "$installed_sum"; fi
           else
             echo "[ERROR] Waited 300 seconds, no response" >&2
           fi
@@ -181,6 +188,7 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
         echo "Upgrading Friendica ..."
         run_as php /var/www/html/bin/console.php dbstructure update
         echo "Upgrading finished"
+        if [ -f "$sources_sum" ]; then cp "$sources_sum" "$installed_sum"; fi
       fi
     fi
   ) 9> /var/www/html/friendica-init-sync.lock

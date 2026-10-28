@@ -404,6 +404,7 @@ Then run `docker-compose up -d`, now you can access Friendica at http://localhos
 
 The `*-dev` and `*-rc` branches are directly downloaded and verified at each docker start to ensure that the latest sources are used.
 The parameter `FRIENDICA_UPGRADE` is required to be `true` (Default: `false`) to activate this behavior.
+If the installed sources come from the same tarball, the container skips copying the sources and the database update.
 
 # Questions / Issues
 

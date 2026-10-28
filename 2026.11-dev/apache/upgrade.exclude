@@ -8,3 +8,4 @@
 /log/
 *.log
 /friendica-init-sync.lock
+/friendica.tar.gz.sum256

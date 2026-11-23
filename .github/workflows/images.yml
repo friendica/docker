@@ -28,6 +28,8 @@ jobs:
         run: |
           strategy="$(GITHUB_REPOSITORY=friendica "$BASHBREW_SCRIPTS/github-actions/generate.sh")"
           strategy="$("$BASHBREW_SCRIPTS/github-actions/munge-i386.sh" -c <<<"$strategy")"
+          # i386 Debian builds fail DNS resolution on ubuntu-26.04 runners (ubuntu-latest since 2026-11-09)
+          strategy="$(jq -c '.matrix.include |= map(if (.name | endswith("(i386)")) then .os = "ubuntu-24.04" else . end)' <<<"$strategy")"
           echo "strategy=$strategy" >> "$GITHUB_OUTPUT"
           jq . <<<"$strategy" # sanity check / debugging aid
   test:

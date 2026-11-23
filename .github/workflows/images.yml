@@ -37,6 +37,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      # Docker 29.4.2 (ubuntu-26.04 runner) denies socketcall(2), which i386 glibc uses for all networking.
+      # Use the seccomp/v0.2.3 default profile (Docker 29.4.3+), which allows it again.
+      # Drop once actions/runner-images#14790 is fixed.
+      - name: Allow socketcall for i386 containers
+        if: endsWith(matrix.name, '(i386)')
+        run: |
+          version="$(docker version --format '{{.Server.Version}}')"
+          if [ "$version" != '29.4.2' ]; then
+            echo "Docker $version, nothing to do"
+            exit 0
+          fi
+          sudo curl -fsSL -o /etc/docker/seccomp-v0.2.3.json \
+            https://raw.githubusercontent.com/moby/profiles/836ae4d37ef2ec995c77c99fc55f5b5f3af3a897/seccomp/default.json
+          config="$(sudo cat /etc/docker/daemon.json 2>/dev/null || echo '{}')"
+          jq '."seccomp-profile" = "/etc/docker/seccomp-v0.2.3.json"' <<<"$config" | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker run --rm i386/debian:trixie getent hosts deb.debian.org
       - name: Prepare Environment
         run: ${{ matrix.runs.prepare }}
       - name: Run update.sh script

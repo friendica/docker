@@ -110,9 +110,9 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ]; then
       fi
 
       if [ "$(id -u)" -eq 0 ]; then
-        rsync_options="-rlDog --chown=www-data:www-data"
+        rsync_options="-rlDogt --chown=www-data:www-data"
       else
-        rsync_options="-rlD"
+        rsync_options="-rlDt"
       fi
 
       rsync $rsync_options --delete --exclude-from=/upgrade.exclude /usr/src/friendica/ /var/www/html/
